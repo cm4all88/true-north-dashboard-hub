@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
 import { CrewSchedule } from '@/components/dashboard/CrewSchedule';
 import { WeatherForecast } from '@/components/dashboard/WeatherForecast';
-import { BirthdayList } from '@/components/dashboard/BirthdayList';
 import { DashboardClock } from '@/components/dashboard/DashboardClock';
 import { useAutoRefresh } from '@/components/dashboard/AutoRefreshProvider';
 import { Button } from '@/components/ui/button';
@@ -27,39 +27,39 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900" id="dashboard-container">
       <header className="w-full bg-white shadow-sm">
-        <div className="max-w-[1800px] mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-screen-2xl mx-auto px-4 py-3 flex justify-between items-center">
           <TrueNorthLogo />
           <DashboardClock />
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Crew Schedule - Full Width */}
-          <div className="col-span-12">
+      <main className="max-w-screen-2xl mx-auto px-4 py-4">
+        <div className="grid grid-cols-1 gap-4">
+          {/* Crew Schedule - Full Height Section */}
+          <div className="h-[30vh]">
             <CrewSchedule />
           </div>
 
-          {/* Weather and Traffic Times - Side by Side */}
-          <div className="col-span-12 md:col-span-6">
+          {/* Weather and Traffic - Full Width Sections */}
+          <div className="h-[25vh]">
             <WeatherForecast />
           </div>
-          <div className="col-span-12 md:col-span-6">
+          <div className="h-[20vh]">
             <TrafficTimes />
           </div>
 
-          {/* Accomplishments and Time Off/Birthdays Calendar - Side by Side */}
-          <div className="col-span-12 md:col-span-6">
+          {/* Accomplishments and Calendar - Full Width Sections */}
+          <div className="h-[15vh]">
             <Accomplishments />
           </div>
-          <div className="col-span-12 md:col-span-6">
+          <div className="h-[25vh]">
             <TimeOffCalendar />
           </div>
         </div>
       </main>
 
-      <footer className="w-full fixed bottom-0 bg-white border-t py-2 px-6">
-        <div className="max-w-[1800px] mx-auto flex justify-between items-center">
+      <footer className="w-full fixed bottom-0 bg-white border-t py-2 px-4">
+        <div className="max-w-screen-2xl mx-auto flex justify-between items-center">
           <div className="text-sm text-gray-500">
             {lastUpdated && (
               <span>Last updated: {formatTime(lastUpdated)}</span>

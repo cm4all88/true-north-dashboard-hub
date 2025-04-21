@@ -24,21 +24,21 @@ const accomplishments = [
 export const Accomplishments = () => {
   return (
     <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-truenorth-700">
-          <Trophy className="h-5 w-5" />
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-truenorth-700 text-lg">
+          <Trophy className="h-4 w-4" />
           Recent Accomplishments
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="overflow-auto">
+        <div className="space-y-2">
           {accomplishments.map((item) => (
             <div
               key={item.id}
-              className="flex justify-between items-start p-3 bg-blue-50 dark:bg-truenorth-900/50 rounded-lg"
+              className="flex justify-between items-start p-2 bg-blue-50 dark:bg-truenorth-900/50 rounded-lg"
             >
-              <p className="text-truenorth-700 flex-1">{item.text}</p>
-              <span className="text-sm text-truenorth-500 ml-4">{item.date}</span>
+              <p className="text-truenorth-700 flex-1 text-sm">{item.text}</p>
+              <span className="text-xs text-truenorth-500 ml-4">{item.date}</span>
             </div>
           ))}
         </div>
