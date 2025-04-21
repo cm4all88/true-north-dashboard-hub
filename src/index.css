@@ -96,7 +96,7 @@
   }
 
   body {
-    @apply bg-background;
+    @apply bg-black text-white; // Changed from bg-background to bg-black
     font-family: 'Arial Black', Arial, sans-serif;
     color: theme('colors.truenorth.600');
   }
