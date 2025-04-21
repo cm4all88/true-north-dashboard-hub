@@ -1,13 +1,12 @@
-
 // Mock data for the True North Dashboard
 
 // Crew Schedule
 export const crewScheduleMock = {
-  Monday: ['Alex Johnson', 'Maria Garcia', 'Darnell Williams'],
-  Tuesday: ['Beth Chen', 'Omar Patel', 'Sarah Kim'],
-  Wednesday: ['James Wilson', 'Maria Garcia', 'Darnell Williams'],
-  Thursday: ['Beth Chen', 'Omar Patel', 'Alex Johnson'],
-  Friday: ['James Wilson', 'Sarah Kim', 'Omar Patel'],
+  Monday: ['Alex Johnson - Field Survey', 'Maria Garcia - Data Processing', 'Darnell Williams - Equipment'],
+  Tuesday: ['Beth Chen - Field Survey', 'Omar Patel - Data Processing', 'Sarah Kim - Equipment'],
+  Wednesday: ['James Wilson - Field Survey', 'Maria Garcia - Data Processing', 'Darnell Williams - Equipment'],
+  Thursday: ['Beth Chen - Field Survey', 'Omar Patel - Data Processing', 'Alex Johnson - Equipment'],
+  Friday: ['James Wilson - Field Survey', 'Sarah Kim - Data Processing', 'Omar Patel - Equipment'],
 };
 
 // Weather Forecast for Seattle

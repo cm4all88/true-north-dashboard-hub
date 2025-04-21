@@ -7,6 +7,7 @@ const routes = [
   {
     from: "Seattle",
     to: "Everett",
+    via: "I-5",
     time: "35 min",
     distance: "28 mi",
     status: "No major delays",
@@ -14,17 +15,26 @@ const routes = [
   {
     from: "Seattle",
     to: "Tacoma",
+    via: "I-5",
     time: "40 min",
     distance: "34 mi",
     status: "Heavy traffic near airport",
   },
+  {
+    from: "Seattle",
+    to: "Puyallup",
+    via: "SR 167",
+    time: "45 min",
+    distance: "38 mi",
+    status: "Moderate traffic",
+  },
 ];
 
 export const TrafficTimes = () => (
-  <Card className="bg-white dark:bg-card shadow flex flex-col gap-3">
+  <Card className="h-full">
     <CardHeader className="pb-3">
       <CardTitle className="flex items-center gap-2 text-truenorth-700">
-        <Car className="text-truenorth-500" />
+        <Car className="h-5 w-5" />
         Traffic Times
       </CardTitle>
     </CardHeader>
@@ -32,7 +42,7 @@ export const TrafficTimes = () => (
       <div className="flex flex-col gap-4">
         {routes.map((route) => (
           <div
-            key={route.to}
+            key={`${route.from}-${route.to}`}
             className="flex flex-col md:flex-row md:items-center justify-between px-2 py-2 rounded-lg bg-blue-50 dark:bg-truenorth-900/50"
           >
             <div className="flex items-center gap-2">
@@ -40,6 +50,7 @@ export const TrafficTimes = () => (
               <span className="font-black tracking-wide text-truenorth-700">{route.from}</span>
               <span className="mx-2 text-truenorth-300">→</span>
               <span className="font-black tracking-wide text-truenorth-700">{route.to}</span>
+              <span className="text-xs text-truenorth-500">({route.via})</span>
             </div>
             <div className="flex items-center gap-6 mt-2 md:mt-0">
               <div className="flex items-center gap-1">
@@ -55,4 +66,3 @@ export const TrafficTimes = () => (
     </CardContent>
   </Card>
 );
-
