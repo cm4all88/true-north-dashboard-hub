@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -11,6 +10,7 @@ import { useAutoRefresh } from '@/components/dashboard/AutoRefreshProvider';
 import { Button } from '@/components/ui/button';
 import { Settings, RefreshCw } from "lucide-react";
 import { ToggleFullscreen } from '@/components/ToggleFullscreen';
+import { TrafficTimes } from "@/components/dashboard/TrafficTimes";
 
 const Index = () => {
   const { lastUpdated, refreshData } = useAutoRefresh();
@@ -43,6 +43,11 @@ const Index = () => {
           {/* Weather Forecast - Spans 7 columns */}
           <div className="col-span-12 lg:col-span-7 xl:col-span-7">
             <WeatherForecast />
+          </div>
+
+          {/* Traffic Times - Spans 12 columns on mobile, 6 on desktop */}
+          <div className="col-span-12 md:col-span-6">
+            <TrafficTimes />
           </div>
 
           {/* Birthdays - Spans 4 columns */}
