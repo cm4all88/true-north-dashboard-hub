@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,5 +109,13 @@
 
   .dashboard-fullscreen {
     @apply fixed inset-0 w-screen h-screen overflow-hidden;
+  }
+
+  /* Added for logo text */
+  @font-face {
+    font-family: 'Arial Black';
+    font-style: italic;
+    font-weight: 900;
+    font-display: swap;
   }
 }

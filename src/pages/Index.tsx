@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -27,9 +26,7 @@ const Index = () => {
     <div className="min-h-screen bg-gray-900 text-white dashboard-fullscreen" id="dashboard-container">
       <header className="w-full bg-gray-800 shadow-md">
         <div className="max-w-full mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="scale-110">
-            <TrueNorthLogo />
-          </div>
+          <TrueNorthLogo />
           <div className="flex-grow mx-8">
             <WeatherForecast headerMode={true} />
           </div>

@@ -3,12 +3,18 @@ import React from "react";
 
 export const TrueNorthLogo = ({ className = "" }: { className?: string }) => {
   return (
-    <div className={`flex items-center ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       <img
-        src="/lovable-uploads/13a089f9-4171-47b2-bde2-b574a94a8945.png"
+        src="/lovable-uploads/e66f3961-0728-4178-9acf-b242e0d3196e.png"
         alt="True North Land Surveying Logo"
         className="h-12"
       />
+      <span 
+        className="font-black italic text-white text-lg whitespace-nowrap"
+        style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}
+      >
+        TRUE NORTH LAND SURVEYING INC.
+      </span>
     </div>
   );
 };
