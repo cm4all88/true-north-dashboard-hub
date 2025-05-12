@@ -10,8 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Settings, RefreshCw } from "lucide-react";
 import { ToggleFullscreen } from '@/components/ToggleFullscreen';
 import { TrafficTimes } from "@/components/dashboard/TrafficTimes";
-import { Accomplishments } from "@/components/dashboard/Accomplishments";
-import { TimeOffCalendar } from "@/components/dashboard/TimeOffCalendar";
 
 const Index = () => {
   const { lastUpdated, refreshData } = useAutoRefresh();
@@ -39,23 +37,13 @@ const Index = () => {
       <main className="max-w-screen-2xl mx-auto px-4 py-4">
         <div className="grid grid-cols-1 gap-2">
           {/* Crew Schedule Section - Increase height to fit both weeks */}
-          <div className="h-[55vh] overflow-hidden">
+          <div className="h-[60vh] overflow-hidden">
             <CrewSchedule />
           </div>
 
           {/* Traffic Section */}
-          <div className="h-[16vh]">
+          <div className="h-[30vh]">
             <TrafficTimes />
-          </div>
-
-          {/* Accomplishments and Calendar Sections */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-[18vh]">
-            <div className="h-full">
-              <Accomplishments />
-            </div>
-            <div className="h-full">
-              <TimeOffCalendar />
-            </div>
           </div>
         </div>
       </main>
