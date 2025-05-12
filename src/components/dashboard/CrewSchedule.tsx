@@ -166,12 +166,14 @@ export function CrewSchedule() {
                         >
                           {day.jobCode && (
                             <div className="flex flex-col gap-2">
-                              <div className="font-medium text-sm text-white">{day.jobCode}</div>
-                              {day.description && (
-                                <div className="text-gray-300 text-sm">- {day.description}</div>
-                              )}
-                              {/* Additional space for potential second project */}
-                              <div className="h-2"></div>
+                              <div>
+                                <span className="font-medium text-sm text-white">{day.jobCode}</span>
+                                {day.description && (
+                                  <span className="text-gray-300 text-sm ml-2">- {day.description}</span>
+                                )}
+                              </div>
+                              {/* Space for potential second project */}
+                              <div className="h-4"></div>
                             </div>
                           )}
                         </TableCell>
