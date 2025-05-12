@@ -152,10 +152,12 @@ export function CrewSchedule() {
                     className={`p-1 border text-[10px] align-top ${crewScheduleData.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
                   >
                     {day.jobCode && (
-                      <>
-                        <div className="font-medium">{day.jobCode}</div>
-                        <div className="text-truenorth-500">{day.description}</div>
-                      </>
+                      <div className="flex items-center gap-1">
+                        <div className="font-medium whitespace-nowrap">{day.jobCode}</div>
+                        {day.description && (
+                          <div className="text-truenorth-500">- {day.description}</div>
+                        )}
+                      </div>
                     )}
                   </TableCell>
                 ))}
