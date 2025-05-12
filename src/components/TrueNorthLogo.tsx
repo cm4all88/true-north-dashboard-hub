@@ -10,7 +10,7 @@ export const TrueNorthLogo = ({ className = "" }: { className?: string }) => {
         className="h-12"
       />
       <span 
-        className="font-black italic text-white text-lg whitespace-nowrap"
+        className="font-black italic text-white text-2xl whitespace-nowrap"
         style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}
       >
         TRUE NORTH LAND SURVEYING INC.
