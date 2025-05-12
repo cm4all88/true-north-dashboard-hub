@@ -12,17 +12,6 @@ const weekOneData = {
   dates: ["5/12/2025", "5/13/2025", "5/14/2025", "5/15/2025", "5/16/2025"],
   crews: [
     {
-      position: "PC IP",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-      ]
-    },
-    {
       position: "TIM",
       name: "SHAUN",
       schedule: [
@@ -31,17 +20,6 @@ const weekOneData = {
         { jobCode: "j18-183", description: "test" },
         { jobCode: "j18-184", description: "test" },
         { jobCode: "j18-185", description: "test" },
-      ]
-    },
-    {
-      position: "NOTES",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
       ]
     },
     {
@@ -56,17 +34,6 @@ const weekOneData = {
       ]
     },
     {
-      position: "NOTES",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-      ]
-    },
-    {
       position: "DOMINIC",
       name: "SERGIO",
       schedule: [
@@ -78,7 +45,7 @@ const weekOneData = {
       ]
     },
     {
-      position: "NOTES",
+      position: "OFF",
       name: "",
       schedule: [
         { jobCode: "", description: "" },
@@ -98,17 +65,6 @@ const weekTwoData = {
   dates: ["5/19/2025", "5/20/2025", "5/21/2025", "5/22/2025", "5/23/2025"],
   crews: [
     {
-      position: "PC IP",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-      ]
-    },
-    {
       position: "TIM",
       name: "SHAUN",
       schedule: [
@@ -117,17 +73,6 @@ const weekTwoData = {
         { jobCode: "j18-24", description: "test" },
         { jobCode: "j18-25", description: "test" },
         { jobCode: "j18-26", description: "test" },
-      ]
-    },
-    {
-      position: "NOTES",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
       ]
     },
     {
@@ -142,17 +87,6 @@ const weekTwoData = {
       ]
     },
     {
-      position: "NOTES",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-      ]
-    },
-    {
       position: "DOMINIC",
       name: "SERGIO",
       schedule: [
@@ -164,7 +98,7 @@ const weekTwoData = {
       ]
     },
     {
-      position: "NOTES",
+      position: "OFF",
       name: "",
       schedule: [
         { jobCode: "", description: "" },
@@ -220,7 +154,7 @@ export function CrewSchedule() {
                 </TableHeader>
                 <TableBody>
                   {weekData.crews.map((crew, crewIndex) => (
-                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-700 h-10" : "h-20"}>
+                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "OFF" ? "bg-gray-700 h-10" : "h-16"}>
                       <TableCell className="p-3 border border-gray-600 text-xs align-top">
                         <div className="font-bold text-sm text-white">{crew.position}</div>
                         <div className="text-sm font-medium text-gray-300">{crew.name}</div>
