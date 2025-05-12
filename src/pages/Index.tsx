@@ -37,22 +37,22 @@ const Index = () => {
       </header>
 
       <main className="max-w-screen-2xl mx-auto px-4 py-4">
-        <div className="grid grid-cols-1 gap-6">
-          {/* Crew Schedule - Fixed Height Section */}
-          <div className="h-[38vh] overflow-hidden">
+        <div className="grid grid-cols-1 gap-4">
+          {/* Crew Schedule Section - Give it more height */}
+          <div className="h-[45vh] overflow-hidden">
             <CrewSchedule />
           </div>
 
-          {/* Traffic - Full Width Section */}
-          <div className="h-[18vh]">
+          {/* Traffic Section */}
+          <div className="h-[16vh]">
             <TrafficTimes />
           </div>
 
-          {/* Accomplishments and Calendar - Full Width Sections */}
-          <div className="h-[12vh]">
+          {/* Accomplishments and Calendar Sections */}
+          <div className="h-[10vh]">
             <Accomplishments />
           </div>
-          <div className="h-[20vh]">
+          <div className="h-[18vh]">
             <TimeOffCalendar />
           </div>
         </div>
