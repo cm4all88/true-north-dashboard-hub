@@ -29,6 +29,9 @@ const Index = () => {
       <header className="w-full bg-white shadow-sm">
         <div className="max-w-screen-2xl mx-auto px-4 py-3 flex justify-between items-center">
           <TrueNorthLogo />
+          <div className="flex-grow mx-4">
+            <WeatherForecast headerMode={true} />
+          </div>
           <DashboardClock />
         </div>
       </header>
@@ -40,10 +43,7 @@ const Index = () => {
             <CrewSchedule />
           </div>
 
-          {/* Weather and Traffic - Full Width Sections */}
-          <div className="h-[25vh]">
-            <WeatherForecast />
-          </div>
+          {/* Traffic - Full Width Section */}
           <div className="h-[20vh]">
             <TrafficTimes />
           </div>

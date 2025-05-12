@@ -18,23 +18,15 @@ const getWeatherIcon = (condition: string) => {
   }
 };
 
-export function WeatherForecast() {
+interface WeatherForecastProps {
+  headerMode?: boolean;
+}
+
+export function WeatherForecast({ headerMode = false }: WeatherForecastProps) {
   const [weatherData, setWeatherData] = useState(weatherForecastMock);
   
   useEffect(() => {
     // Here you would fetch real weather data from an API
-    // For example:
-    // const fetchWeatherData = async () => {
-    //   try {
-    //     const response = await fetch('https://api.weather.gov/gridpoints/SEW/124,67/forecast');
-    //     const data = await response.json();
-    //     setWeatherData(formatWeatherData(data.properties.periods));
-    //   } catch (error) {
-    //     console.error('Error fetching weather data:', error);
-    //   }
-    // };
-    // fetchWeatherData();
-    
     // For now, we'll use our mock data
     const intervalId = setInterval(() => {
       // Simulate data refresh every hour
@@ -43,6 +35,32 @@ export function WeatherForecast() {
     
     return () => clearInterval(intervalId);
   }, []);
+
+  if (headerMode) {
+    return (
+      <div className="flex items-center justify-center">
+        <div className="flex gap-4 items-center">
+          {weatherData.slice(0, 3).map((day, index) => (
+            <div 
+              key={index} 
+              className="flex items-center gap-2 bg-white p-2 rounded-md"
+            >
+              {index === 0 && <CloudSun className="h-5 w-5 mr-1 text-truenorth-400" />}
+              {index === 0 && <span className="font-semibold mr-1">Today:</span>}
+              {index !== 0 && <span className="font-semibold mr-1">{day.day}:</span>}
+              <div className="flex items-center">
+                {getWeatherIcon(day.condition)}
+                <div className="flex gap-1 text-sm ml-1">
+                  <span className="font-medium">{day.high}°</span>
+                  <span className="text-gray-500">{day.low}°</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Card className="h-full">
