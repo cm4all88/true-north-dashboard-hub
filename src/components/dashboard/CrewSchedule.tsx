@@ -227,10 +227,10 @@ export function CrewSchedule() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-2">
-        <ScrollArea className="h-[calc(100vh-170px)]">
+        <ScrollArea className="h-[calc(100vh-200px)]">
           {scheduleData.map((weekData, weekIndex) => (
-            <div key={weekIndex} className={weekIndex > 0 ? "mt-6" : ""}>
-              <CardDescription className="mb-2">{weekData.weekOf}</CardDescription>
+            <div key={weekIndex} className={weekIndex > 0 ? "mt-4" : ""}>
+              <CardDescription className="mb-2 font-medium">{weekData.weekOf}</CardDescription>
               <Table className="border-collapse">
                 <TableHeader className="bg-blue-50">
                   <TableRow>
