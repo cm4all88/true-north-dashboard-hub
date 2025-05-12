@@ -154,7 +154,7 @@ export function CrewSchedule() {
                 </TableHeader>
                 <TableBody>
                   {weekData.crews.map((crew, crewIndex) => (
-                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "OFF" ? "bg-gray-700 h-[17.5px]" : "h-[28px]"}>
+                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "OFF" ? "bg-gray-700 h-[35px]" : "h-[70px]"}>
                       <TableCell className="p-3 border border-gray-600 text-xs align-top">
                         <div className="font-bold text-sm text-white">{crew.position}</div>
                         <div className="text-sm font-medium text-gray-300">{crew.name}</div>
