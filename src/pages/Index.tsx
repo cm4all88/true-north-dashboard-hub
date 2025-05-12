@@ -24,8 +24,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 dashboard-fullscreen" id="dashboard-container">
-      <header className="w-full bg-white shadow-md">
+    <div className="min-h-screen bg-gray-900 text-white dashboard-fullscreen" id="dashboard-container">
+      <header className="w-full bg-gray-800 shadow-md">
         <div className="max-w-full mx-auto px-6 py-3 flex justify-between items-center">
           <div className="scale-110">
             <TrueNorthLogo />
@@ -58,21 +58,21 @@ const Index = () => {
         </div>
       </main>
 
-      <footer className="w-full fixed bottom-0 bg-white border-t py-2 px-6">
+      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-2 px-6">
         <div className="max-w-full mx-auto flex justify-between items-center">
-          <div className="text-base text-gray-500">
+          <div className="text-base text-gray-300">
             {lastUpdated && (
               <span>Last updated: {formatTime(lastUpdated)}</span>
             )}
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={refreshData} title="Refresh Data" className="text-lg">
+            <Button variant="ghost" size="sm" onClick={refreshData} title="Refresh Data" className="text-lg text-gray-300 hover:text-white">
               <RefreshCw className="h-6 w-6 mr-2" />
               Refresh
             </Button>
             <ToggleFullscreen />
             <Link to="/admin">
-              <Button variant="ghost" size="sm" className="text-lg">
+              <Button variant="ghost" size="sm" className="text-lg text-gray-300 hover:text-white">
                 <Settings className="mr-2 h-6 w-6" />
                 Admin
               </Button>
