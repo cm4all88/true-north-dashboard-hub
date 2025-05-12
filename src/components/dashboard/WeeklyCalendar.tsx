@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { format, startOfWeek, endOfWeek, isToday, addDays } from "date-fns";
+import { format, startOfWeek, endOfWeek, isToday, addDays, isSameDay } from "date-fns";
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 
 // Mock events data - replace with actual API call in production
@@ -18,14 +18,18 @@ const EVENTS = [
 export const WeeklyCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   
-  // Calculate current week range
+  // Calculate work week range (Monday to Friday)
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
-  const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 }); // Sunday
+  const weekEnd = addDays(weekStart, 4); // Friday (4 days after Monday)
   
-  // Get events for the selected week
-  const weekEvents = EVENTS.filter(event => 
-    event.date >= weekStart && event.date <= weekEnd
-  ).sort((a, b) => a.date.getTime() - b.date.getTime());
+  // Filter events to only include work week (Monday to Friday)
+  const workWeekEvents = EVENTS.filter(event => {
+    const day = event.date.getDay();
+    // Include only events from Monday (1) to Friday (5)
+    return day >= 1 && day <= 5 && 
+           event.date >= weekStart && 
+           event.date <= weekEnd;
+  }).sort((a, b) => a.date.getTime() - b.date.getTime());
   
   // Get event type badge color
   const getEventTypeColor = (type: string) => {
@@ -61,7 +65,7 @@ export const WeeklyCalendar = () => {
             </div>
           </div>
           
-          {weekEvents.length > 0 ? (
+          {workWeekEvents.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -71,7 +75,7 @@ export const WeeklyCalendar = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {weekEvents.map(event => (
+                {workWeekEvents.map(event => (
                   <TableRow key={event.id} className={isToday(event.date) ? "bg-blue-50" : ""}>
                     <TableCell className="font-medium">
                       {format(event.date, "EEEE, MMM d")}
