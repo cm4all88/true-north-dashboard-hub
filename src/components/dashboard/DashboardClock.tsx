@@ -32,10 +32,10 @@ export function DashboardClock() {
 
   return (
     <div className="flex flex-col items-end">
-      <div className="text-3xl font-semibold text-truenorth-700">
+      <div className="text-3xl font-semibold text-white">
         {formatTime(time)}
       </div>
-      <div className="text-lg text-gray-500">
+      <div className="text-lg text-white">
         {formatDate(time)}
       </div>
     </div>

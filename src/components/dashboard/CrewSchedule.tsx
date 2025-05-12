@@ -191,9 +191,9 @@ export function CrewSchedule() {
   const currentDay = getCurrentDayName();
   
   return (
-    <Card className="h-full">
+    <Card className="h-full bg-gray-800">
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-truenorth-700 text-lg">
+        <CardTitle className="flex items-center gap-2 text-white text-lg">
           <Calendar className="h-4 w-4" />
           Field Crew Schedule
         </CardTitle>
@@ -202,40 +202,42 @@ export function CrewSchedule() {
         <ScrollArea className="h-[calc(100vh-200px)]">
           {scheduleData.map((weekData, weekIndex) => (
             <div key={weekIndex} className={weekIndex > 0 ? "mt-4" : ""}>
-              <CardDescription className="mb-2 font-medium">{weekData.weekOf}</CardDescription>
+              <CardDescription className="mb-2 font-medium text-gray-300">{weekData.weekOf}</CardDescription>
               <Table className="border-collapse">
-                <TableHeader className="bg-blue-50">
+                <TableHeader className="bg-gray-700">
                   <TableRow>
-                    <TableHead className="w-24 text-xs font-bold text-truenorth-700 p-2 border">Crew</TableHead>
+                    <TableHead className="w-24 text-xs font-bold text-white p-2 border border-gray-600">Crew</TableHead>
                     {weekData.days.map((day, index) => (
                       <TableHead 
                         key={day + index} 
-                        className={`w-24 text-xs font-bold p-2 border text-center ${day === currentDay ? 'bg-truenorth-100 text-truenorth-700' : 'text-truenorth-600'}`}
+                        className={`w-24 text-xs font-bold p-2 border border-gray-600 text-center ${day === currentDay ? 'bg-gray-600 text-white' : 'text-gray-300'}`}
                       >
                         {day}
-                        <div className="text-[10px] text-truenorth-500">{weekData.dates[index]}</div>
+                        <div className="text-[10px] text-gray-400">{weekData.dates[index]}</div>
                       </TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {weekData.crews.map((crew, crewIndex) => (
-                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-50 h-10" : "h-16"}>
-                      <TableCell className="p-3 border text-xs align-top">
-                        <div className="font-bold text-sm">{crew.position}</div>
-                        <div className="text-sm font-medium">{crew.name}</div>
+                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-700 h-10" : "h-20"}>
+                      <TableCell className="p-3 border border-gray-600 text-xs align-top">
+                        <div className="font-bold text-sm text-white">{crew.position}</div>
+                        <div className="text-sm font-medium text-gray-300">{crew.name}</div>
                       </TableCell>
                       {crew.schedule.map((day, dayIndex) => (
                         <TableCell 
                           key={`${crewIndex}-${dayIndex}`} 
-                          className={`p-3 border align-top ${weekData.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
+                          className={`p-3 border border-gray-600 align-top ${weekData.days[dayIndex] === currentDay ? 'bg-gray-600' : ''}`}
                         >
                           {day.jobCode && (
-                            <div className="flex flex-col gap-1">
-                              <div className="font-medium text-sm">{day.jobCode}</div>
+                            <div className="flex flex-col gap-2">
+                              <div className="font-medium text-sm text-white">{day.jobCode}</div>
                               {day.description && (
-                                <div className="text-truenorth-500 text-sm">- {day.description}</div>
+                                <div className="text-gray-300 text-sm">- {day.description}</div>
                               )}
+                              {/* Additional space for potential second project */}
+                              <div className="h-2"></div>
                             </div>
                           )}
                         </TableCell>
