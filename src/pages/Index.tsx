@@ -11,6 +11,7 @@ import { Settings, RefreshCw } from "lucide-react";
 import { ToggleFullscreen } from '@/components/ToggleFullscreen';
 import { TrafficTimes } from "@/components/dashboard/TrafficTimes";
 import { TimeOffCalendar } from "@/components/dashboard/TimeOffCalendar";
+import { ComicOfTheDay } from "@/components/dashboard/ComicOfTheDay";
 
 const Index = () => {
   const { lastUpdated, refreshData } = useAutoRefresh();
@@ -44,13 +45,16 @@ const Index = () => {
             <CrewSchedule />
           </div>
 
-          {/* Right Column: Traffic Times and Time Off Calendar */}
-          <div className="col-span-2 h-[calc(100vh-11rem)] grid grid-rows-2 gap-5">
+          {/* Right Column: Traffic Times, Time Off Calendar, and Comic of the Day */}
+          <div className="col-span-2 h-[calc(100vh-11rem)] grid grid-rows-3 gap-5">
             <div className="overflow-auto">
               <TrafficTimes />
             </div>
             <div className="overflow-auto">
               <TimeOffCalendar />
+            </div>
+            <div className="overflow-auto">
+              <ComicOfTheDay />
             </div>
           </div>
         </div>
