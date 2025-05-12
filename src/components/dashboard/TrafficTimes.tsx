@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Car, MapPin, Clock } from "lucide-react";
+import { Car, MapPin, Clock, ArrowRightLeft } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 // Updated routes - both directions
@@ -64,18 +64,19 @@ export const TrafficTimes = () => (
       <CardTitle className="flex items-center gap-2 text-truenorth-700 text-2xl">
         <Car className="h-7 w-7" />
         Traffic Times
+        <ArrowRightLeft className="h-5 w-5 ml-2 text-truenorth-500" />
       </CardTitle>
     </CardHeader>
     <CardContent className="p-0">
       <div className="grid grid-cols-2 w-full mx-auto gap-x-1">
-        {/* Left column - From Seattle */}
+        {/* Left column - To Seattle */}
         <div className="border-r">
           <div className="text-truenorth-600 font-semibold text-lg p-2 bg-gray-100">
-            From Seattle
+            To Seattle
           </div>
-          {routesFromSeattle.map((route) => (
+          {routesToSeattle.map((route) => (
             <div
-              key={`from-${route.from}-${route.to}`}
+              key={`to-${route.from}-${route.to}`}
               className="flex flex-col border-b last:border-b-0 py-3 px-4"
             >
               <div className="flex items-center gap-2 mb-1">
@@ -101,14 +102,14 @@ export const TrafficTimes = () => (
           ))}
         </div>
         
-        {/* Right column - To Seattle */}
+        {/* Right column - From Seattle */}
         <div>
           <div className="text-truenorth-600 font-semibold text-lg p-2 bg-gray-100">
-            To Seattle
+            From Seattle
           </div>
-          {routesToSeattle.map((route) => (
+          {routesFromSeattle.map((route) => (
             <div
-              key={`to-${route.from}-${route.to}`}
+              key={`from-${route.from}-${route.to}`}
               className="flex flex-col border-b last:border-b-0 py-3 px-4"
             >
               <div className="flex items-center gap-2 mb-1">
