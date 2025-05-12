@@ -5,7 +5,7 @@ export const TrueNorthLogo = ({ className = "" }: { className?: string }) => {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <img
-        src="/lovable-uploads/e66f3961-0728-4178-9acf-b242e0d3196e.png"
+        src="/lovable-uploads/541e7d0a-4bb0-4230-9dee-980fd9598990.png"
         alt="True North Land Surveying Logo"
         className="h-12"
       />
