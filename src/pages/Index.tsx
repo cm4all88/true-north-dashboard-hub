@@ -25,7 +25,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dashboard-fullscreen" id="dashboard-container">
       <header className="w-full bg-white shadow-md">
-        <div className="max-w-full mx-auto px-8 py-4 flex justify-between items-center">
+        <div className="max-w-full mx-auto px-6 py-3 flex justify-between items-center">
           <div className="scale-110">
             <TrueNorthLogo />
           </div>
@@ -38,21 +38,21 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-full mx-auto px-8 py-6 h-[calc(100vh-10rem)]">
-        <div className="grid grid-cols-12 gap-6 h-full">
+      <main className="max-w-full mx-auto px-6 py-4 h-[calc(100vh-9rem)]">
+        <div className="grid grid-cols-12 gap-5 h-full">
           {/* Crew Schedule Section */}
-          <div className="col-span-9 h-[80vh] overflow-hidden">
+          <div className="col-span-9 h-[calc(100vh-11rem)] overflow-hidden">
             <CrewSchedule />
           </div>
 
           {/* Traffic Times Section */}
-          <div className="col-span-3 h-[80vh]">
+          <div className="col-span-3 h-[calc(100vh-11rem)] overflow-auto">
             <TrafficTimes />
           </div>
         </div>
       </main>
 
-      <footer className="w-full fixed bottom-0 bg-white border-t py-3 px-8">
+      <footer className="w-full fixed bottom-0 bg-white border-t py-2 px-6">
         <div className="max-w-full mx-auto flex justify-between items-center">
           <div className="text-base text-gray-500">
             {lastUpdated && (
