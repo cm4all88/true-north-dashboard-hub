@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, addDays } from "date-fns";
+import { format, startOfWeek, endOfWeek, isToday, addDays } from "date-fns";
+import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 
 // Mock events data - replace with actual API call in production
 const EVENTS = [
@@ -21,30 +22,18 @@ export const WeeklyCalendar = () => {
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
   const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 1 }); // Sunday
   
-  // Get all days of the current week
-  const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
-  
-  // Filter events for the selected week
+  // Get events for the selected week
   const weekEvents = EVENTS.filter(event => 
     event.date >= weekStart && event.date <= weekEnd
-  );
-
-  // Get events for a specific day
-  const getEventsForDay = (date: Date) => {
-    return weekEvents.filter(event => 
-      date.getDate() === event.date.getDate() && 
-      date.getMonth() === event.date.getMonth() && 
-      date.getFullYear() === event.date.getFullYear()
-    );
-  };
-
-  // Get background color based on event type
-  const getEventColor = (type: string) => {
+  ).sort((a, b) => a.date.getTime() - b.date.getTime());
+  
+  // Get event type badge color
+  const getEventTypeColor = (type: string) => {
     switch (type) {
-      case "meeting": return "bg-blue-100 border-blue-300";
-      case "training": return "bg-green-100 border-green-300";
-      case "maintenance": return "bg-yellow-100 border-yellow-300";
-      default: return "bg-gray-100 border-gray-300";
+      case "meeting": return "bg-blue-100 text-blue-800";
+      case "training": return "bg-green-100 text-green-800";
+      case "maintenance": return "bg-yellow-100 text-yellow-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
   
@@ -57,41 +46,52 @@ export const WeeklyCalendar = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="flex flex-col">
-          <div className="px-4 pt-2 pb-0">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => date && setSelectedDate(date)}
-              className="w-full rounded-md border shadow-sm"
-            />
-          </div>
-          <div className="px-4 py-3">
-            <h3 className="font-bold text-lg mb-2">
+        <div className="px-4 py-3 flex flex-col h-full">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-bold text-lg">
               {format(weekStart, "MMMM d")} - {format(weekEnd, "MMMM d, yyyy")}
             </h3>
-            <div className="space-y-2">
-              {weekEvents.length > 0 ? (
-                weekEvents.map(event => (
-                  <div 
-                    key={event.id}
-                    className={`p-3 rounded-md border-l-4 ${getEventColor(event.type)}`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-lg">{event.title}</span>
-                      <span className="text-truenorth-500">
-                        {format(event.date, "EEEE, MMM d")}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-lg text-center py-6 text-gray-500">
-                  No events scheduled for this week
-                </div>
-              )}
+            <div className="hidden">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                className="rounded-md border shadow-sm"
+              />
             </div>
           </div>
+          
+          {weekEvents.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/3">Date</TableHead>
+                  <TableHead>Event</TableHead>
+                  <TableHead className="w-1/4">Type</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {weekEvents.map(event => (
+                  <TableRow key={event.id} className={isToday(event.date) ? "bg-blue-50" : ""}>
+                    <TableCell className="font-medium">
+                      {format(event.date, "EEEE, MMM d")}
+                      {isToday(event.date) && <span className="ml-2 text-blue-600 text-xs font-bold">TODAY</span>}
+                    </TableCell>
+                    <TableCell className="font-medium text-lg">{event.title}</TableCell>
+                    <TableCell>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEventTypeColor(event.type)}`}>
+                        {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-xl text-center py-10 text-gray-500">
+              No events scheduled for this week
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
