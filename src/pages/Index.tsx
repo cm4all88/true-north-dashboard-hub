@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Settings, RefreshCw } from "lucide-react";
 import { ToggleFullscreen } from '@/components/ToggleFullscreen';
 import { TrafficTimes } from "@/components/dashboard/TrafficTimes";
-import { WeeklyCalendar } from "@/components/dashboard/WeeklyCalendar";
+import { TimeOffCalendar } from "@/components/dashboard/TimeOffCalendar";
 
 const Index = () => {
   const { lastUpdated, refreshData } = useAutoRefresh();
@@ -40,19 +40,19 @@ const Index = () => {
       </header>
 
       <main className="max-w-full mx-auto px-6 py-4 h-[calc(100vh-9rem)]">
-        <div className="grid grid-cols-12 gap-5 h-full">
-          {/* Crew Schedule Section */}
-          <div className="col-span-9 h-[calc(100vh-11rem)] overflow-hidden">
+        <div className="grid grid-cols-3 gap-5 h-full">
+          {/* Crew Schedule Section - Takes up 2/3 of screen width */}
+          <div className="col-span-2 h-[calc(100vh-11rem)]">
             <CrewSchedule />
           </div>
 
-          {/* Right Column: Traffic Times and Weekly Calendar */}
-          <div className="col-span-3 h-[calc(100vh-11rem)] grid grid-rows-2 gap-5">
+          {/* Right Column: Traffic Times and Time Off Calendar */}
+          <div className="col-span-1 h-[calc(100vh-11rem)] grid grid-rows-2 gap-5">
             <div className="overflow-auto">
               <TrafficTimes />
             </div>
             <div className="overflow-auto">
-              <WeeklyCalendar />
+              <TimeOffCalendar />
             </div>
           </div>
         </div>
