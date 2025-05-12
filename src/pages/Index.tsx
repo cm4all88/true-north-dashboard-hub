@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -37,14 +38,14 @@ const Index = () => {
       </header>
 
       <main className="max-w-full mx-auto px-6 py-4 h-[calc(100vh-9rem)]">
-        <div className="grid grid-cols-3 gap-5 h-full">
-          {/* Crew Schedule Section - Takes up 2/3 of screen width */}
+        <div className="grid grid-cols-4 gap-5 h-full">
+          {/* Crew Schedule Section - Takes up 1/2 of screen width */}
           <div className="col-span-2 h-[calc(100vh-11rem)]">
             <CrewSchedule />
           </div>
 
           {/* Right Column: Traffic Times and Time Off Calendar */}
-          <div className="col-span-1 h-[calc(100vh-11rem)] grid grid-rows-2 gap-5">
+          <div className="col-span-2 h-[calc(100vh-11rem)] grid grid-rows-2 gap-5">
             <div className="overflow-auto">
               <TrafficTimes />
             </div>
