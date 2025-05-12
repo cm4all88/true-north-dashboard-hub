@@ -1,10 +1,8 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 
 // Structured data for the first week
 const weekOneData = {
@@ -218,100 +216,64 @@ const getCurrentDayName = () => {
 
 export function CrewSchedule() {
   const currentDay = getCurrentDayName();
-  const [activeWeekIndex, setActiveWeekIndex] = useState(0);
-  
-  const handlePreviousWeek = () => {
-    setActiveWeekIndex((prev) => (prev > 0 ? prev - 1 : prev));
-  };
-  
-  const handleNextWeek = () => {
-    setActiveWeekIndex((prev) => (prev < scheduleData.length - 1 ? prev + 1 : prev));
-  };
-
-  const activeWeek = scheduleData[activeWeekIndex];
   
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="flex items-center gap-2 text-truenorth-700 text-lg">
-            <Calendar className="h-4 w-4" />
-            Field Crew Schedule
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <ChevronLeft 
-              className={`h-5 w-5 cursor-pointer ${activeWeekIndex === 0 ? 'text-gray-300' : 'text-truenorth-700'}`} 
-              onClick={handlePreviousWeek}
-            />
-            <ChevronRight 
-              className={`h-5 w-5 cursor-pointer ${activeWeekIndex === scheduleData.length - 1 ? 'text-gray-300' : 'text-truenorth-700'}`} 
-              onClick={handleNextWeek}
-            />
-          </div>
-        </div>
-        <CardDescription>{activeWeek.weekOf}</CardDescription>
+        <CardTitle className="flex items-center gap-2 text-truenorth-700 text-lg">
+          <Calendar className="h-4 w-4" />
+          Field Crew Schedule
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-2">
         <ScrollArea className="h-[calc(100vh-170px)]">
-          <Table className="border-collapse">
-            <TableHeader className="bg-blue-50">
-              <TableRow>
-                <TableHead className="w-24 text-xs font-bold text-truenorth-700 p-1 border">Crew</TableHead>
-                {activeWeek.days.map((day, index) => (
-                  <TableHead 
-                    key={day + index} 
-                    className={`w-24 text-xs font-bold p-1 border text-center ${day === currentDay ? 'bg-truenorth-100 text-truenorth-700' : 'text-truenorth-600'}`}
-                  >
-                    {day}
-                    <div className="text-[10px] text-truenorth-500">{activeWeek.dates[index]}</div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {activeWeek.crews.map((crew, crewIndex) => (
-                <TableRow key={`${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-50 h-6" : ""}>
-                  <TableCell className="p-1 border text-xs align-top">
-                    <div className="font-bold">{crew.position}</div>
-                    <div className="text-xs">{crew.name}</div>
-                  </TableCell>
-                  {crew.schedule.map((day, dayIndex) => (
-                    <TableCell 
-                      key={`${crewIndex}-${dayIndex}`} 
-                      className={`p-1 border text-[10px] align-top ${activeWeek.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
-                    >
-                      {day.jobCode && (
-                        <div className="flex items-center gap-1">
-                          <div className="font-medium whitespace-nowrap">{day.jobCode}</div>
-                          {day.description && (
-                            <div className="text-truenorth-500">- {day.description}</div>
+          {scheduleData.map((weekData, weekIndex) => (
+            <div key={weekIndex} className={weekIndex > 0 ? "mt-6" : ""}>
+              <CardDescription className="mb-2">{weekData.weekOf}</CardDescription>
+              <Table className="border-collapse">
+                <TableHeader className="bg-blue-50">
+                  <TableRow>
+                    <TableHead className="w-24 text-xs font-bold text-truenorth-700 p-1 border">Crew</TableHead>
+                    {weekData.days.map((day, index) => (
+                      <TableHead 
+                        key={day + index} 
+                        className={`w-24 text-xs font-bold p-1 border text-center ${day === currentDay ? 'bg-truenorth-100 text-truenorth-700' : 'text-truenorth-600'}`}
+                      >
+                        {day}
+                        <div className="text-[10px] text-truenorth-500">{weekData.dates[index]}</div>
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {weekData.crews.map((crew, crewIndex) => (
+                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-50 h-6" : ""}>
+                      <TableCell className="p-1 border text-xs align-top">
+                        <div className="font-bold">{crew.position}</div>
+                        <div className="text-xs">{crew.name}</div>
+                      </TableCell>
+                      {crew.schedule.map((day, dayIndex) => (
+                        <TableCell 
+                          key={`${crewIndex}-${dayIndex}`} 
+                          className={`p-1 border text-[10px] align-top ${weekData.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
+                        >
+                          {day.jobCode && (
+                            <div className="flex items-center gap-1">
+                              <div className="font-medium whitespace-nowrap">{day.jobCode}</div>
+                              {day.description && (
+                                <div className="text-truenorth-500">- {day.description}</div>
+                              )}
+                            </div>
                           )}
-                        </div>
-                      )}
-                    </TableCell>
+                        </TableCell>
+                      ))}
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                </TableBody>
+              </Table>
+            </div>
+          ))}
         </ScrollArea>
-        <div className="mt-2 flex justify-center">
-          <Pagination>
-            <PaginationContent>
-              {scheduleData.map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    isActive={activeWeekIndex === index}
-                    onClick={() => setActiveWeekIndex(index)}
-                    className="cursor-pointer h-6 w-6 p-0 flex items-center justify-center"
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-            </PaginationContent>
-          </Pagination>
-        </div>
       </CardContent>
     </Card>
   );
