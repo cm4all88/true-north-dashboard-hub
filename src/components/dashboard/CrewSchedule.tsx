@@ -250,19 +250,19 @@ export function CrewSchedule() {
                   {weekData.crews.map((crew, crewIndex) => (
                     <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-50 h-6" : ""}>
                       <TableCell className="p-1 border text-xs align-top">
-                        <div className="font-bold">{crew.position}</div>
-                        <div className="text-xs">{crew.name}</div>
+                        <div className="font-bold text-sm">{crew.position}</div>
+                        <div className="text-sm font-medium">{crew.name}</div>
                       </TableCell>
                       {crew.schedule.map((day, dayIndex) => (
                         <TableCell 
                           key={`${crewIndex}-${dayIndex}`} 
-                          className={`p-1 border text-[10px] align-top ${weekData.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
+                          className={`p-1 border align-top ${weekData.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
                         >
                           {day.jobCode && (
                             <div className="flex items-center gap-1">
-                              <div className="font-medium whitespace-nowrap">{day.jobCode}</div>
+                              <div className="font-medium text-sm">{day.jobCode}</div>
                               {day.description && (
-                                <div className="text-truenorth-500">- {day.description}</div>
+                                <div className="text-truenorth-500 text-sm">- {day.description}</div>
                               )}
                             </div>
                           )}

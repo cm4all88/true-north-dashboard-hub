@@ -39,7 +39,7 @@ export const TrafficTimes = () => (
       </CardTitle>
     </CardHeader>
     <CardContent className="p-0">
-      <div className="flex flex-col">
+      <div className="flex flex-col max-w-3xl mx-auto">
         {routes.map((route) => (
           <div
             key={`${route.from}-${route.to}`}

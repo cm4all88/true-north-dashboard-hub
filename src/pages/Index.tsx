@@ -36,14 +36,16 @@ const Index = () => {
 
       <main className="max-w-screen-2xl mx-auto px-4 py-4">
         <div className="grid grid-cols-1 gap-2">
-          {/* Crew Schedule Section - Increase height to fit both weeks */}
-          <div className="h-[60vh] overflow-hidden">
+          {/* Crew Schedule Section - Adjusted height */}
+          <div className="h-[65vh] overflow-hidden">
             <CrewSchedule />
           </div>
 
-          {/* Traffic Section */}
-          <div className="h-[30vh]">
-            <TrafficTimes />
+          {/* Traffic Section - More compact */}
+          <div className="h-[25vh]">
+            <div className="max-w-3xl mx-auto">
+              <TrafficTimes />
+            </div>
           </div>
         </div>
       </main>
