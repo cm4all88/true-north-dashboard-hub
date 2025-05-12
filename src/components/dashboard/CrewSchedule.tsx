@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
@@ -205,11 +206,11 @@ export function CrewSchedule() {
               <Table className="border-collapse">
                 <TableHeader className="bg-blue-50">
                   <TableRow>
-                    <TableHead className="w-24 text-xs font-bold text-truenorth-700 p-1 border">Crew</TableHead>
+                    <TableHead className="w-24 text-xs font-bold text-truenorth-700 p-2 border">Crew</TableHead>
                     {weekData.days.map((day, index) => (
                       <TableHead 
                         key={day + index} 
-                        className={`w-24 text-xs font-bold p-1 border text-center ${day === currentDay ? 'bg-truenorth-100 text-truenorth-700' : 'text-truenorth-600'}`}
+                        className={`w-24 text-xs font-bold p-2 border text-center ${day === currentDay ? 'bg-truenorth-100 text-truenorth-700' : 'text-truenorth-600'}`}
                       >
                         {day}
                         <div className="text-[10px] text-truenorth-500">{weekData.dates[index]}</div>
@@ -219,18 +220,18 @@ export function CrewSchedule() {
                 </TableHeader>
                 <TableBody>
                   {weekData.crews.map((crew, crewIndex) => (
-                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-50 h-6" : ""}>
-                      <TableCell className="p-1 border text-xs align-top">
+                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "NOTES" ? "bg-gray-50 h-10" : "h-16"}>
+                      <TableCell className="p-3 border text-xs align-top">
                         <div className="font-bold text-sm">{crew.position}</div>
                         <div className="text-sm font-medium">{crew.name}</div>
                       </TableCell>
                       {crew.schedule.map((day, dayIndex) => (
                         <TableCell 
                           key={`${crewIndex}-${dayIndex}`} 
-                          className={`p-1 border align-top ${weekData.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
+                          className={`p-3 border align-top ${weekData.days[dayIndex] === currentDay ? 'bg-truenorth-50' : ''}`}
                         >
                           {day.jobCode && (
-                            <div className="flex items-center gap-1">
+                            <div className="flex flex-col gap-1">
                               <div className="font-medium text-sm">{day.jobCode}</div>
                               {day.description && (
                                 <div className="text-truenorth-500 text-sm">- {day.description}</div>
