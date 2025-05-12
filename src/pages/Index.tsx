@@ -45,16 +45,21 @@ const Index = () => {
             <CrewSchedule />
           </div>
 
-          {/* Right Column: Traffic Times, Time Off Calendar, and Comic of the Day */}
-          <div className="col-span-2 h-[calc(100vh-11rem)] grid grid-rows-3 gap-5">
+          {/* Right Column: Traffic Times on top, Time Off Calendar and Comic side by side below */}
+          <div className="col-span-2 h-[calc(100vh-11rem)] grid grid-rows-2 gap-5">
+            {/* Traffic Times takes full width */}
             <div className="overflow-auto">
               <TrafficTimes />
             </div>
-            <div className="overflow-auto">
-              <TimeOffCalendar />
-            </div>
-            <div className="overflow-auto">
-              <ComicOfTheDay />
+            
+            {/* Time Off Calendar and Comic of the Day side by side */}
+            <div className="grid grid-cols-2 gap-5">
+              <div className="overflow-auto">
+                <TimeOffCalendar />
+              </div>
+              <div className="overflow-auto">
+                <ComicOfTheDay />
+              </div>
             </div>
           </div>
         </div>
