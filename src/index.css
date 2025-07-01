@@ -100,6 +100,8 @@
     @apply bg-black text-white dark:bg-black;
     font-family: 'Arial Black', Arial, sans-serif;
     color: theme('colors.white');
+    /* Optimized for 55" vertical monitor */
+    font-size: 18px;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -109,6 +111,8 @@
 
   .dashboard-fullscreen {
     @apply fixed inset-0 w-screen h-screen overflow-hidden;
+    /* Ensure optimal scaling for large vertical display */
+    zoom: 1.2;
   }
 
   /* Added for logo text */
@@ -117,5 +121,16 @@
     font-style: italic;
     font-weight: 900;
     font-display: swap;
+  }
+
+  /* Optimizations for 55" vertical monitor */
+  @media screen and (orientation: portrait) and (min-height: 1920px) {
+    .dashboard-fullscreen {
+      zoom: 1.4;
+    }
+    
+    body {
+      font-size: 20px;
+    }
   }
 }

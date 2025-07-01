@@ -27,60 +27,58 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white dashboard-fullscreen" id="dashboard-container">
       <header className="w-full bg-gray-800 shadow-md">
-        <div className="max-w-full mx-auto px-6 py-3 flex justify-between items-center">
+        <div className="max-w-full mx-auto px-6 py-4 flex justify-between items-center">
           <TrueNorthLogo />
           <div className="flex-grow mx-8">
             <WeatherForecast headerMode={true} />
           </div>
-          <div className="scale-110">
+          <div className="scale-125">
             <DashboardClock />
           </div>
         </div>
       </header>
 
-      <main className="max-w-full mx-auto px-6 py-4 h-[calc(100vh-9rem)]">
-        <div className="grid grid-cols-4 gap-5 h-full">
-          {/* Crew Schedule Section - Takes up 1/2 of screen width */}
-          <div className="col-span-2 h-[calc(100vh-11rem)]">
+      <main className="max-w-full mx-auto px-6 py-6 h-[calc(100vh-12rem)]">
+        {/* Vertical layout optimized for portrait 55" monitor */}
+        <div className="flex flex-col gap-6 h-full">
+          {/* Top section: Crew Schedule - takes up 45% of available height */}
+          <div className="h-[45%]">
             <CrewSchedule />
           </div>
 
-          {/* Right Column: Traffic Times on top, Time Off Calendar and Comic side by side below */}
-          <div className="col-span-2 h-[calc(100vh-11rem)] grid grid-rows-2 gap-5">
-            {/* Traffic Times takes full width */}
+          {/* Middle section: Traffic Times - takes up 30% of available height */}
+          <div className="h-[30%]">
+            <TrafficTimes />
+          </div>
+          
+          {/* Bottom section: Time Off Calendar and Comic side by side - takes up 25% */}
+          <div className="h-[25%] grid grid-cols-2 gap-6">
             <div className="overflow-auto">
-              <TrafficTimes />
+              <TimeOffCalendar />
             </div>
-            
-            {/* Time Off Calendar and Comic of the Day side by side */}
-            <div className="grid grid-cols-2 gap-5">
-              <div className="overflow-auto">
-                <TimeOffCalendar />
-              </div>
-              <div className="overflow-auto">
-                <ComicOfTheDay />
-              </div>
+            <div className="overflow-auto">
+              <ComicOfTheDay />
             </div>
           </div>
         </div>
       </main>
 
-      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-2 px-6">
+      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-3 px-6">
         <div className="max-w-full mx-auto flex justify-between items-center">
-          <div className="text-base text-gray-300">
+          <div className="text-lg text-gray-300">
             {lastUpdated && (
               <span>Last updated: {formatTime(lastUpdated)}</span>
             )}
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={refreshData} title="Refresh Data" className="text-lg text-gray-300 hover:text-white">
-              <RefreshCw className="h-6 w-6 mr-2" />
+            <Button variant="ghost" size="lg" onClick={refreshData} title="Refresh Data" className="text-xl text-gray-300 hover:text-white">
+              <RefreshCw className="h-7 w-7 mr-2" />
               Refresh
             </Button>
             <ToggleFullscreen />
             <Link to="/admin">
-              <Button variant="ghost" size="sm" className="text-lg text-gray-300 hover:text-white">
-                <Settings className="mr-2 h-6 w-6" />
+              <Button variant="ghost" size="lg" className="text-xl text-gray-300 hover:text-white">
+                <Settings className="mr-2 h-7 w-7" />
                 Admin
               </Button>
             </Link>
