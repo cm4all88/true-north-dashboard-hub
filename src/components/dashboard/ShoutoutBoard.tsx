@@ -38,7 +38,7 @@ export function ShoutoutBoard() {
 
   return (
     <Card className="h-full bg-gray-800 overflow-hidden">
-      <CardHeader className="pb-1 px-3 py-2">
+      <CardHeader className="pb-1 px-3 py-1">
         <CardTitle className="flex items-center gap-2 text-white text-lg">
           <MessageSquare className="h-4 w-4" />
           Team Shoutouts
@@ -49,18 +49,18 @@ export function ShoutoutBoard() {
           key={currentIndex}
           className="animate-fade-in"
         >
-          <div className="space-y-2">
-            <p className="text-white text-sm leading-relaxed">{currentShoutout.text}</p>
+          <div className="space-y-1">
+            <p className="text-white text-base leading-relaxed">{currentShoutout.text}</p>
             <div className="flex justify-between items-center">
-              <span className="text-gray-300 text-xs">From: {currentShoutout.from}</span>
-              <span className="text-gray-400 text-xs">
+              <span className="text-gray-300 text-sm">From: {currentShoutout.from}</span>
+              <span className="text-gray-400 text-sm">
                 {new Date(currentShoutout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
             </div>
           </div>
           
           {/* Progress indicator */}
-          <div className="flex justify-center mt-2 space-x-1">
+          <div className="flex justify-center mt-1 space-x-1">
             {data.shoutouts.map((_, index) => (
               <div
                 key={index}

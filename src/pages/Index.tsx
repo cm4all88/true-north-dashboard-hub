@@ -45,13 +45,13 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Middle section: Crew Schedule - More space */}
-          <div className="h-[60%] min-h-0">
+          {/* Middle section: Crew Schedule - Expanded space */}
+          <div className="h-[70%] min-h-0">
             <CrewSchedule />
           </div>
 
-          {/* Shoutouts section - Thin space */}
-          <div className="h-[18%] min-h-0">
+          {/* Shoutouts section - Reduced space */}
+          <div className="h-[8%] min-h-0">
             <ShoutoutBoard />
           </div>
 
