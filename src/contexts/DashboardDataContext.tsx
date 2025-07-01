@@ -1,9 +1,16 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
+interface Project {
+  jobCode: string;
+  description: string;
+  projectManager?: string;
+}
+
 interface ScheduleItem {
   jobCode: string;
   description: string;
   projectManager?: string;
+  projects?: Project[];
 }
 
 interface CrewMember {
@@ -94,44 +101,149 @@ const generateInitialScheduleData = (): WeekData[] => {
           position: "TIM",
           name: "SHAUN",
           schedule: [
-            { jobCode: `j18-${18 + weekOffset}`, description: "test", projectManager: "John Smith" },
-            { jobCode: `j18-${18 + weekOffset}`, description: "test", projectManager: "John Smith" },
-            { jobCode: `j18-${183 + weekOffset}`, description: "test", projectManager: "Sarah Jones" },
-            { jobCode: `j18-${184 + weekOffset}`, description: "test", projectManager: "Mike Davis" },
-            { jobCode: `j18-${185 + weekOffset}`, description: "test", projectManager: "Mike Davis" },
+            { 
+              jobCode: `j18-${18 + weekOffset}`, 
+              description: "test", 
+              projectManager: "John Smith",
+              projects: [
+                { jobCode: `j18-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
+              ]
+            },
+            { 
+              jobCode: `j18-${18 + weekOffset}`, 
+              description: "test", 
+              projectManager: "John Smith",
+              projects: [
+                { jobCode: `j18-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
+              ]
+            },
+            { 
+              jobCode: `j18-${183 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Sarah Jones",
+              projects: [
+                { jobCode: `j18-${183 + weekOffset}`, description: "test", projectManager: "Sarah Jones" }
+              ]
+            },
+            { 
+              jobCode: `j18-${184 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Mike Davis",
+              projects: [
+                { jobCode: `j18-${184 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
+              ]
+            },
+            { 
+              jobCode: `j18-${185 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Mike Davis",
+              projects: [
+                { jobCode: `j18-${185 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
+              ]
+            },
           ]
         },
         {
           position: "TAYLOR",
           name: "GERRY",
           schedule: [
-            { jobCode: `j19-${18 + weekOffset}`, description: "test", projectManager: "John Smith" },
-            { jobCode: `j19-${18 + weekOffset}`, description: "test", projectManager: "John Smith" },
-            { jobCode: `j19-${183 + weekOffset}`, description: "test", projectManager: "Sarah Jones" },
-            { jobCode: `j19-${184 + weekOffset}`, description: "test", projectManager: "Mike Davis" },
-            { jobCode: `j19-${185 + weekOffset}`, description: "test", projectManager: "Mike Davis" },
+            { 
+              jobCode: `j19-${18 + weekOffset}`, 
+              description: "test", 
+              projectManager: "John Smith",
+              projects: [
+                { jobCode: `j19-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
+              ]
+            },
+            { 
+              jobCode: `j19-${18 + weekOffset}`, 
+              description: "test", 
+              projectManager: "John Smith",
+              projects: [
+                { jobCode: `j19-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
+              ]
+            },
+            { 
+              jobCode: `j19-${183 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Sarah Jones",
+              projects: [
+                { jobCode: `j19-${183 + weekOffset}`, description: "test", projectManager: "Sarah Jones" }
+              ]
+            },
+            { 
+              jobCode: `j19-${184 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Mike Davis",
+              projects: [
+                { jobCode: `j19-${184 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
+              ]
+            },
+            { 
+              jobCode: `j19-${185 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Mike Davis",
+              projects: [
+                { jobCode: `j19-${185 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
+              ]
+            },
           ]
         },
         {
           position: "DOMINIC",
           name: "SERGIO",
           schedule: [
-            { jobCode: `j20-${11 + weekOffset}`, description: "test", projectManager: "Emily Wilson" },
-            { jobCode: `j20-${11 + weekOffset}`, description: "test", projectManager: "Emily Wilson" },
-            { jobCode: `j20-${113 + weekOffset}`, description: "test", projectManager: "Sarah Jones" },
-            { jobCode: `j20-${114 + weekOffset}`, description: "test", projectManager: "Mike Davis" },
-            { jobCode: `j20-${115 + weekOffset}`, description: "test", projectManager: "John Smith" },
+            { 
+              jobCode: `j20-${11 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Emily Wilson",
+              projects: [
+                { jobCode: `j20-${11 + weekOffset}`, description: "test", projectManager: "Emily Wilson" }
+              ]
+            },
+            { 
+              jobCode: `j20-${11 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Emily Wilson",
+              projects: [
+                { jobCode: `j20-${11 + weekOffset}`, description: "test", projectManager: "Emily Wilson" }
+              ]
+            },
+            { 
+              jobCode: `j20-${113 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Sarah Jones",
+              projects: [
+                { jobCode: `j20-${113 + weekOffset}`, description: "test", projectManager: "Sarah Jones" }
+              ]
+            },
+            { 
+              jobCode: `j20-${114 + weekOffset}`, 
+              description: "test", 
+              projectManager: "Mike Davis",
+              projects: [
+                { jobCode: `j20-${114 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
+              ]
+            },
+            { 
+              jobCode: `j20-${115 + weekOffset}`, 
+              description: "test", 
+              projectManager: "John Smith",
+              projects: [
+                { jobCode: `j20-${115 + weekOffset}`, description: "test", projectManager: "John Smith" }
+              ]
+            },
           ]
         },
         {
           position: "OFF",
           name: "",
           schedule: [
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
+            { jobCode: "", description: "", projects: [] },
+            { jobCode: "", description: "", projects: [] },
+            { jobCode: "", description: "", projects: [] },
+            { jobCode: "", description: "", projects: [] },
+            { jobCode: "", description: "", projects: [] },
           ]
         },
       ]

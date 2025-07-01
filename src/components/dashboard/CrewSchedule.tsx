@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Copy } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 import { useDashboardData } from '@/contexts/DashboardDataContext';
 
 // Function to check if a date string matches today's date
@@ -37,18 +36,6 @@ const getProjectManagerColor = (projectManager: string, colorOverrides: Record<s
   ];
   
   return colors[Math.abs(hash) % colors.length];
-};
-
-// Function to copy previous day's schedule
-const copyPreviousDay = (weekData: any, dayIndex: number) => {
-  if (dayIndex === 0) return; // Can't copy for the first day
-  
-  weekData.crews.forEach((crew: any) => {
-    const previousDaySchedule = crew.schedule[dayIndex - 1];
-    if (previousDaySchedule) {
-      crew.schedule[dayIndex] = { ...previousDaySchedule };
-    }
-  });
 };
 
 export function CrewSchedule() {
@@ -92,25 +79,13 @@ export function CrewSchedule() {
                   {weekData.days.map((day, dayIndex) => (
                     <TableRow key={`${day}-${dayIndex}`} className={`${isToday(weekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[60px]`}>
                       <TableCell className="p-2 border border-gray-600 font-medium">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className={`font-bold text-sm ${isToday(weekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
-                              {day.slice(0, 3)}
-                            </div>
-                            <div className="text-xs text-gray-400">
-                              {weekData.dates[dayIndex].split('/').slice(0, 2).join('/')}
-                            </div>
+                        <div>
+                          <div className={`font-bold text-sm ${isToday(weekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
+                            {day.slice(0, 3)}
                           </div>
-                          {dayIndex > 0 && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="p-1 h-6 w-6 text-gray-400 hover:text-white"
-                              onClick={() => copyPreviousDay(weekData, dayIndex)}
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
-                          )}
+                          <div className="text-xs text-gray-400">
+                            {weekData.dates[dayIndex].split('/').slice(0, 2).join('/')}
+                          </div>
                         </div>
                       </TableCell>
                       {weekData.crews.map((crew, crewIndex) => (
@@ -118,7 +93,27 @@ export function CrewSchedule() {
                           key={`${crewIndex}-${dayIndex}`} 
                           className="p-2 border border-gray-600 text-center"
                         >
-                          {crew.schedule[dayIndex]?.jobCode && crew.schedule[dayIndex].jobCode.trim() !== '' && crew.schedule[dayIndex].jobCode !== 'OFF' && (
+                          {crew.schedule[dayIndex]?.projects && crew.schedule[dayIndex].projects.length > 0 ? (
+                            <div className="space-y-1">
+                              {crew.schedule[dayIndex].projects.map((project, projectIndex) => (
+                                <div key={projectIndex} className="space-y-1">
+                                  <div className="flex items-center justify-center gap-2">
+                                    {project.projectManager && (
+                                      <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(project.projectManager, colorOverrides)}`}></div>
+                                    )}
+                                    <div className="font-medium text-sm text-white">
+                                      {project.jobCode}
+                                    </div>
+                                  </div>
+                                  {project.description && (
+                                    <div className="text-gray-300 text-xs">
+                                      {project.description}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ) : crew.schedule[dayIndex]?.jobCode && crew.schedule[dayIndex].jobCode.trim() !== '' && crew.schedule[dayIndex].jobCode !== 'OFF' ? (
                             <div className="space-y-1">
                               <div className="flex items-center justify-center gap-2">
                                 {crew.schedule[dayIndex].projectManager && (
@@ -134,12 +129,11 @@ export function CrewSchedule() {
                                 </div>
                               )}
                             </div>
-                          )}
-                          {crew.schedule[dayIndex]?.jobCode === 'OFF' && (
+                          ) : crew.schedule[dayIndex]?.jobCode === 'OFF' ? (
                             <div className="text-gray-400 text-sm font-medium">
                               OFF
                             </div>
-                          )}
+                          ) : null}
                         </TableCell>
                       ))}
                     </TableRow>
