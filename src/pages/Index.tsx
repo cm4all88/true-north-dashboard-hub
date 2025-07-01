@@ -25,60 +25,61 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white dashboard-fullscreen" id="dashboard-container">
-      <header className="w-full bg-gray-800 shadow-md h-20">
-        <div className="max-w-full mx-auto px-6 py-4 flex justify-between items-center h-full">
-          <TrueNorthLogo />
-          <div className="flex-grow mx-8">
+    <div className="min-h-screen bg-gray-900 text-white overflow-hidden" id="dashboard-container">
+      <header className="w-full bg-gray-800 shadow-md h-16">
+        <div className="max-w-full mx-auto px-4 py-2 flex justify-between items-center h-full">
+          <div className="flex-shrink-0">
+            <TrueNorthLogo />
+          </div>
+          <div className="flex-grow mx-6">
             <WeatherForecast headerMode={true} />
           </div>
-          <div className="scale-125">
+          <div className="flex-shrink-0">
             <DashboardClock />
           </div>
         </div>
       </header>
 
-      <main className="max-w-full mx-auto px-6 py-6" style={{ height: 'calc(100vh - 140px)' }}>
-        {/* Vertical layout optimized for portrait 55" monitor */}
-        <div className="flex flex-col gap-6 h-full">
-          {/* Top section: Crew Schedule - takes up 45% of available height */}
-          <div className="h-[45%]">
+      <main className="px-4 py-3" style={{ height: 'calc(100vh - 112px)' }}>
+        <div className="flex flex-col gap-3 h-full">
+          {/* Top section: Crew Schedule - 40% */}
+          <div className="h-[40%] min-h-0">
             <CrewSchedule />
           </div>
 
-          {/* Middle section: Traffic Times - takes up 30% of available height */}
-          <div className="h-[30%]">
+          {/* Middle section: Traffic Times - 30% */}
+          <div className="h-[30%] min-h-0">
             <TrafficTimes />
           </div>
           
-          {/* Bottom section: Time Off Calendar and Comic side by side - takes up 25% */}
-          <div className="h-[25%] grid grid-cols-2 gap-6">
-            <div className="overflow-auto">
+          {/* Bottom section: Time Off Calendar and Comic side by side - 30% */}
+          <div className="h-[30%] min-h-0 grid grid-cols-2 gap-3">
+            <div className="min-h-0 overflow-hidden">
               <TimeOffCalendar />
             </div>
-            <div className="overflow-auto">
+            <div className="min-h-0 overflow-hidden">
               <ComicOfTheDay />
             </div>
           </div>
         </div>
       </main>
 
-      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-3 px-6 h-16">
+      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-2 px-4 h-12">
         <div className="max-w-full mx-auto flex justify-between items-center h-full">
-          <div className="text-lg text-gray-300">
+          <div className="text-sm text-gray-300">
             {lastUpdated && (
               <span>Last updated: {formatTime(lastUpdated)}</span>
             )}
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="lg" onClick={refreshData} title="Refresh Data" className="text-xl text-gray-300 hover:text-white">
-              <RefreshCw className="h-7 w-7 mr-2" />
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={refreshData} title="Refresh Data" className="text-sm text-gray-300 hover:text-white">
+              <RefreshCw className="h-4 w-4 mr-1" />
               Refresh
             </Button>
             <ToggleFullscreen />
             <Link to="/admin">
-              <Button variant="ghost" size="lg" className="text-xl text-gray-300 hover:text-white">
-                <Settings className="mr-2 h-7 w-7" />
+              <Button variant="ghost" size="sm" className="text-sm text-gray-300 hover:text-white">
+                <Settings className="mr-1 h-4 w-4" />
                 Admin
               </Button>
             </Link>
