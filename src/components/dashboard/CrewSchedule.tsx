@@ -84,7 +84,7 @@ export function CrewSchedule() {
             </TableHeader>
             <TableBody>
               {currentWeekData.days.map((day, dayIndex) => (
-                <TableRow key={`${day}-${dayIndex}`} className={`${isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[180px]`}>
+                <TableRow key={`${day}-${dayIndex}`} className={`${isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[160px]`}>
                   <TableCell className="p-4 border border-gray-600 font-medium">
                     <div>
                       <div className={`font-bold text-6xl uppercase ${isToday(currentWeekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
