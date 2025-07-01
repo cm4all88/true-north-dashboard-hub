@@ -28,40 +28,48 @@ export function CrewSchedule() {
       <CardContent className="p-2">
         <ScrollArea className="h-[calc(100%-50px)]">
           {data.scheduleData.map((weekData, weekIndex) => (
-            <div key={weekIndex} className={weekIndex > 0 ? "mt-3" : ""}>
+            <div key={weekIndex} className={weekIndex > 0 ? "mt-4" : ""}>
               <div className="font-bold text-gray-300 text-sm mb-2">{weekData.weekOf}</div>
-              <Table className="border-collapse text-xs">
+              <Table className="border-collapse text-sm">
                 <TableHeader className="bg-gray-700">
                   <TableRow>
-                    <TableHead className="w-16 text-xs font-bold text-white p-1 border border-gray-600">Crew</TableHead>
-                    {weekData.days.map((day, index) => (
+                    <TableHead className="w-24 text-sm font-bold text-white p-2 border border-gray-600">Date</TableHead>
+                    {weekData.crews.map((crew, crewIndex) => (
                       <TableHead 
-                        key={day + index} 
-                        className={`w-16 text-xs font-bold p-1 border border-gray-600 text-center ${day === currentDay ? 'bg-gray-600 text-white' : 'text-gray-300'}`}
+                        key={`${crew.position}-${crewIndex}`} 
+                        className="text-sm font-bold text-white p-2 border border-gray-600 text-center min-w-[120px]"
                       >
-                        <div className="truncate">{day.slice(0, 3)}</div>
-                        <div className="text-xs text-gray-400">{weekData.dates[index].split('/').slice(0, 2).join('/')}</div>
+                        <div className="font-bold">{crew.position}</div>
+                        <div className="text-xs text-gray-300 font-normal">{crew.name}</div>
                       </TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {weekData.crews.map((crew, crewIndex) => (
-                    <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`} className={crew.position === "OFF" ? "bg-gray-700 h-[25px]" : "h-[45px]"}>
-                      <TableCell className="p-1 border border-gray-600 align-top">
-                        <div className="font-bold text-sm text-white truncate">{crew.position}</div>
-                        <div className="text-xs font-medium text-gray-300 truncate">{crew.name}</div>
+                  {weekData.days.map((day, dayIndex) => (
+                    <TableRow key={`${day}-${dayIndex}`} className={`${day === currentDay ? 'bg-gray-600' : ''} h-[60px]`}>
+                      <TableCell className="p-2 border border-gray-600 font-medium">
+                        <div className={`font-bold text-sm ${day === currentDay ? 'text-white' : 'text-gray-300'}`}>
+                          {day.slice(0, 3)}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {weekData.dates[dayIndex].split('/').slice(0, 2).join('/')}
+                        </div>
                       </TableCell>
-                      {crew.schedule.map((day, dayIndex) => (
+                      {weekData.crews.map((crew, crewIndex) => (
                         <TableCell 
                           key={`${crewIndex}-${dayIndex}`} 
-                          className={`p-1 border border-gray-600 align-top ${weekData.days[dayIndex] === currentDay ? 'bg-gray-600' : ''}`}
+                          className="p-2 border border-gray-600 text-center"
                         >
-                          {day.jobCode !== undefined && (
-                            <div className="space-y-0.5">
-                              <div className="font-medium text-xs text-white truncate">{day.jobCode}</div>
-                              {day.description && (
-                                <div className="text-gray-300 text-xs truncate">- {day.description}</div>
+                          {crew.schedule[dayIndex]?.jobCode !== undefined && (
+                            <div className="space-y-1">
+                              <div className="font-medium text-sm text-white">
+                                {crew.schedule[dayIndex].jobCode}
+                              </div>
+                              {crew.schedule[dayIndex].description && (
+                                <div className="text-gray-300 text-xs">
+                                  {crew.schedule[dayIndex].description}
+                                </div>
                               )}
                             </div>
                           )}
