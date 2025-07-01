@@ -15,17 +15,19 @@ const isToday = (dateString: string) => {
 };
 
 // Function to get color based on project manager
-const getProjectManagerColor = (jobCode: string, colorOverrides: Record<string, string> = {}) => {
+const getProjectManagerColor = (projectManager: string, colorOverrides: Record<string, string> = {}) => {
+  if (!projectManager || projectManager.trim() === '') return '';
+  
   // Check if there's a color override
-  if (colorOverrides[jobCode]) {
-    return colorOverrides[jobCode];
+  if (colorOverrides[projectManager]) {
+    return colorOverrides[projectManager];
   }
   
   // Simple hash function to assign consistent colors
-  const hash = jobCode?.split('').reduce((a, b) => {
+  const hash = projectManager.split('').reduce((a, b) => {
     a = ((a << 5) - a) + b.charCodeAt(0);
     return a & a;
-  }, 0) || 0;
+  }, 0);
   
   const colors = [
     'bg-orange-500',
@@ -77,7 +79,7 @@ export function CrewSchedule() {
                       <TableHead 
                         key={`${crew.position}-${crewIndex}`} 
                         className={`text-sm font-bold text-white p-2 border border-gray-600 text-center ${
-                          crew.position === 'OFF' ? 'min-w-[60px]' : 'min-w-[140px]'
+                          crew.position === 'OFF' ? 'min-w-[50px]' : 'min-w-[150px]'
                         }`}
                       >
                         <div className="font-bold text-sm">{crew.position}</div>
@@ -119,7 +121,9 @@ export function CrewSchedule() {
                           {crew.schedule[dayIndex]?.jobCode && crew.schedule[dayIndex].jobCode.trim() !== '' && crew.schedule[dayIndex].jobCode !== 'OFF' && (
                             <div className="space-y-1">
                               <div className="flex items-center justify-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(crew.schedule[dayIndex].jobCode, colorOverrides)}`}></div>
+                                {crew.schedule[dayIndex].projectManager && (
+                                  <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(crew.schedule[dayIndex].projectManager, colorOverrides)}`}></div>
+                                )}
                                 <div className="font-medium text-sm text-white">
                                   {crew.schedule[dayIndex].jobCode}
                                 </div>
