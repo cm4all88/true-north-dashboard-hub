@@ -5,110 +5,160 @@ import { Calendar } from "lucide-react";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Initial structured data for the first week
-const initialWeekOneData = {
-  weekOf: "May 12 - May 16, 2025",
-  days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
-  dates: ["5/12/2025", "5/13/2025", "5/14/2025", "5/15/2025", "5/16/2025"],
-  crews: [
-    {
-      position: "TIM",
-      name: "SHAUN",
-      schedule: [
-        { jobCode: "j18-18", description: "test" },
-        { jobCode: "j18-18", description: "test" },
-        { jobCode: "j18-183", description: "test" },
-        { jobCode: "j18-184", description: "test" },
-        { jobCode: "j18-185", description: "test" },
-      ]
-    },
-    {
-      position: "TAYLOR",
-      name: "GERRY",
-      schedule: [
-        { jobCode: "j19-18", description: "test" },
-        { jobCode: "j19-18", description: "test" },
-        { jobCode: "j19-183", description: "test" },
-        { jobCode: "j19-184", description: "test" },
-        { jobCode: "j19-185", description: "test" },
-      ]
-    },
-    {
-      position: "DOMINIC",
-      name: "SERGIO",
-      schedule: [
-        { jobCode: "j20-11", description: "test" },
-        { jobCode: "j20-11", description: "test" },
-        { jobCode: "j20-113", description: "test" },
-        { jobCode: "j20-114", description: "test" },
-        { jobCode: "j20-115", description: "test" },
-      ]
-    },
-    {
-      position: "OFF",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-      ]
-    },
-  ]
+// Function to get Monday of current week
+const getMondayOfWeek = (date: Date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  return new Date(d.setDate(diff));
 };
 
-// Initial structured data for the second week
-const initialWeekTwoData = {
-  weekOf: "May 19 - May 23, 2025",
-  days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
-  dates: ["5/19/2025", "5/20/2025", "5/21/2025", "5/22/2025", "5/23/2025"],
-  crews: [
-    {
-      position: "TIM",
-      name: "SHAUN",
-      schedule: [
-        { jobCode: "j18-22", description: "test" },
-        { jobCode: "j18-23", description: "test" },
-        { jobCode: "j18-24", description: "test" },
-        { jobCode: "j18-25", description: "test" },
-        { jobCode: "j18-26", description: "test" },
-      ]
-    },
-    {
-      position: "TAYLOR",
-      name: "GERRY",
-      schedule: [
-        { jobCode: "j19-22", description: "test" },
-        { jobCode: "j19-23", description: "test" },
-        { jobCode: "j19-24", description: "test" },
-        { jobCode: "j19-25", description: "test" },
-        { jobCode: "j19-26", description: "test" },
-      ]
-    },
-    {
-      position: "DOMINIC",
-      name: "SERGIO",
-      schedule: [
-        { jobCode: "j20-22", description: "test" },
-        { jobCode: "j20-23", description: "test" },
-        { jobCode: "j20-24", description: "test" },
-        { jobCode: "j20-25", description: "test" },
-        { jobCode: "j20-26", description: "test" },
-      ]
-    },
-    {
-      position: "OFF",
-      name: "",
-      schedule: [
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-        { jobCode: "", description: "" },
-      ]
-    },
-  ]
+// Function to format date as M/D/YYYY
+const formatDate = (date: Date) => {
+  return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+};
+
+// Function to get week range string
+const getWeekRange = (mondayDate: Date) => {
+  const friday = new Date(mondayDate);
+  friday.setDate(mondayDate.getDate() + 4);
+  
+  const mondayMonth = mondayDate.toLocaleDateString('en-US', { month: 'short' });
+  const mondayDay = mondayDate.getDate();
+  const fridayMonth = friday.toLocaleDateString('en-US', { month: 'short' });
+  const fridayDay = friday.getDate();
+  const year = mondayDate.getFullYear();
+  
+  return `${mondayMonth} ${mondayDay} - ${fridayMonth} ${fridayDay}, ${year}`;
+};
+
+// Generate current week data
+const generateCurrentWeekData = () => {
+  const currentMonday = getMondayOfWeek(new Date());
+  const dates = [];
+  
+  for (let i = 0; i < 5; i++) {
+    const date = new Date(currentMonday);
+    date.setDate(currentMonday.getDate() + i);
+    dates.push(formatDate(date));
+  }
+  
+  return {
+    weekOf: getWeekRange(currentMonday),
+    days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+    dates,
+    crews: [
+      {
+        position: "TIM",
+        name: "SHAUN",
+        schedule: [
+          { jobCode: "j18-18", description: "test" },
+          { jobCode: "j18-18", description: "test" },
+          { jobCode: "j18-183", description: "test" },
+          { jobCode: "j18-184", description: "test" },
+          { jobCode: "j18-185", description: "test" },
+        ]
+      },
+      {
+        position: "TAYLOR",
+        name: "GERRY",
+        schedule: [
+          { jobCode: "j19-18", description: "test" },
+          { jobCode: "j19-18", description: "test" },
+          { jobCode: "j19-183", description: "test" },
+          { jobCode: "j19-184", description: "test" },
+          { jobCode: "j19-185", description: "test" },
+        ]
+      },
+      {
+        position: "DOMINIC",
+        name: "SERGIO",
+        schedule: [
+          { jobCode: "j20-11", description: "test" },
+          { jobCode: "j20-11", description: "test" },
+          { jobCode: "j20-113", description: "test" },
+          { jobCode: "j20-114", description: "test" },
+          { jobCode: "j20-115", description: "test" },
+        ]
+      },
+      {
+        position: "OFF",
+        name: "",
+        schedule: [
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+        ]
+      },
+    ]
+  };
+};
+
+// Generate next week data
+const generateNextWeekData = () => {
+  const nextMonday = getMondayOfWeek(new Date());
+  nextMonday.setDate(nextMonday.getDate() + 7);
+  const dates = [];
+  
+  for (let i = 0; i < 5; i++) {
+    const date = new Date(nextMonday);
+    date.setDate(nextMonday.getDate() + i);
+    dates.push(formatDate(date));
+  }
+  
+  return {
+    weekOf: getWeekRange(nextMonday),
+    days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+    dates,
+    crews: [
+      {
+        position: "TIM",
+        name: "SHAUN",
+        schedule: [
+          { jobCode: "j18-22", description: "test" },
+          { jobCode: "j18-23", description: "test" },
+          { jobCode: "j18-24", description: "test" },
+          { jobCode: "j18-25", description: "test" },
+          { jobCode: "j18-26", description: "test" },
+        ]
+      },
+      {
+        position: "TAYLOR",
+        name: "GERRY",
+        schedule: [
+          { jobCode: "j19-22", description: "test" },
+          { jobCode: "j19-23", description: "test" },
+          { jobCode: "j19-24", description: "test" },
+          { jobCode: "j19-25", description: "test" },
+          { jobCode: "j19-26", description: "test" },
+        ]
+      },
+      {
+        position: "DOMINIC",
+        name: "SERGIO",
+        schedule: [
+          { jobCode: "j20-22", description: "test" },
+          { jobCode: "j20-23", description: "test" },
+          { jobCode: "j20-24", description: "test" },
+          { jobCode: "j20-25", description: "test" },
+          { jobCode: "j20-26", description: "test" },
+        ]
+      },
+      {
+        position: "OFF",
+        name: "",
+        schedule: [
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+          { jobCode: "", description: "" },
+        ]
+      },
+    ]
+  };
 };
 
 // Function to get the current day name
@@ -119,7 +169,7 @@ const getCurrentDayName = () => {
 };
 
 export function CrewSchedule() {
-  const [scheduleData] = useState([initialWeekOneData, initialWeekTwoData]);
+  const [scheduleData] = useState([generateCurrentWeekData(), generateNextWeekData()]);
   const currentDay = getCurrentDayName();
   
   return (
