@@ -2,81 +2,69 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
-import { shoutoutsMock } from '@/lib/mockData';
+import { useDashboardData } from '@/contexts/DashboardDataContext';
 
 export function ShoutoutBoard() {
-  const [shoutouts, setShoutouts] = useState(shoutoutsMock);
+  const { data } = useDashboardData();
   const [currentIndex, setCurrentIndex] = useState(0);
   
   useEffect(() => {
-    // Here you would fetch the real shoutout data
-    setShoutouts(shoutoutsMock);
-    
-    // Auto-refresh every few minutes
-    const intervalId = setInterval(() => {
-      console.log('Shoutouts would be refreshed here');
-    }, 300000); // 5 minutes
-    
-    return () => clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
-    if (shoutouts.length === 0) return;
+    if (data.shoutouts.length === 0) return;
     
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % shoutouts.length);
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % data.shoutouts.length);
     }, 5000); // Change every 5 seconds
 
     return () => clearInterval(interval);
-  }, [shoutouts.length]);
+  }, [data.shoutouts.length]);
 
-  if (shoutouts.length === 0) {
+  if (data.shoutouts.length === 0) {
     return (
-      <Card className="h-full bg-truenorth-600">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-white">
-            <MessageSquare className="h-5 w-5" />
+      <Card className="h-full bg-gray-800">
+        <CardHeader className="pb-1 px-3 py-2">
+          <CardTitle className="flex items-center gap-2 text-white text-lg">
+            <MessageSquare className="h-4 w-4" />
             Team Shoutouts
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2">
           <p className="text-gray-300">No shoutouts available</p>
         </CardContent>
       </Card>
     );
   }
 
-  const currentShoutout = shoutouts[currentIndex];
+  const currentShoutout = data.shoutouts[currentIndex];
 
   return (
-    <Card className="h-full bg-truenorth-600 overflow-hidden">
-      <CardHeader className="pb-2">
+    <Card className="h-full bg-gray-800 overflow-hidden">
+      <CardHeader className="pb-1 px-3 py-2">
         <CardTitle className="flex items-center gap-2 text-white text-lg">
-          <MessageSquare className="h-5 w-5" />
+          <MessageSquare className="h-4 w-4" />
           Team Shoutouts
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-2">
         <div 
           key={currentIndex}
           className="animate-fade-in"
         >
-          <div className="space-y-3">
-            <p className="text-white text-lg leading-relaxed">{currentShoutout.text}</p>
+          <div className="space-y-2">
+            <p className="text-white text-sm leading-relaxed">{currentShoutout.text}</p>
             <div className="flex justify-between items-center">
-              <span className="text-gray-300 text-sm">From: {currentShoutout.from}</span>
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-300 text-xs">From: {currentShoutout.from}</span>
+              <span className="text-gray-400 text-xs">
                 {new Date(currentShoutout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
             </div>
           </div>
           
           {/* Progress indicator */}
-          <div className="flex justify-center mt-4 space-x-1">
-            {shoutouts.map((_, index) => (
+          <div className="flex justify-center mt-2 space-x-1">
+            {data.shoutouts.map((_, index) => (
               <div
                 key={index}
-                className={`h-2 w-2 rounded-full transition-colors duration-300 ${
+                className={`h-1 w-1 rounded-full transition-colors duration-300 ${
                   index === currentIndex ? 'bg-white' : 'bg-gray-500'
                 }`}
               />
