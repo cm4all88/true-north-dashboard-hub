@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -15,37 +14,14 @@ import { format } from "date-fns";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useDashboardData } from '@/contexts/DashboardDataContext';
 
-// Available colors for project managers
+// Available colors for dots
 const availableColors = [
-  { value: 'bg-orange-500', label: 'Orange', color: '#f97316' },
-  { value: 'bg-blue-500', label: 'Blue', color: '#3b82f6' },
-  { value: 'bg-green-500', label: 'Green', color: '#22c55e' },
-  { value: 'bg-purple-500', label: 'Purple', color: '#a855f7' }
+  { value: 'none', label: 'None', color: 'transparent' },
+  { value: 'orange', label: 'Orange', color: '#f97316' },
+  { value: 'blue', label: 'Blue', color: '#3b82f6' },
+  { value: 'green', label: 'Green', color: '#22c55e' },
+  { value: 'purple', label: 'Purple', color: '#a855f7' }
 ];
-
-// Function to get color based on project manager
-const getProjectManagerColor = (projectManager: string, colorOverrides: Record<string, string> = {}) => {
-  if (!projectManager || projectManager.trim() === '') return '';
-  
-  // Check if there's a color override
-  if (colorOverrides[projectManager]) {
-    return colorOverrides[projectManager];
-  }
-  
-  const hash = projectManager.split('').reduce((a, b) => {
-    a = ((a << 5) - a) + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-  
-  const colors = [
-    'bg-orange-500',
-    'bg-blue-500', 
-    'bg-green-500',
-    'bg-purple-500'
-  ];
-  
-  return colors[Math.abs(hash) % colors.length];
-};
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -55,13 +31,6 @@ const Admin = () => {
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
   
-  const [editingCell, setEditingCell] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState('');
-  
-  // State for color overrides
-  const [colorOverrides, setColorOverrides] = useState<Record<string, string>>({});
-  const [editingColor, setEditingColor] = useState<string | null>(null);
-
   // Function to copy from previous day
   const copyFromPreviousDay = (weekIndex: number, crewIndex: number, dayIndex: number) => {
     if (dayIndex === 0) return; // Can't copy if it's the first day
@@ -69,25 +38,31 @@ const Admin = () => {
     const newScheduleData = [...data.scheduleData];
     const previousDayData = newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex - 1];
     newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex] = {
-      jobCode: previousDayData.jobCode,
-      description: previousDayData.description,
-      projectManager: previousDayData.projectManager
+      row1: { ...previousDayData.row1 },
+      row2: { ...previousDayData.row2 }
     };
     
     updateScheduleData(newScheduleData);
   };
   
+  // Function to update row data
+  const updateRowData = (weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string) => {
+    const newScheduleData = [...data.scheduleData];
+    newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row][field] = value;
+    updateScheduleData(newScheduleData);
+  };
+
   // Function to export daily schedule as CSV
   const exportDayAsCSV = (weekData: any, dayIndex: number) => {
     const dayName = weekData.days[dayIndex];
     const date = weekData.dates[dayIndex];
     
     let csvContent = `Crew Schedule for ${dayName} ${date}\n`;
-    csvContent += `Crew Member,Position,Job Code,Description,Project Manager\n`;
+    csvContent += `Crew Member,Position,Row,Job Code,Description,Project Manager\n`;
     
     weekData.crews.forEach((crew: any) => {
-      const daySchedule = crew.schedule[dayIndex];
-      csvContent += `${crew.name},${crew.position},${daySchedule.jobCode},${daySchedule.description},${daySchedule.projectManager || ''}\n`;
+      csvContent += `${crew.name},${crew.position},1,${crew.schedule[dayIndex].row1.jobNumber},${crew.schedule[dayIndex].row1.jobName},${crew.schedule[dayIndex].row1.color}\n`;
+      csvContent += `${crew.name},${crew.position},2,${crew.schedule[dayIndex].row2.jobNumber},${crew.schedule[dayIndex].row2.jobName},${crew.schedule[dayIndex].row2.color}\n`;
     });
     
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -100,23 +75,7 @@ const Admin = () => {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
   };
-  
-  // Get all unique project managers from the schedule data
-  const getAllProjectManagers = () => {
-    const projectManagers = new Set<string>();
-    data.scheduleData.forEach(weekData => {
-      weekData.crews.forEach(crew => {
-        crew.schedule.forEach(day => {
-          if (day.projectManager && day.projectManager.trim() !== '') {
-            projectManagers.add(day.projectManager);
-          }
-        });
-      });
-    });
-    return Array.from(projectManagers);
-  };
 
-  // Handle birthday updates
   const handleAddBirthday = () => {
     if (newBirthday.name.trim() === '') return;
     
@@ -157,51 +116,6 @@ const Admin = () => {
     updateShoutouts(updatedShoutouts);
   };
   
-  // Handle color override changes
-  const handleColorChange = (projectManager: string, color: string) => {
-    setColorOverrides(prev => ({
-      ...prev,
-      [projectManager]: color
-    }));
-    setEditingColor(null);
-  };
-  
-  // Handle crew schedule editing
-  const handleCellEdit = (weekIndex: number, crewIndex: number, dayIndex: number | null, field: 'jobCode' | 'description' | 'projectManager' | 'position' | 'name') => {
-    const cellId = dayIndex !== null 
-      ? `${weekIndex}-${crewIndex}-${dayIndex}-${field}`
-      : `${weekIndex}-${crewIndex}-crew-${field}`;
-    
-    let currentValue = '';
-    if (field === 'position' || field === 'name') {
-      currentValue = data.scheduleData[weekIndex].crews[crewIndex][field];
-    } else if (dayIndex !== null) {
-      currentValue = data.scheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field] || '';
-    }
-    
-    setEditingCell(cellId);
-    setEditValue(currentValue);
-  };
-  
-  const handleSaveEdit = (weekIndex: number, crewIndex: number, dayIndex: number | null, field: 'jobCode' | 'description' | 'projectManager' | 'position' | 'name') => {
-    const newScheduleData = [...data.scheduleData];
-    
-    if (field === 'position' || field === 'name') {
-      newScheduleData[weekIndex].crews[crewIndex][field] = editValue;
-    } else if (dayIndex !== null) {
-      newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field] = editValue;
-    }
-    
-    updateScheduleData(newScheduleData);
-    setEditingCell(null);
-    setEditValue('');
-  };
-  
-  const handleCancelEdit = () => {
-    setEditingCell(null);
-    setEditValue('');
-  };
-  
   // Save all changes
   const handleSaveChanges = () => {
     // Here you would save all the data to your backend
@@ -217,7 +131,7 @@ const Admin = () => {
             <Button variant="outline" onClick={() => navigate('/')}>
               View Dashboard
             </Button>
-            <Button onClick={handleSaveChanges}>
+            <Button onClick={() => alert('Changes saved!')}>
               <Save className="mr-2 h-4 w-4" />
               Save All Changes
             </Button>
@@ -231,92 +145,23 @@ const Admin = () => {
         <Tabs defaultValue="schedule">
           <TabsList className="mb-6">
             <TabsTrigger value="schedule">Crew Schedule</TabsTrigger>
-            <TabsTrigger value="colors">Project Manager Colors</TabsTrigger>
             <TabsTrigger value="birthdays">Birthdays</TabsTrigger>
             <TabsTrigger value="shoutouts">Shoutouts</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="colors">
-            <Card>
-              <CardHeader>
-                <CardTitle>Manage Project Manager Colors</CardTitle>
-                <CardDescription>
-                  Customize the dot colors for each project manager in the crew schedule.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {getAllProjectManagers().map((projectManager) => (
-                    <div key={projectManager} className="flex items-center justify-between p-3 bg-white border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className={`w-4 h-4 rounded-full ${getProjectManagerColor(projectManager, colorOverrides)}`}
-                        ></div>
-                        <span className="font-medium">{projectManager}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Select
-                          value={colorOverrides[projectManager] || getProjectManagerColor(projectManager)}
-                          onValueChange={(color) => handleColorChange(projectManager, color)}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {availableColors.map((color) => (
-                              <SelectItem key={color.value} value={color.value}>
-                                <div className="flex items-center gap-2">
-                                  <div 
-                                    className={`w-3 h-3 rounded-full ${color.value}`}
-                                  ></div>
-                                  <span>{color.label}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  ))}
-                  {getAllProjectManagers().length === 0 && (
-                    <p className="text-gray-500 text-center py-8">
-                      No project managers found. Add some project managers to the schedule to manage their colors.
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
           
           <TabsContent value="schedule">
             <Card>
               <CardHeader>
                 <CardTitle>Manage Crew Schedule</CardTitle>
                 <CardDescription>
-                  Edit the crew schedule that appears on the main dashboard. Click on any cell to edit it, including crew names and positions. Use the download buttons to export daily schedules as CSV files. Click the copy button to copy information from the previous day.
+                  Edit the crew schedule with 2 rows per day. Each row can have a colored dot, job number, and job name.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {data.scheduleData.map((weekData, weekIndex) => (
                     <div key={weekIndex}>
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className="text-lg font-semibold">{weekData.weekOf}</h3>
-                        <div className="flex gap-2">
-                          {weekData.days.map((day, dayIndex) => (
-                            <Button
-                              key={`export-${weekIndex}-${dayIndex}`}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => exportDayAsCSV(weekData, dayIndex)}
-                              className="text-xs"
-                            >
-                              <Download className="h-3 w-3 mr-1" />
-                              {day}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
+                      <h3 className="text-lg font-semibold mb-3">{weekData.weekOf}</h3>
                       <Table className="border-collapse border border-gray-300">
                         <TableHeader>
                           <TableRow>
@@ -333,195 +178,119 @@ const Admin = () => {
                           {weekData.crews.map((crew, crewIndex) => (
                             <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`}>
                               <TableCell className="border border-gray-300 font-medium">
-                                {/* Position */}
-                                {editingCell === `${weekIndex}-${crewIndex}-crew-position` ? (
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <Input
-                                      value={editValue}
-                                      onChange={(e) => setEditValue(e.target.value)}
-                                      className="text-sm font-bold"
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          handleSaveEdit(weekIndex, crewIndex, null, 'position');
-                                        } else if (e.key === 'Escape') {
-                                          handleCancelEdit();
-                                        }
-                                      }}
-                                      autoFocus
-                                    />
-                                    <Button size="sm" onClick={() => handleSaveEdit(weekIndex, crewIndex, null, 'position')}>
-                                      <Save className="h-3 w-3" />
-                                    </Button>
-                                    <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <div 
-                                    className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1 font-bold mb-2"
-                                    onClick={() => handleCellEdit(weekIndex, crewIndex, null, 'position')}
-                                  >
-                                    <span>{crew.position}</span>
-                                    <Edit2 className="h-3 w-3 text-gray-400" />
-                                  </div>
-                                )}
-                                
-                                {/* Name */}
-                                {editingCell === `${weekIndex}-${crewIndex}-crew-name` ? (
-                                  <div className="flex items-center gap-2">
-                                    <Input
-                                      value={editValue}
-                                      onChange={(e) => setEditValue(e.target.value)}
-                                      className="text-sm"
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          handleSaveEdit(weekIndex, crewIndex, null, 'name');
-                                        } else if (e.key === 'Escape') {
-                                          handleCancelEdit();
-                                        }
-                                      }}
-                                      autoFocus
-                                    />
-                                    <Button size="sm" onClick={() => handleSaveEdit(weekIndex, crewIndex, null, 'name')}>
-                                      <Save className="h-3 w-3" />
-                                    </Button>
-                                    <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <div 
-                                    className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1 text-sm text-gray-600"
-                                    onClick={() => handleCellEdit(weekIndex, crewIndex, null, 'name')}
-                                  >
-                                    <span>{crew.name || 'Click to add name'}</span>
-                                    <Edit2 className="h-3 w-3 text-gray-400" />
-                                  </div>
-                                )}
+                                <div className="font-bold">{crew.position}</div>
+                                <div className="text-sm text-gray-600">{crew.name}</div>
                               </TableCell>
                               {crew.schedule.map((day, dayIndex) => (
                                 <TableCell key={`${crewIndex}-${dayIndex}`} className="border border-gray-300">
-                                  <div className="space-y-2">
-                                    {/* Copy button */}
-                                    {dayIndex > 0 && (
-                                      <div className="flex justify-end mb-1">
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={() => copyFromPreviousDay(weekIndex, crewIndex, dayIndex)}
-                                          className="h-6 w-6 p-0"
-                                          title="Copy from previous day"
-                                        >
-                                          <Copy className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                    )}
-                                    
-                                    {/* Job Code */}
-                                    {editingCell === `${weekIndex}-${crewIndex}-${dayIndex}-jobCode` ? (
-                                      <div className="flex items-center gap-2">
-                                        <Input
-                                          value={editValue}
-                                          onChange={(e) => setEditValue(e.target.value)}
-                                          className="text-sm"
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                              handleSaveEdit(weekIndex, crewIndex, dayIndex, 'jobCode');
-                                            } else if (e.key === 'Escape') {
-                                              handleCancelEdit();
-                                            }
-                                          }}
-                                          autoFocus
-                                        />
-                                        <Button size="sm" onClick={() => handleSaveEdit(weekIndex, crewIndex, dayIndex, 'jobCode')}>
-                                          <Save className="h-3 w-3" />
-                                        </Button>
-                                        <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                          <X className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                    ) : (
-                                      <div 
-                                        className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1"
-                                        onClick={() => handleCellEdit(weekIndex, crewIndex, dayIndex, 'jobCode')}
-                                      >
-                                        <div className="flex items-center gap-2">
-                                          {day.projectManager && day.projectManager.trim() !== '' && (
-                                            <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(day.projectManager, colorOverrides)}`}></div>
-                                          )}
-                                          <span className="font-medium">{day.jobCode}</span>
+                                  {crew.position === 'OFF' ? (
+                                    <div className="text-gray-400 text-center">OFF</div>
+                                  ) : (
+                                    <div className="space-y-4">
+                                      {/* Copy button */}
+                                      {dayIndex > 0 && (
+                                        <div className="flex justify-end">
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => copyFromPreviousDay(weekIndex, crewIndex, dayIndex)}
+                                            className="h-6 w-6 p-0"
+                                            title="Copy from previous day"
+                                          >
+                                            <Copy className="h-3 w-3" />
+                                          </Button>
                                         </div>
-                                        <Edit2 className="h-3 w-3 text-gray-400" />
-                                      </div>
-                                    )}
-                                    
-                                    {/* Project Manager */}
-                                    {editingCell === `${weekIndex}-${crewIndex}-${dayIndex}-projectManager` ? (
-                                      <div className="flex items-center gap-2">
-                                        <Input
-                                          value={editValue}
-                                          onChange={(e) => setEditValue(e.target.value)}
-                                          className="text-sm"
-                                          placeholder="Project Manager"
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                              handleSaveEdit(weekIndex, crewIndex, dayIndex, 'projectManager');
-                                            } else if (e.key === 'Escape') {
-                                              handleCancelEdit();
+                                      )}
+                                      
+                                      {/* Row 1 */}
+                                      <div className="space-y-2 p-2 bg-gray-50 rounded">
+                                        <div className="text-xs font-semibold text-gray-600">Row 1</div>
+                                        <div className="grid grid-cols-3 gap-2">
+                                          <Select
+                                            value={day.row1.color}
+                                            onValueChange={(value: 'orange' | 'blue' | 'green' | 'purple' | 'none') => 
+                                              updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'color', value)
                                             }
-                                          }}
-                                          autoFocus
-                                        />
-                                        <Button size="sm" onClick={() => handleSaveEdit(weekIndex, crewIndex, dayIndex, 'projectManager')}>
-                                          <Save className="h-3 w-3" />
-                                        </Button>
-                                        <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                          <X className="h-3 w-3" />
-                                        </Button>
+                                          >
+                                            <SelectTrigger className="h-8">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              {availableColors.map((color) => (
+                                                <SelectItem key={color.value} value={color.value}>
+                                                  <div className="flex items-center gap-2">
+                                                    {color.value !== 'none' && (
+                                                      <div 
+                                                        className="w-3 h-3 rounded-full"
+                                                        style={{ backgroundColor: color.color }}
+                                                      ></div>
+                                                    )}
+                                                    <span>{color.label}</span>
+                                                  </div>
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
+                                          <Input
+                                            placeholder="Job #"
+                                            value={day.row1.jobNumber}
+                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobNumber', e.target.value)}
+                                            className="h-8 text-xs"
+                                          />
+                                          <Input
+                                            placeholder="Job Name"
+                                            value={day.row1.jobName}
+                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobName', e.target.value)}
+                                            className="h-8 text-xs"
+                                          />
+                                        </div>
                                       </div>
-                                    ) : (
-                                      <div 
-                                        className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1"
-                                        onClick={() => handleCellEdit(weekIndex, crewIndex, dayIndex, 'projectManager')}
-                                      >
-                                        <span className="text-gray-600 text-sm">{day.projectManager || 'Click to add PM'}</span>
-                                        <Edit2 className="h-3 w-3 text-gray-400" />
-                                      </div>
-                                    )}
-                                    
-                                    {/* Description */}
-                                    {editingCell === `${weekIndex}-${crewIndex}-${dayIndex}-description` ? (
-                                      <div className="flex items-center gap-2">
-                                        <Input
-                                          value={editValue}
-                                          onChange={(e) => setEditValue(e.target.value)}
-                                          className="text-sm"
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                              handleSaveEdit(weekIndex, crewIndex, dayIndex, 'description');
-                                            } else if (e.key === 'Escape') {
-                                              handleCancelEdit();
+                                      
+                                      {/* Row 2 */}
+                                      <div className="space-y-2 p-2 bg-gray-50 rounded">
+                                        <div className="text-xs font-semibold text-gray-600">Row 2</div>
+                                        <div className="grid grid-cols-3 gap-2">
+                                          <Select
+                                            value={day.row2.color}
+                                            onValueChange={(value: 'orange' | 'blue' | 'green' | 'purple' | 'none') => 
+                                              updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'color', value)
                                             }
-                                          }}
-                                          autoFocus
-                                        />
-                                        <Button size="sm" onClick={() => handleSaveEdit(weekIndex, crewIndex, dayIndex, 'description')}>
-                                          <Save className="h-3 w-3" />
-                                        </Button>
-                                        <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                          <X className="h-3 w-3" />
-                                        </Button>
+                                          >
+                                            <SelectTrigger className="h-8">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              {availableColors.map((color) => (
+                                                <SelectItem key={color.value} value={color.value}>
+                                                  <div className="flex items-center gap-2">
+                                                    {color.value !== 'none' && (
+                                                      <div 
+                                                        className="w-3 h-3 rounded-full"
+                                                        style={{ backgroundColor: color.color }}
+                                                      ></div>
+                                                    )}
+                                                    <span>{color.label}</span>
+                                                  </div>
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
+                                          <Input
+                                            placeholder="Job #"
+                                            value={day.row2.jobNumber}
+                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobNumber', e.target.value)}
+                                            className="h-8 text-xs"
+                                          />
+                                          <Input
+                                            placeholder="Job Name"
+                                            value={day.row2.jobName}
+                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobName', e.target.value)}
+                                            className="h-8 text-xs"
+                                          />
+                                        </div>
                                       </div>
-                                    ) : (
-                                      <div 
-                                        className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1"
-                                        onClick={() => handleCellEdit(weekIndex, crewIndex, dayIndex, 'description')}
-                                      >
-                                        <span className="text-gray-600 text-sm">{day.description || 'Click to add description'}</span>
-                                        <Edit2 className="h-3 w-3 text-gray-400" />
-                                      </div>
-                                    )}
-                                  </div>
+                                    </div>
+                                  )}
                                 </TableCell>
                               ))}
                             </TableRow>

@@ -13,37 +13,20 @@ const isToday = (dateString: string) => {
   return today.toDateString() === targetDate.toDateString();
 };
 
-// Function to get color based on project manager
-const getProjectManagerColor = (projectManager: string, colorOverrides: Record<string, string> = {}) => {
-  if (!projectManager || projectManager.trim() === '') return '';
-  
-  // Check if there's a color override
-  if (colorOverrides[projectManager]) {
-    return colorOverrides[projectManager];
-  }
-  
-  // Simple hash function to assign consistent colors
-  const hash = projectManager.split('').reduce((a, b) => {
-    a = ((a << 5) - a) + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-  
-  const colors = [
-    'bg-orange-500',
-    'bg-blue-500', 
-    'bg-green-500',
-    'bg-purple-500'
-  ];
-  
-  return colors[Math.abs(hash) % colors.length];
+// Function to get color class
+const getColorClass = (color: string) => {
+  const colorMap: Record<string, string> = {
+    'orange': 'bg-orange-500',
+    'blue': 'bg-blue-500',
+    'green': 'bg-green-500',
+    'purple': 'bg-purple-500',
+    'none': ''
+  };
+  return colorMap[color] || '';
 };
 
 export function CrewSchedule() {
   const { data } = useDashboardData();
-  
-  // For now, we'll use empty color overrides in the dashboard view
-  // In the future, this could be stored in the context or passed as props
-  const colorOverrides: Record<string, string> = {};
   
   return (
     <Card className="h-full bg-gray-800">
@@ -77,7 +60,7 @@ export function CrewSchedule() {
                 </TableHeader>
                 <TableBody>
                   {weekData.days.map((day, dayIndex) => (
-                    <TableRow key={`${day}-${dayIndex}`} className={`${isToday(weekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[60px]`}>
+                    <TableRow key={`${day}-${dayIndex}`} className={`${isToday(weekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[80px]`}>
                       <TableCell className="p-2 border border-gray-600 font-medium">
                         <div>
                           <div className={`font-bold text-sm ${isToday(weekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
@@ -93,47 +76,47 @@ export function CrewSchedule() {
                           key={`${crewIndex}-${dayIndex}`} 
                           className="p-2 border border-gray-600 text-center"
                         >
-                          {crew.schedule[dayIndex]?.projects && crew.schedule[dayIndex].projects.length > 0 ? (
-                            <div className="space-y-1">
-                              {crew.schedule[dayIndex].projects.map((project, projectIndex) => (
-                                <div key={projectIndex} className="space-y-1">
-                                  <div className="flex items-center justify-center gap-2">
-                                    {project.projectManager && (
-                                      <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(project.projectManager, colorOverrides)}`}></div>
-                                    )}
-                                    <div className="font-medium text-sm text-white">
-                                      {project.jobCode}
-                                    </div>
-                                  </div>
-                                  {project.description && (
-                                    <div className="text-gray-300 text-xs">
-                                      {project.description}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          ) : crew.schedule[dayIndex]?.jobCode && crew.schedule[dayIndex].jobCode.trim() !== '' && crew.schedule[dayIndex].jobCode !== 'OFF' ? (
-                            <div className="space-y-1">
-                              <div className="flex items-center justify-center gap-2">
-                                {crew.schedule[dayIndex].projectManager && (
-                                  <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(crew.schedule[dayIndex].projectManager, colorOverrides)}`}></div>
-                                )}
-                                <div className="font-medium text-sm text-white">
-                                  {crew.schedule[dayIndex].jobCode}
-                                </div>
-                              </div>
-                              {crew.schedule[dayIndex].description && (
-                                <div className="text-gray-300 text-xs">
-                                  {crew.schedule[dayIndex].description}
-                                </div>
-                              )}
-                            </div>
-                          ) : crew.schedule[dayIndex]?.jobCode === 'OFF' ? (
+                          {crew.position === 'OFF' ? (
                             <div className="text-gray-400 text-sm font-medium">
                               OFF
                             </div>
-                          ) : null}
+                          ) : (
+                            <div className="space-y-1">
+                              {/* Row 1 */}
+                              <div className="flex items-center justify-center gap-2 min-h-[20px]">
+                                {crew.schedule[dayIndex]?.row1?.color && crew.schedule[dayIndex].row1.color !== 'none' && (
+                                  <div className={`w-3 h-3 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
+                                )}
+                                {crew.schedule[dayIndex]?.row1?.jobNumber && (
+                                  <div className="font-medium text-sm text-white">
+                                    {crew.schedule[dayIndex].row1.jobNumber}
+                                  </div>
+                                )}
+                              </div>
+                              {crew.schedule[dayIndex]?.row1?.jobName && (
+                                <div className="text-gray-300 text-xs">
+                                  {crew.schedule[dayIndex].row1.jobName}
+                                </div>
+                              )}
+                              
+                              {/* Row 2 */}
+                              <div className="flex items-center justify-center gap-2 min-h-[20px]">
+                                {crew.schedule[dayIndex]?.row2?.color && crew.schedule[dayIndex].row2.color !== 'none' && (
+                                  <div className={`w-3 h-3 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
+                                )}
+                                {crew.schedule[dayIndex]?.row2?.jobNumber && (
+                                  <div className="font-medium text-sm text-white">
+                                    {crew.schedule[dayIndex].row2.jobNumber}
+                                  </div>
+                                )}
+                              </div>
+                              {crew.schedule[dayIndex]?.row2?.jobName && (
+                                <div className="text-gray-300 text-xs">
+                                  {crew.schedule[dayIndex].row2.jobName}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </TableCell>
                       ))}
                     </TableRow>

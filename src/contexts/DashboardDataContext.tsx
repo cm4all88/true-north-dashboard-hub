@@ -1,16 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-interface Project {
-  jobCode: string;
-  description: string;
-  projectManager?: string;
+interface RowData {
+  color: 'orange' | 'blue' | 'green' | 'purple' | 'none';
+  jobNumber: string;
+  jobName: string;
 }
 
 interface ScheduleItem {
-  jobCode: string;
-  description: string;
-  projectManager?: string;
-  projects?: Project[];
+  row1: RowData;
+  row2: RowData;
 }
 
 interface CrewMember {
@@ -102,44 +100,24 @@ const generateInitialScheduleData = (): WeekData[] => {
           name: "SHAUN",
           schedule: [
             { 
-              jobCode: `j18-${18 + weekOffset}`, 
-              description: "test", 
-              projectManager: "John Smith",
-              projects: [
-                { jobCode: `j18-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
-              ]
+              row1: { color: 'orange', jobNumber: `j18-${18 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j18-${18 + weekOffset}`, 
-              description: "test", 
-              projectManager: "John Smith",
-              projects: [
-                { jobCode: `j18-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
-              ]
+              row1: { color: 'orange', jobNumber: `j18-${18 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j18-${183 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Sarah Jones",
-              projects: [
-                { jobCode: `j18-${183 + weekOffset}`, description: "test", projectManager: "Sarah Jones" }
-              ]
+              row1: { color: 'blue', jobNumber: `j18-${183 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j18-${184 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Mike Davis",
-              projects: [
-                { jobCode: `j18-${184 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
-              ]
+              row1: { color: 'green', jobNumber: `j18-${184 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j18-${185 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Mike Davis",
-              projects: [
-                { jobCode: `j18-${185 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
-              ]
+              row1: { color: 'green', jobNumber: `j18-${185 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
           ]
         },
@@ -148,44 +126,24 @@ const generateInitialScheduleData = (): WeekData[] => {
           name: "GERRY",
           schedule: [
             { 
-              jobCode: `j19-${18 + weekOffset}`, 
-              description: "test", 
-              projectManager: "John Smith",
-              projects: [
-                { jobCode: `j19-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
-              ]
+              row1: { color: 'orange', jobNumber: `j19-${18 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j19-${18 + weekOffset}`, 
-              description: "test", 
-              projectManager: "John Smith",
-              projects: [
-                { jobCode: `j19-${18 + weekOffset}`, description: "test", projectManager: "John Smith" }
-              ]
+              row1: { color: 'orange', jobNumber: `j19-${18 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j19-${183 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Sarah Jones",
-              projects: [
-                { jobCode: `j19-${183 + weekOffset}`, description: "test", projectManager: "Sarah Jones" }
-              ]
+              row1: { color: 'blue', jobNumber: `j19-${183 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j19-${184 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Mike Davis",
-              projects: [
-                { jobCode: `j19-${184 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
-              ]
+              row1: { color: 'green', jobNumber: `j19-${184 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j19-${185 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Mike Davis",
-              projects: [
-                { jobCode: `j19-${185 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
-              ]
+              row1: { color: 'green', jobNumber: `j19-${185 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
           ]
         },
@@ -194,44 +152,24 @@ const generateInitialScheduleData = (): WeekData[] => {
           name: "SERGIO",
           schedule: [
             { 
-              jobCode: `j20-${11 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Emily Wilson",
-              projects: [
-                { jobCode: `j20-${11 + weekOffset}`, description: "test", projectManager: "Emily Wilson" }
-              ]
+              row1: { color: 'purple', jobNumber: `j20-${11 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j20-${11 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Emily Wilson",
-              projects: [
-                { jobCode: `j20-${11 + weekOffset}`, description: "test", projectManager: "Emily Wilson" }
-              ]
+              row1: { color: 'purple', jobNumber: `j20-${11 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j20-${113 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Sarah Jones",
-              projects: [
-                { jobCode: `j20-${113 + weekOffset}`, description: "test", projectManager: "Sarah Jones" }
-              ]
+              row1: { color: 'blue', jobNumber: `j20-${113 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j20-${114 + weekOffset}`, 
-              description: "test", 
-              projectManager: "Mike Davis",
-              projects: [
-                { jobCode: `j20-${114 + weekOffset}`, description: "test", projectManager: "Mike Davis" }
-              ]
+              row1: { color: 'green', jobNumber: `j20-${114 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
             { 
-              jobCode: `j20-${115 + weekOffset}`, 
-              description: "test", 
-              projectManager: "John Smith",
-              projects: [
-                { jobCode: `j20-${115 + weekOffset}`, description: "test", projectManager: "John Smith" }
-              ]
+              row1: { color: 'orange', jobNumber: `j20-${115 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
             },
           ]
         },
@@ -239,11 +177,11 @@ const generateInitialScheduleData = (): WeekData[] => {
           position: "OFF",
           name: "",
           schedule: [
-            { jobCode: "", description: "", projects: [] },
-            { jobCode: "", description: "", projects: [] },
-            { jobCode: "", description: "", projects: [] },
-            { jobCode: "", description: "", projects: [] },
-            { jobCode: "", description: "", projects: [] },
+            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
+            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
+            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
+            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
+            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
           ]
         },
       ]
