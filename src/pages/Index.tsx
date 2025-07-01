@@ -29,24 +29,28 @@ const Index = () => {
           <div className="flex-shrink-0">
             <TrueNorthLogo />
           </div>
-          <div className="flex-grow mx-6">
-            <WeatherForecast headerMode={true} />
-          </div>
-          <div className="flex-shrink-0">
-            <DashboardClock />
-          </div>
         </div>
       </header>
 
       <main className="px-4 py-3" style={{ height: 'calc(100vh - 112px)' }}>
         <div className="flex flex-col gap-3 h-full">
-          {/* Top section: Crew Schedule - 65% */}
-          <div className="h-[65%] min-h-0">
+          {/* Top section: Weather and Clock */}
+          <div className="h-[15%] flex gap-3">
+            <div className="flex-1">
+              <WeatherForecast headerMode={false} />
+            </div>
+            <div className="flex-shrink-0 flex items-center justify-center bg-gray-800 rounded-lg px-6">
+              <DashboardClock />
+            </div>
+          </div>
+
+          {/* Middle section: Crew Schedule - 55% */}
+          <div className="h-[55%] min-h-0">
             <CrewSchedule />
           </div>
 
-          {/* Bottom section: Traffic Times - 35% */}
-          <div className="h-[35%] min-h-0">
+          {/* Bottom section: Traffic Times - 30% */}
+          <div className="h-[30%] min-h-0">
             <TrafficTimes />
           </div>
         </div>
