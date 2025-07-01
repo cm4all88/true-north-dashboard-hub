@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, X, Plus, Save, Edit2 } from "lucide-react";
+import { Calendar as CalendarIcon, X, Plus, Save, Edit2, Download } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -160,6 +160,30 @@ const Admin = () => {
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   
+  // Function to export daily schedule as CSV
+  const exportDayAsCSV = (weekData: any, dayIndex: number) => {
+    const dayName = weekData.days[dayIndex];
+    const date = weekData.dates[dayIndex];
+    
+    let csvContent = `Crew Schedule for ${dayName} ${date}\n`;
+    csvContent += `Crew Member,Position,Job Code,Description\n`;
+    
+    weekData.crews.forEach((crew: any) => {
+      const daySchedule = crew.schedule[dayIndex];
+      csvContent += `${crew.name},${crew.position},${daySchedule.jobCode},${daySchedule.description}\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `crew-schedule-${dayName.toLowerCase()}-${date.replace(/\//g, '-')}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+  
   // Handle birthday updates
   const handleAddBirthday = () => {
     if (newBirthday.name.trim() === '') return;
@@ -271,14 +295,30 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Manage Crew Schedule</CardTitle>
                 <CardDescription>
-                  Edit the crew schedule that appears on the main dashboard. Click on any cell to edit it, including crew names and positions.
+                  Edit the crew schedule that appears on the main dashboard. Click on any cell to edit it, including crew names and positions. Use the download buttons to export daily schedules as CSV files.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {scheduleData.map((weekData, weekIndex) => (
                     <div key={weekIndex}>
-                      <h3 className="text-lg font-semibold mb-3">{weekData.weekOf}</h3>
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg font-semibold">{weekData.weekOf}</h3>
+                        <div className="flex gap-2">
+                          {weekData.days.map((day, dayIndex) => (
+                            <Button
+                              key={`export-${weekIndex}-${dayIndex}`}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => exportDayAsCSV(weekData, dayIndex)}
+                              className="text-xs"
+                            >
+                              <Download className="h-3 w-3 mr-1" />
+                              {day}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
                       <Table className="border-collapse border border-gray-300">
                         <TableHeader>
                           <TableRow>

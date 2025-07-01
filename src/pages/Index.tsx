@@ -10,8 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Settings, RefreshCw } from "lucide-react";
 import { ToggleFullscreen } from '@/components/ToggleFullscreen';
 import { TrafficTimes } from "@/components/dashboard/TrafficTimes";
-import { TimeOffCalendar } from "@/components/dashboard/TimeOffCalendar";
-import { ComicOfTheDay } from "@/components/dashboard/ComicOfTheDay";
 
 const Index = () => {
   const { lastUpdated, refreshData } = useAutoRefresh();
@@ -42,24 +40,14 @@ const Index = () => {
 
       <main className="px-4 py-3" style={{ height: 'calc(100vh - 112px)' }}>
         <div className="flex flex-col gap-3 h-full">
-          {/* Top section: Crew Schedule - 40% */}
-          <div className="h-[40%] min-h-0">
+          {/* Top section: Crew Schedule - 65% */}
+          <div className="h-[65%] min-h-0">
             <CrewSchedule />
           </div>
 
-          {/* Middle section: Traffic Times - 30% */}
-          <div className="h-[30%] min-h-0">
+          {/* Bottom section: Traffic Times - 35% */}
+          <div className="h-[35%] min-h-0">
             <TrafficTimes />
-          </div>
-          
-          {/* Bottom section: Time Off Calendar and Comic side by side - 30% */}
-          <div className="h-[30%] min-h-0 grid grid-cols-2 gap-3">
-            <div className="min-h-0 overflow-hidden">
-              <TimeOffCalendar />
-            </div>
-            <div className="min-h-0 overflow-hidden">
-              <ComicOfTheDay />
-            </div>
           </div>
         </div>
       </main>

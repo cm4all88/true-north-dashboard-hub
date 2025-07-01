@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calendar, Download } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 
 // Initial structured data for the first week
 const initialWeekOneData = {
@@ -119,30 +118,6 @@ const getCurrentDayName = () => {
   return days[today];
 };
 
-// Function to export daily schedule as CSV
-const exportDayAsCSV = (weekData: any, dayIndex: number) => {
-  const dayName = weekData.days[dayIndex];
-  const date = weekData.dates[dayIndex];
-  
-  let csvContent = `Crew Schedule for ${dayName} ${date}\n`;
-  csvContent += `Crew Member,Position,Job Code,Description\n`;
-  
-  weekData.crews.forEach((crew: any) => {
-    const daySchedule = crew.schedule[dayIndex];
-    csvContent += `${crew.name},${crew.position},${daySchedule.jobCode},${daySchedule.description}\n`;
-  });
-  
-  const blob = new Blob([csvContent], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `crew-schedule-${dayName.toLowerCase()}-${date.replace(/\//g, '-')}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
-};
-
 export function CrewSchedule() {
   const [scheduleData] = useState([initialWeekOneData, initialWeekTwoData]);
   const currentDay = getCurrentDayName();
@@ -159,23 +134,7 @@ export function CrewSchedule() {
         <ScrollArea className="h-[calc(100vh-200px)]">
           {scheduleData.map((weekData, weekIndex) => (
             <div key={weekIndex} className={weekIndex > 0 ? "mt-6" : ""}>
-              <div className="flex justify-between items-center mb-3">
-                <CardDescription className="font-bold text-gray-300 text-xl">{weekData.weekOf}</CardDescription>
-                <div className="flex gap-2">
-                  {weekData.days.map((day, dayIndex) => (
-                    <Button
-                      key={`export-${weekIndex}-${dayIndex}`}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => exportDayAsCSV(weekData, dayIndex)}
-                      className="text-xs"
-                    >
-                      <Download className="h-3 w-3 mr-1" />
-                      {day}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+              <CardDescription className="font-bold text-gray-300 text-xl mb-3">{weekData.weekOf}</CardDescription>
               <Table className="border-collapse">
                 <TableHeader className="bg-gray-700">
                   <TableRow>
