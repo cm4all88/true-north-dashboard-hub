@@ -32,46 +32,46 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="px-4 py-3" style={{ height: 'calc(100vh - 112px)' }}>
-        <div className="flex flex-col gap-3 h-full">
-          {/* Top section: Weather and Clock */}
-          <div className="h-[15%] flex gap-3">
+      <main className="px-4 py-2" style={{ height: 'calc(100vh - 80px)' }}>
+        <div className="flex flex-col gap-2 h-full">
+          {/* Top section: Weather and Clock - Reduced height */}
+          <div className="h-[12%] flex gap-3">
             <div className="flex-1">
               <WeatherForecast headerMode={false} />
             </div>
-            <div className="flex-shrink-0 flex items-center justify-center bg-gray-800 rounded-lg px-6">
+            <div className="flex-shrink-0 flex items-center justify-center bg-gray-800 rounded-lg px-4">
               <DashboardClock />
             </div>
           </div>
 
-          {/* Middle section: Crew Schedule - 55% */}
-          <div className="h-[55%] min-h-0">
+          {/* Middle section: Crew Schedule - Increased height */}
+          <div className="h-[58%] min-h-0">
             <CrewSchedule />
           </div>
 
-          {/* Bottom section: Traffic Times - 30% */}
-          <div className="h-[30%] min-h-0">
+          {/* Bottom section: Traffic Times - Adjusted height */}
+          <div className="h-[28%] min-h-0">
             <TrafficTimes />
           </div>
         </div>
       </main>
 
-      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-2 px-4 h-12">
+      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-1 px-4 h-8">
         <div className="max-w-full mx-auto flex justify-between items-center h-full">
-          <div className="text-sm text-gray-300">
+          <div className="text-xs text-gray-300">
             {lastUpdated && (
               <span>Last updated: {formatTime(lastUpdated)}</span>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={refreshData} title="Refresh Data" className="text-sm text-gray-300 hover:text-white">
-              <RefreshCw className="h-4 w-4 mr-1" />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={refreshData} title="Refresh Data" className="text-xs text-gray-300 hover:text-white h-6">
+              <RefreshCw className="h-3 w-3 mr-1" />
               Refresh
             </Button>
             <ToggleFullscreen />
             <Link to="/admin">
-              <Button variant="ghost" size="sm" className="text-sm text-gray-300 hover:text-white">
-                <Settings className="mr-1 h-4 w-4" />
+              <Button variant="ghost" size="sm" className="text-xs text-gray-300 hover:text-white h-6">
+                <Settings className="mr-1 h-3 w-3" />
                 Admin
               </Button>
             </Link>
