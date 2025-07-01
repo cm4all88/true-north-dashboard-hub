@@ -32,77 +32,91 @@ const Admin = () => {
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
   
-  // Function to update crew name - Fixed to handle proper crew indexing
+  // Function to update crew name - Simplified to work directly with crew array
   const updateCrewName = (weekIndex: number, crewIndex: number, newName: string) => {
     const newScheduleData = [...data.scheduleData];
-    // Find the actual crew in the filtered list
-    const visibleCrews = newScheduleData[weekIndex].crews.filter(crew => crew.position !== 'OFF');
-    const actualCrewIndex = newScheduleData[weekIndex].crews.indexOf(visibleCrews[crewIndex]);
+    const allCrews = newScheduleData[weekIndex].crews;
+    const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
-    if (actualCrewIndex !== -1) {
-      newScheduleData[weekIndex].crews[actualCrewIndex].name = newName;
-      console.log('Updated crew name:', { weekIndex, actualCrewIndex, newName });
-      updateScheduleData(newScheduleData);
+    if (visibleCrews[crewIndex]) {
+      // Find the actual index in the full crew array
+      const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
+      if (actualIndex !== -1) {
+        newScheduleData[weekIndex].crews[actualIndex].name = newName;
+        console.log('Updated crew name:', { weekIndex, actualIndex, newName });
+        updateScheduleData(newScheduleData);
+      }
     }
   };
   
-  // Function to update crew position - Fixed to handle proper crew indexing
+  // Function to update crew position - Simplified to work directly with crew array
   const updateCrewPosition = (weekIndex: number, crewIndex: number, newPosition: string) => {
     const newScheduleData = [...data.scheduleData];
-    // Find the actual crew in the filtered list
-    const visibleCrews = newScheduleData[weekIndex].crews.filter(crew => crew.position !== 'OFF');
-    const actualCrewIndex = newScheduleData[weekIndex].crews.indexOf(visibleCrews[crewIndex]);
+    const allCrews = newScheduleData[weekIndex].crews;
+    const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
-    if (actualCrewIndex !== -1) {
-      newScheduleData[weekIndex].crews[actualCrewIndex].position = newPosition;
-      console.log('Updated crew position:', { weekIndex, actualCrewIndex, newPosition });
-      updateScheduleData(newScheduleData);
+    if (visibleCrews[crewIndex]) {
+      // Find the actual index in the full crew array
+      const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
+      if (actualIndex !== -1) {
+        newScheduleData[weekIndex].crews[actualIndex].position = newPosition;
+        console.log('Updated crew position:', { weekIndex, actualIndex, newPosition });
+        updateScheduleData(newScheduleData);
+      }
     }
   };
   
-  // Function to copy from previous day - Fixed to handle proper crew indexing
+  // Function to copy from previous day - Simplified to work directly with crew array
   const copyFromPreviousDay = (weekIndex: number, crewIndex: number, dayIndex: number) => {
     if (dayIndex === 0) return; // Can't copy if it's the first day
     
     const newScheduleData = [...data.scheduleData];
-    // Find the actual crew in the filtered list
-    const visibleCrews = newScheduleData[weekIndex].crews.filter(crew => crew.position !== 'OFF');
-    const actualCrewIndex = newScheduleData[weekIndex].crews.indexOf(visibleCrews[crewIndex]);
+    const allCrews = newScheduleData[weekIndex].crews;
+    const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
-    if (actualCrewIndex !== -1) {
-      const previousDayData = newScheduleData[weekIndex].crews[actualCrewIndex].schedule[dayIndex - 1];
-      newScheduleData[weekIndex].crews[actualCrewIndex].schedule[dayIndex] = {
-        row1: { ...previousDayData.row1 },
-        row2: { ...previousDayData.row2 }
-      };
-      
-      console.log('Copied from previous day:', { weekIndex, actualCrewIndex, dayIndex });
-      updateScheduleData(newScheduleData);
+    if (visibleCrews[crewIndex]) {
+      // Find the actual index in the full crew array
+      const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
+      if (actualIndex !== -1) {
+        const previousDayData = newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex - 1];
+        newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex] = {
+          row1: { ...previousDayData.row1 },
+          row2: { ...previousDayData.row2 }
+        };
+        
+        console.log('Copied from previous day:', { weekIndex, actualIndex, dayIndex });
+        updateScheduleData(newScheduleData);
+      }
     }
   };
   
-  // Function to update row data - Fixed to handle proper crew indexing
+  // Function to update row data - Simplified to work directly with crew array
   const updateRowData = (weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string) => {
     const newScheduleData = [...data.scheduleData];
+    const allCrews = newScheduleData[weekIndex].crews;
+    const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
-    // Find the actual crew in the filtered list
-    const visibleCrews = newScheduleData[weekIndex].crews.filter(crew => crew.position !== 'OFF');
-    const actualCrewIndex = newScheduleData[weekIndex].crews.indexOf(visibleCrews[crewIndex]);
+    if (!visibleCrews[crewIndex]) {
+      console.error('Crew not found:', { weekIndex, crewIndex });
+      return;
+    }
     
-    if (actualCrewIndex === -1) {
-      console.error('Crew not found:', { weekIndex, crewIndex, actualCrewIndex });
+    // Find the actual index in the full crew array
+    const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
+    if (actualIndex === -1) {
+      console.error('Actual crew index not found:', { weekIndex, crewIndex, actualIndex });
       return;
     }
     
     // Ensure the schedule data structure exists
-    if (!newScheduleData[weekIndex]?.crews[actualCrewIndex]?.schedule[dayIndex]) {
-      console.error('Schedule data structure missing:', { weekIndex, actualCrewIndex, dayIndex });
+    if (!newScheduleData[weekIndex]?.crews[actualIndex]?.schedule[dayIndex]) {
+      console.error('Schedule data structure missing:', { weekIndex, actualIndex, dayIndex });
       return;
     }
     
     // Ensure the row exists
-    if (!newScheduleData[weekIndex].crews[actualCrewIndex].schedule[dayIndex][row]) {
-      newScheduleData[weekIndex].crews[actualCrewIndex].schedule[dayIndex][row] = {
+    if (!newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row]) {
+      newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row] = {
         color: 'none',
         jobNumber: '',
         jobName: ''
@@ -110,9 +124,9 @@ const Admin = () => {
     }
     
     // Update the specific field
-    newScheduleData[weekIndex].crews[actualCrewIndex].schedule[dayIndex][row][field] = value as any;
+    newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row][field] = value as any;
     
-    console.log('Updated row data:', { weekIndex, actualCrewIndex, dayIndex, row, field, value });
+    console.log('Updated row data:', { weekIndex, actualIndex, dayIndex, row, field, value });
     updateScheduleData(newScheduleData);
   };
 
