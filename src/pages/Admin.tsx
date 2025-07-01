@@ -46,9 +46,31 @@ const Admin = () => {
   };
   
   // Function to update row data
-  const updateRowData = (weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string | 'orange' | 'blue' | 'green' | 'purple' | 'none') => {
+  const updateRowData = (weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string) => {
     const newScheduleData = [...data.scheduleData];
-    newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row][field] = value as any;
+    
+    // Ensure the schedule data structure exists
+    if (!newScheduleData[weekIndex]?.crews[crewIndex]?.schedule[dayIndex]) {
+      console.error('Schedule data structure missing:', { weekIndex, crewIndex, dayIndex });
+      return;
+    }
+    
+    // Ensure the row exists
+    if (!newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row]) {
+      newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row] = {
+        color: 'none',
+        jobNumber: '',
+        jobName: ''
+      };
+    }
+    
+    // Update the specific field
+    if (field === 'color') {
+      newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row][field] = value as 'orange' | 'blue' | 'green' | 'purple' | 'none';
+    } else {
+      newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row][field] = value;
+    }
+    
     updateScheduleData(newScheduleData);
   };
 
@@ -207,7 +229,7 @@ const Admin = () => {
                                         <div className="text-xs font-semibold text-gray-600">Row 1</div>
                                         <div className="grid grid-cols-3 gap-2">
                                           <Select
-                                            value={day.row1.color}
+                                            value={day.row1?.color || 'none'}
                                             onValueChange={(value: 'orange' | 'blue' | 'green' | 'purple' | 'none') => 
                                               updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'color', value)
                                             }
@@ -233,13 +255,13 @@ const Admin = () => {
                                           </Select>
                                           <Input
                                             placeholder="Job #"
-                                            value={day.row1.jobNumber}
+                                            value={day.row1?.jobNumber || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobNumber', e.target.value)}
                                             className="h-8 text-xs"
                                           />
                                           <Input
                                             placeholder="Job Name"
-                                            value={day.row1.jobName}
+                                            value={day.row1?.jobName || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobName', e.target.value)}
                                             className="h-8 text-xs"
                                           />
@@ -251,7 +273,7 @@ const Admin = () => {
                                         <div className="text-xs font-semibold text-gray-600">Row 2</div>
                                         <div className="grid grid-cols-3 gap-2">
                                           <Select
-                                            value={day.row2.color}
+                                            value={day.row2?.color || 'none'}
                                             onValueChange={(value: 'orange' | 'blue' | 'green' | 'purple' | 'none') => 
                                               updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'color', value)
                                             }
@@ -277,13 +299,13 @@ const Admin = () => {
                                           </Select>
                                           <Input
                                             placeholder="Job #"
-                                            value={day.row2.jobNumber}
+                                            value={day.row2?.jobNumber || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobNumber', e.target.value)}
                                             className="h-8 text-xs"
                                           />
                                           <Input
                                             placeholder="Job Name"
-                                            value={day.row2.jobName}
+                                            value={day.row2?.jobName || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobName', e.target.value)}
                                             className="h-8 text-xs"
                                           />
