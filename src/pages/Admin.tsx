@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -8,11 +7,30 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, X, Plus, Save, Edit2, Download } from "lucide-react";
+import { Calendar as CalendarIcon, X, Plus, Save, Edit2, Download, Copy } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useDashboardData } from '@/contexts/DashboardDataContext';
+
+// Function to get color based on project manager
+const getProjectManagerColor = (jobCode: string) => {
+  if (!jobCode || jobCode.trim() === '') return '';
+  
+  const hash = jobCode.split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0);
+    return a & a;
+  }, 0);
+  
+  const colors = [
+    'bg-orange-500',
+    'bg-blue-500', 
+    'bg-green-500',
+    'bg-purple-500'
+  ];
+  
+  return colors[Math.abs(hash) % colors.length];
+};
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -24,6 +42,20 @@ const Admin = () => {
   
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+  
+  // Function to copy from previous day
+  const copyFromPreviousDay = (weekIndex: number, crewIndex: number, dayIndex: number) => {
+    if (dayIndex === 0) return; // Can't copy if it's the first day
+    
+    const newScheduleData = [...data.scheduleData];
+    const previousDayData = newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex - 1];
+    newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex] = {
+      jobCode: previousDayData.jobCode,
+      description: previousDayData.description
+    };
+    
+    updateScheduleData(newScheduleData);
+  };
   
   // Function to export daily schedule as CSV
   const exportDayAsCSV = (weekData: any, dayIndex: number) => {
@@ -164,7 +196,7 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Manage Crew Schedule</CardTitle>
                 <CardDescription>
-                  Edit the crew schedule that appears on the main dashboard. Click on any cell to edit it, including crew names and positions. Use the download buttons to export daily schedules as CSV files.
+                  Edit the crew schedule that appears on the main dashboard. Click on any cell to edit it, including crew names and positions. Use the download buttons to export daily schedules as CSV files. Click the copy button to copy information from the previous day.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -273,6 +305,21 @@ const Admin = () => {
                               {crew.schedule.map((day, dayIndex) => (
                                 <TableCell key={`${crewIndex}-${dayIndex}`} className="border border-gray-300">
                                   <div className="space-y-2">
+                                    {/* Copy button */}
+                                    {dayIndex > 0 && (
+                                      <div className="flex justify-end mb-1">
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => copyFromPreviousDay(weekIndex, crewIndex, dayIndex)}
+                                          className="h-6 w-6 p-0"
+                                          title="Copy from previous day"
+                                        >
+                                          <Copy className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    )}
+                                    
                                     {/* Job Code */}
                                     {editingCell === `${weekIndex}-${crewIndex}-${dayIndex}-jobCode` ? (
                                       <div className="flex items-center gap-2">
@@ -301,7 +348,12 @@ const Admin = () => {
                                         className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1"
                                         onClick={() => handleCellEdit(weekIndex, crewIndex, dayIndex, 'jobCode')}
                                       >
-                                        <span className="font-medium">{day.jobCode}</span>
+                                        <div className="flex items-center gap-2">
+                                          {day.jobCode && day.jobCode.trim() !== '' && (
+                                            <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(day.jobCode)}`}></div>
+                                          )}
+                                          <span className="font-medium">{day.jobCode}</span>
+                                        </div>
                                         <Edit2 className="h-3 w-3 text-gray-400" />
                                       </div>
                                     )}

@@ -78,7 +78,7 @@ export function CrewSchedule() {
                           key={`${crewIndex}-${dayIndex}`} 
                           className="p-2 border border-gray-600 text-center"
                         >
-                          {crew.schedule[dayIndex]?.jobCode !== undefined && (
+                          {crew.schedule[dayIndex]?.jobCode && crew.schedule[dayIndex].jobCode.trim() !== '' && (
                             <div className="space-y-1">
                               <div className="flex items-center justify-center gap-2">
                                 <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(crew.schedule[dayIndex].jobCode)}`}></div>
