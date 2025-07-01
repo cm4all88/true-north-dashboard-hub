@@ -6,52 +6,82 @@ import { shoutoutsMock } from '@/lib/mockData';
 
 export function ShoutoutBoard() {
   const [shoutouts, setShoutouts] = useState(shoutoutsMock);
+  const [currentIndex, setCurrentIndex] = useState(0);
   
   useEffect(() => {
     // Here you would fetch the real shoutout data
-    // For example:
-    // const fetchShoutouts = async () => {
-    //   try {
-    //     const response = await fetch('/api/shoutouts');
-    //     const data = await response.json();
-    //     setShoutouts(data);
-    //   } catch (error) {
-    //     console.error('Error fetching shoutouts:', error);
-    //   }
-    // };
-    // fetchShoutouts();
+    setShoutouts(shoutoutsMock);
     
     // Auto-refresh every few minutes
     const intervalId = setInterval(() => {
-      // Refresh shoutouts
       console.log('Shoutouts would be refreshed here');
     }, 300000); // 5 minutes
     
     return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    if (shoutouts.length === 0) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % shoutouts.length);
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [shoutouts.length]);
+
+  if (shoutouts.length === 0) {
+    return (
+      <Card className="h-full bg-truenorth-600">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-white">
+            <MessageSquare className="h-5 w-5" />
+            Team Shoutouts
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-300">No shoutouts available</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentShoutout = shoutouts[currentIndex];
+
   return (
-    <Card className="h-full">
+    <Card className="h-full bg-truenorth-600 overflow-hidden">
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-truenorth-700">
+        <CardTitle className="flex items-center gap-2 text-white text-lg">
           <MessageSquare className="h-5 w-5" />
           Team Shoutouts
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {shoutouts.map((shoutout) => (
-            <div 
-              key={shoutout.id} 
-              className="bg-white p-4 rounded-md shadow-sm border-l-4 border-truenorth-500 animate-fade-in"
-            >
-              <p className="text-gray-800 mb-2">{shoutout.text}</p>
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>From: {shoutout.from}</span>
-                <span>{new Date(shoutout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-              </div>
+      <CardContent className="p-4">
+        <div 
+          key={currentIndex}
+          className="animate-fade-in"
+        >
+          <div className="space-y-3">
+            <p className="text-white text-lg leading-relaxed">{currentShoutout.text}</p>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300 text-sm">From: {currentShoutout.from}</span>
+              <span className="text-gray-400 text-sm">
+                {new Date(currentShoutout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
             </div>
-          ))}
+          </div>
+          
+          {/* Progress indicator */}
+          <div className="flex justify-center mt-4 space-x-1">
+            {shoutouts.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 w-2 rounded-full transition-colors duration-300 ${
+                  index === currentIndex ? 'bg-white' : 'bg-gray-500'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

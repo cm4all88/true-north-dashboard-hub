@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
 import { CrewSchedule } from '@/components/dashboard/CrewSchedule';
 import { WeatherForecast } from '@/components/dashboard/WeatherForecast';
 import { DashboardClock } from '@/components/dashboard/DashboardClock';
+import { ShoutoutBoard } from '@/components/dashboard/ShoutoutBoard';
 import { useAutoRefresh } from '@/components/dashboard/AutoRefreshProvider';
 import { Button } from '@/components/ui/button';
 import { Settings, RefreshCw } from "lucide-react";
@@ -44,12 +46,17 @@ const Index = () => {
           </div>
 
           {/* Middle section: Crew Schedule - More space */}
-          <div className="h-[72%] min-h-0">
+          <div className="h-[58%] min-h-0">
             <CrewSchedule />
           </div>
 
-          {/* Bottom section: Traffic Times - Reduced space for scrolling display */}
+          {/* Shoutouts section - Thin space */}
           <div className="h-[16%] min-h-0">
+            <ShoutoutBoard />
+          </div>
+
+          {/* Bottom section: Traffic Times - Reduced space for scrolling display */}
+          <div className="h-[14%] min-h-0">
             <TrafficTimes />
           </div>
         </div>
