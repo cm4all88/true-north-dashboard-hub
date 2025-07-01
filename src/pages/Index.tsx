@@ -26,8 +26,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white dashboard-fullscreen" id="dashboard-container">
-      <header className="w-full bg-gray-800 shadow-md">
-        <div className="max-w-full mx-auto px-6 py-4 flex justify-between items-center">
+      <header className="w-full bg-gray-800 shadow-md h-20">
+        <div className="max-w-full mx-auto px-6 py-4 flex justify-between items-center h-full">
           <TrueNorthLogo />
           <div className="flex-grow mx-8">
             <WeatherForecast headerMode={true} />
@@ -38,7 +38,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-full mx-auto px-6 py-6 h-[calc(100vh-12rem)]">
+      <main className="max-w-full mx-auto px-6 py-6" style={{ height: 'calc(100vh - 140px)' }}>
         {/* Vertical layout optimized for portrait 55" monitor */}
         <div className="flex flex-col gap-6 h-full">
           {/* Top section: Crew Schedule - takes up 45% of available height */}
@@ -63,8 +63,8 @@ const Index = () => {
         </div>
       </main>
 
-      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-3 px-6">
-        <div className="max-w-full mx-auto flex justify-between items-center">
+      <footer className="w-full fixed bottom-0 bg-gray-800 border-t border-gray-700 py-3 px-6 h-16">
+        <div className="max-w-full mx-auto flex justify-between items-center h-full">
           <div className="text-lg text-gray-300">
             {lastUpdated && (
               <span>Last updated: {formatTime(lastUpdated)}</span>
