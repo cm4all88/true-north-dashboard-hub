@@ -32,7 +32,7 @@ export function CrewSchedule() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentWeekIndex((prevIndex) => (prevIndex + 1) % data.scheduleData.length);
-    }, 6000); // Change every 6 seconds
+    }, 15000); // Change every 15 seconds
 
     return () => clearInterval(interval);
   }, [data.scheduleData.length]);
