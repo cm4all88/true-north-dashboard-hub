@@ -9,16 +9,40 @@ export const crewScheduleMock = {
   Friday: ['James Wilson - Field Survey', 'Sarah Kim - Data Processing', 'Omar Patel - Equipment'],
 };
 
+// Function to generate dynamic weather forecast based on current date
+const generateWeatherForecast = () => {
+  const today = new Date();
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const conditions = ['sunny', 'cloudy', 'rainy', 'partly cloudy'];
+  
+  const forecast = [];
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    
+    const dayName = i === 0 ? 'Today' : dayNames[date.getDay()];
+    const condition = conditions[i % conditions.length];
+    
+    // Generate realistic temperatures (adjust based on season if needed)
+    const baseTemp = 65;
+    const variation = Math.sin(i * 0.5) * 8; // Creates some variation
+    const high = Math.round(baseTemp + variation + Math.random() * 6);
+    const low = Math.round(high - 10 - Math.random() * 6);
+    
+    forecast.push({
+      day: dayName,
+      high,
+      low,
+      condition
+    });
+  }
+  
+  return forecast;
+};
+
 // Weather Forecast for Seattle
-export const weatherForecastMock = [
-  { day: 'Today', high: 72, low: 56, condition: 'sunny' },
-  { day: 'Tue', high: 65, low: 52, condition: 'cloudy' },
-  { day: 'Wed', high: 60, low: 51, condition: 'rainy' },
-  { day: 'Thu', high: 64, low: 54, condition: 'partly cloudy' },
-  { day: 'Fri', high: 68, low: 55, condition: 'sunny' },
-  { day: 'Sat', high: 70, low: 56, condition: 'sunny' },
-  { day: 'Sun', high: 65, low: 53, condition: 'rainy' },
-];
+export const weatherForecastMock = generateWeatherForecast();
 
 // Upcoming Birthdays
 export const birthdaysMock = [
