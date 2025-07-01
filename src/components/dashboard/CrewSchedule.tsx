@@ -13,6 +13,24 @@ const isToday = (dateString: string) => {
   return dateString === todayFormatted;
 };
 
+// Function to get color based on project manager
+const getProjectManagerColor = (jobCode: string) => {
+  // Simple hash function to assign consistent colors
+  const hash = jobCode?.split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0);
+    return a & a;
+  }, 0) || 0;
+  
+  const colors = [
+    'bg-orange-500',
+    'bg-blue-500', 
+    'bg-green-500',
+    'bg-purple-500'
+  ];
+  
+  return colors[Math.abs(hash) % colors.length];
+};
+
 export function CrewSchedule() {
   const { data } = useDashboardData();
   
@@ -62,8 +80,11 @@ export function CrewSchedule() {
                         >
                           {crew.schedule[dayIndex]?.jobCode !== undefined && (
                             <div className="space-y-1">
-                              <div className="font-medium text-sm text-white">
-                                {crew.schedule[dayIndex].jobCode}
+                              <div className="flex items-center justify-center gap-2">
+                                <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(crew.schedule[dayIndex].jobCode)}`}></div>
+                                <div className="font-medium text-sm text-white">
+                                  {crew.schedule[dayIndex].jobCode}
+                                </div>
                               </div>
                               {crew.schedule[dayIndex].description && (
                                 <div className="text-gray-300 text-xs">
