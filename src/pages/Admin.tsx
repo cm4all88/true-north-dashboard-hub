@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -15,14 +14,6 @@ import { cn } from "@/lib/utils";
 
 const Admin = () => {
   const navigate = useNavigate();
-  // State for crew schedule
-  const [crewSchedule, setCrewSchedule] = useState({
-    Monday: ['Alex Johnson', 'Maria Garcia', 'Darnell Williams'],
-    Tuesday: ['Beth Chen', 'Omar Patel', 'Sarah Kim'],
-    Wednesday: ['James Wilson', 'Maria Garcia', 'Darnell Williams'],
-    Thursday: ['Beth Chen', 'Omar Patel', 'Alex Johnson'],
-    Friday: ['James Wilson', 'Sarah Kim', 'Omar Patel'],
-  });
   
   // State for birthdays
   const [birthdays, setBirthdays] = useState([
@@ -60,28 +51,6 @@ const Admin = () => {
   
   // State for the current shoutout being created
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
-  
-  // State for tracking crew edits
-  const [editingDay, setEditingDay] = useState('');
-  const [crewMember, setCrewMember] = useState('');
-  
-  // Handle crew schedule updates
-  const handleAddCrewMember = (day) => {
-    if (crewMember.trim() === '') return;
-    
-    setCrewSchedule(prevSchedule => ({
-      ...prevSchedule,
-      [day]: [...prevSchedule[day], crewMember]
-    }));
-    setCrewMember('');
-  };
-  
-  const handleRemoveCrewMember = (day, index) => {
-    setCrewSchedule(prevSchedule => ({
-      ...prevSchedule,
-      [day]: prevSchedule[day].filter((_, i) => i !== index)
-    }));
-  };
   
   // Handle birthday updates
   const handleAddBirthday = () => {
@@ -124,34 +93,6 @@ const Admin = () => {
   const handleSaveChanges = () => {
     // Here you would save all the data to your backend
     alert('Changes saved!');
-    
-    // In a real app, you would use an API call:
-    // const saveData = async () => {
-    //   try {
-    //     await Promise.all([
-    //       fetch('/api/crew-schedule', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(crewSchedule)
-    //       }),
-    //       fetch('/api/birthdays', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(birthdays)
-    //       }),
-    //       fetch('/api/shoutouts', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(shoutouts)
-    //       })
-    //     ]);
-    //     alert('Changes saved successfully!');
-    //   } catch (error) {
-    //     console.error('Error saving data:', error);
-    //     alert('Error saving changes');
-    //   }
-    // };
-    // saveData();
   };
 
   return (
@@ -174,79 +115,18 @@ const Admin = () => {
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6">
         <h1 className="text-2xl font-bold text-truenorth-700 mb-6">Dashboard Administration</h1>
         
-        <Tabs defaultValue="crew">
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+          <p className="text-blue-800">
+            <strong>Note:</strong> Crew schedule editing is now done directly on the main dashboard. 
+            Click on any cell in the crew schedule table to edit it, and use the export buttons to download daily schedules as CSV files.
+          </p>
+        </div>
+        
+        <Tabs defaultValue="birthdays">
           <TabsList className="mb-6">
-            <TabsTrigger value="crew">Crew Schedule</TabsTrigger>
             <TabsTrigger value="birthdays">Birthdays</TabsTrigger>
             <TabsTrigger value="shoutouts">Shoutouts</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="crew">
-            <Card>
-              <CardHeader>
-                <CardTitle>Manage Crew Schedule</CardTitle>
-                <CardDescription>
-                  Update the field crew assignments for each day of the work week.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                  {Object.entries(crewSchedule).map(([day, crew]) => (
-                    <Card key={day} className="border">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg">{day}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2 mb-4">
-                          {crew.map((member, index) => (
-                            <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
-                              <span>{member}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => handleRemoveCrewMember(day, index)}
-                              >
-                                <X className="h-4 w-4 text-gray-500" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        {editingDay === day ? (
-                          <div className="flex gap-2">
-                            <Input 
-                              value={crewMember} 
-                              onChange={(e) => setCrewMember(e.target.value)}
-                              placeholder="Crew member name"
-                              className="flex-1"
-                            />
-                            <Button 
-                              onClick={() => {
-                                handleAddCrewMember(day);
-                                setEditingDay('');
-                              }}
-                              size="sm"
-                            >
-                              Add
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full" 
-                            onClick={() => setEditingDay(day)}
-                          >
-                            <Plus className="h-4 w-4 mr-1" /> Add Crew Member
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
           
           <TabsContent value="birthdays">
             <Card>
