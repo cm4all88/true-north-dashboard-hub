@@ -104,7 +104,7 @@ export function CrewSchedule() {
                         {/* Row 1 */}
                         <div className="flex items-center justify-center gap-3 min-h-[48px]">
                           {crew.schedule[dayIndex]?.row1?.color && crew.schedule[dayIndex].row1.color !== 'none' && (
-                            <div className={`w-12 h-12 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
+                            <div className={`w-9 h-9 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row1?.jobNumber && (
                             <div className="font-medium text-3xl text-white uppercase">
@@ -121,7 +121,7 @@ export function CrewSchedule() {
                         {/* Row 2 */}
                         <div className="flex items-center justify-center gap-3 min-h-[48px]">
                           {crew.schedule[dayIndex]?.row2?.color && crew.schedule[dayIndex].row2.color !== 'none' && (
-                            <div className={`w-12 h-12 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
+                            <div className={`w-9 h-9 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row2?.jobNumber && (
                             <div className="font-medium text-3xl text-white uppercase">
