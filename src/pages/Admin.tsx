@@ -9,13 +9,27 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon, X, Plus, Save, Edit2, Download, Copy } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useDashboardData } from '@/contexts/DashboardDataContext';
 
+// Available colors for project managers
+const availableColors = [
+  { value: 'bg-orange-500', label: 'Orange', color: '#f97316' },
+  { value: 'bg-blue-500', label: 'Blue', color: '#3b82f6' },
+  { value: 'bg-green-500', label: 'Green', color: '#22c55e' },
+  { value: 'bg-purple-500', label: 'Purple', color: '#a855f7' }
+];
+
 // Function to get color based on project manager
-const getProjectManagerColor = (jobCode: string) => {
+const getProjectManagerColor = (jobCode: string, colorOverrides: Record<string, string> = {}) => {
   if (!jobCode || jobCode.trim() === '') return '';
+  
+  // Check if there's a color override
+  if (colorOverrides[jobCode]) {
+    return colorOverrides[jobCode];
+  }
   
   const hash = jobCode.split('').reduce((a, b) => {
     a = ((a << 5) - a) + b.charCodeAt(0);
@@ -43,6 +57,10 @@ const Admin = () => {
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   
+  // State for color overrides
+  const [colorOverrides, setColorOverrides] = useState<Record<string, string>>({});
+  const [editingColor, setEditingColor] = useState<string | null>(null);
+
   // Function to copy from previous day
   const copyFromPreviousDay = (weekIndex: number, crewIndex: number, dayIndex: number) => {
     if (dayIndex === 0) return; // Can't copy if it's the first day
@@ -81,6 +99,21 @@ const Admin = () => {
     window.URL.revokeObjectURL(url);
   };
   
+  // Get all unique job codes from the schedule data
+  const getAllJobCodes = () => {
+    const jobCodes = new Set<string>();
+    data.scheduleData.forEach(weekData => {
+      weekData.crews.forEach(crew => {
+        crew.schedule.forEach(day => {
+          if (day.jobCode && day.jobCode.trim() !== '' && day.jobCode !== 'OFF') {
+            jobCodes.add(day.jobCode);
+          }
+        });
+      });
+    });
+    return Array.from(jobCodes);
+  };
+
   // Handle birthday updates
   const handleAddBirthday = () => {
     if (newBirthday.name.trim() === '') return;
@@ -120,6 +153,15 @@ const Admin = () => {
   const handleRemoveShoutout = (id: number) => {
     const updatedShoutouts = data.shoutouts.filter(shoutout => shoutout.id !== id);
     updateShoutouts(updatedShoutouts);
+  };
+  
+  // Handle color override changes
+  const handleColorChange = (jobCode: string, color: string) => {
+    setColorOverrides(prev => ({
+      ...prev,
+      [jobCode]: color
+    }));
+    setEditingColor(null);
   };
   
   // Handle crew schedule editing
@@ -187,9 +229,62 @@ const Admin = () => {
         <Tabs defaultValue="schedule">
           <TabsList className="mb-6">
             <TabsTrigger value="schedule">Crew Schedule</TabsTrigger>
+            <TabsTrigger value="colors">Job Code Colors</TabsTrigger>
             <TabsTrigger value="birthdays">Birthdays</TabsTrigger>
             <TabsTrigger value="shoutouts">Shoutouts</TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="colors">
+            <Card>
+              <CardHeader>
+                <CardTitle>Manage Job Code Colors</CardTitle>
+                <CardDescription>
+                  Customize the dot colors for each job code in the crew schedule.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {getAllJobCodes().map((jobCode) => (
+                    <div key={jobCode} className="flex items-center justify-between p-3 bg-white border rounded-md">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className={`w-4 h-4 rounded-full ${getProjectManagerColor(jobCode, colorOverrides)}`}
+                        ></div>
+                        <span className="font-medium">{jobCode}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={colorOverrides[jobCode] || getProjectManagerColor(jobCode)}
+                          onValueChange={(color) => handleColorChange(jobCode, color)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableColors.map((color) => (
+                              <SelectItem key={color.value} value={color.value}>
+                                <div className="flex items-center gap-2">
+                                  <div 
+                                    className={`w-3 h-3 rounded-full ${color.value}`}
+                                  ></div>
+                                  <span>{color.label}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  ))}
+                  {getAllJobCodes().length === 0 && (
+                    <p className="text-gray-500 text-center py-8">
+                      No job codes found. Add some job codes to the schedule to manage their colors.
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
           
           <TabsContent value="schedule">
             <Card>
@@ -349,8 +444,8 @@ const Admin = () => {
                                         onClick={() => handleCellEdit(weekIndex, crewIndex, dayIndex, 'jobCode')}
                                       >
                                         <div className="flex items-center gap-2">
-                                          {day.jobCode && day.jobCode.trim() !== '' && (
-                                            <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(day.jobCode)}`}></div>
+                                          {day.jobCode && day.jobCode.trim() !== '' && day.jobCode !== 'OFF' && (
+                                            <div className={`w-3 h-3 rounded-full ${getProjectManagerColor(day.jobCode, colorOverrides)}`}></div>
                                           )}
                                           <span className="font-medium">{day.jobCode}</span>
                                         </div>
