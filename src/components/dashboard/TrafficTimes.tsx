@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Car, MapPin, Clock, ArrowRightLeft } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
@@ -58,83 +58,72 @@ const routesToSeattle = [
   },
 ];
 
-export const TrafficTimes = () => (
-  <Card className="h-full bg-gray-800">
-    <CardHeader className="pb-1">
-      <CardTitle className="flex items-center gap-2 text-white text-2xl">
-        <Car className="h-7 w-7" />
-        Traffic Times
-        <ArrowRightLeft className="h-5 w-5 ml-2 text-gray-400" />
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="p-0">
-      <div className="grid grid-cols-2 w-full mx-auto gap-x-1">
-        {/* Left column - To Seattle */}
-        <div className="border-r border-gray-600">
-          <div className="text-white font-semibold text-lg p-2 bg-gray-700">
-            To Seattle
-          </div>
-          {routesToSeattle.map((route) => (
-            <div
-              key={`to-${route.from}-${route.to}`}
-              className="flex flex-col border-b border-gray-600 last:border-b-0 py-3 px-4"
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <MapPin className="text-white h-5 w-5 flex-shrink-0" />
-                <div className="flex items-center flex-wrap">
-                  <span className="font-semibold text-white text-xl">{route.from}</span>
-                  <span className="mx-1 text-gray-400 text-xl">→</span>
-                  <span className="font-semibold text-white text-xl">{route.to}</span>
-                  <span className="text-base text-gray-300 ml-1">({route.via})</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Clock className="text-gray-300 h-5 w-5 mr-2" />
-                  <span className="font-semibold text-white text-xl">{route.time}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-base text-gray-300">{route.distance}</div>
-                  <div className="text-base text-blue-400 italic">{route.status}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        {/* Right column - From Seattle */}
-        <div>
-          <div className="text-white font-semibold text-lg p-2 bg-gray-700">
-            From Seattle
-          </div>
-          {routesFromSeattle.map((route) => (
-            <div
-              key={`from-${route.from}-${route.to}`}
-              className="flex flex-col border-b border-gray-600 last:border-b-0 py-3 px-4"
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <MapPin className="text-white h-5 w-5 flex-shrink-0" />
-                <div className="flex items-center flex-wrap">
-                  <span className="font-semibold text-white text-xl">{route.from}</span>
-                  <span className="mx-1 text-gray-400 text-xl">→</span>
-                  <span className="font-semibold text-white text-xl">{route.to}</span>
-                  <span className="text-base text-gray-300 ml-1">({route.via})</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Clock className="text-gray-300 h-5 w-5 mr-2" />
-                  <span className="font-semibold text-white text-xl">{route.time}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-base text-gray-300">{route.distance}</div>
-                  <div className="text-base text-blue-400 italic">{route.status}</div>
-                </div>
+// Combine all routes for scrolling
+const allRoutes = [...routesToSeattle, ...routesFromSeattle];
+
+export const TrafficTimes = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % allRoutes.length);
+    }, 4000); // Change every 4 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentRoute = allRoutes[currentIndex];
+
+  return (
+    <Card className="h-full bg-gray-800 overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-white text-xl">
+          <Car className="h-6 w-6" />
+          Traffic Times
+          <ArrowRightLeft className="h-4 w-4 ml-2 text-gray-400" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4">
+        <div 
+          key={currentIndex}
+          className="animate-fade-in"
+        >
+          <div className="flex flex-col space-y-3">
+            <div className="flex items-center gap-3">
+              <MapPin className="text-white h-6 w-6 flex-shrink-0" />
+              <div className="flex items-center flex-wrap">
+                <span className="font-bold text-white text-2xl">{currentRoute.from}</span>
+                <span className="mx-2 text-gray-400 text-2xl">→</span>
+                <span className="font-bold text-white text-2xl">{currentRoute.to}</span>
+                <span className="text-lg text-gray-300 ml-2">({currentRoute.via})</span>
               </div>
             </div>
-          ))}
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Clock className="text-gray-300 h-6 w-6 mr-3" />
+                <span className="font-bold text-green-400 text-3xl">{currentRoute.time}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-lg text-gray-300">{currentRoute.distance}</div>
+                <div className="text-lg text-blue-400 italic font-medium">{currentRoute.status}</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Progress indicator */}
+          <div className="flex justify-center mt-4 space-x-1">
+            {allRoutes.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 w-2 rounded-full transition-colors duration-300 ${
+                  index === currentIndex ? 'bg-blue-400' : 'bg-gray-600'
+                }`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+};
