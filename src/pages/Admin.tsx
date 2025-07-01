@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -25,10 +26,8 @@ const Admin = () => {
     { name: 'Omar Patel', date: new Date('2023-05-17') },
   ]);
   
-  // State for the current birthday being edited
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
   
-  // State for shoutouts
   const [shoutouts, setShoutouts] = useState([
     { 
       id: 1, 
@@ -50,7 +49,6 @@ const Admin = () => {
     },
   ]);
   
-  // State for the current shoutout being created
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
   
   // State for crew schedule
@@ -200,16 +198,31 @@ const Admin = () => {
   };
   
   // Handle crew schedule editing
-  const handleCellEdit = (weekIndex: number, crewIndex: number, dayIndex: number, field: 'jobCode' | 'description') => {
-    const cellId = `${weekIndex}-${crewIndex}-${dayIndex}-${field}`;
-    const currentValue = scheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field];
+  const handleCellEdit = (weekIndex: number, crewIndex: number, dayIndex: number | null, field: 'jobCode' | 'description' | 'position' | 'name') => {
+    const cellId = dayIndex !== null 
+      ? `${weekIndex}-${crewIndex}-${dayIndex}-${field}`
+      : `${weekIndex}-${crewIndex}-crew-${field}`;
+    
+    let currentValue = '';
+    if (field === 'position' || field === 'name') {
+      currentValue = scheduleData[weekIndex].crews[crewIndex][field];
+    } else if (dayIndex !== null) {
+      currentValue = scheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field];
+    }
+    
     setEditingCell(cellId);
     setEditValue(currentValue);
   };
   
-  const handleSaveEdit = (weekIndex: number, crewIndex: number, dayIndex: number, field: 'jobCode' | 'description') => {
+  const handleSaveEdit = (weekIndex: number, crewIndex: number, dayIndex: number | null, field: 'jobCode' | 'description' | 'position' | 'name') => {
     const newScheduleData = [...scheduleData];
-    newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field] = editValue;
+    
+    if (field === 'position' || field === 'name') {
+      newScheduleData[weekIndex].crews[crewIndex][field] = editValue;
+    } else if (dayIndex !== null) {
+      newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field] = editValue;
+    }
+    
     setScheduleData(newScheduleData);
     setEditingCell(null);
     setEditValue('');
@@ -258,7 +271,7 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Manage Crew Schedule</CardTitle>
                 <CardDescription>
-                  Edit the crew schedule that appears on the main dashboard. Click on any cell to edit it.
+                  Edit the crew schedule that appears on the main dashboard. Click on any cell to edit it, including crew names and positions.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -282,8 +295,71 @@ const Admin = () => {
                           {weekData.crews.map((crew, crewIndex) => (
                             <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`}>
                               <TableCell className="border border-gray-300 font-medium">
-                                <div className="font-bold">{crew.position}</div>
-                                <div className="text-sm text-gray-600">{crew.name}</div>
+                                {/* Position */}
+                                {editingCell === `${weekIndex}-${crewIndex}-crew-position` ? (
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Input
+                                      value={editValue}
+                                      onChange={(e) => setEditValue(e.target.value)}
+                                      className="text-sm font-bold"
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          handleSaveEdit(weekIndex, crewIndex, null, 'position');
+                                        } else if (e.key === 'Escape') {
+                                          handleCancelEdit();
+                                        }
+                                      }}
+                                      autoFocus
+                                    />
+                                    <Button size="sm" onClick={() => handleSaveEdit(weekIndex, crewIndex, null, 'position')}>
+                                      <Save className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div 
+                                    className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1 font-bold mb-2"
+                                    onClick={() => handleCellEdit(weekIndex, crewIndex, null, 'position')}
+                                  >
+                                    <span>{crew.position}</span>
+                                    <Edit2 className="h-3 w-3 text-gray-400" />
+                                  </div>
+                                )}
+                                
+                                {/* Name */}
+                                {editingCell === `${weekIndex}-${crewIndex}-crew-name` ? (
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      value={editValue}
+                                      onChange={(e) => setEditValue(e.target.value)}
+                                      className="text-sm"
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          handleSaveEdit(weekIndex, crewIndex, null, 'name');
+                                        } else if (e.key === 'Escape') {
+                                          handleCancelEdit();
+                                        }
+                                      }}
+                                      autoFocus
+                                    />
+                                    <Button size="sm" onClick={() => handleSaveEdit(weekIndex, crewIndex, null, 'name')}>
+                                      <Save className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div 
+                                    className="cursor-pointer hover:bg-gray-100 p-1 rounded flex items-center gap-1 text-sm text-gray-600"
+                                    onClick={() => handleCellEdit(weekIndex, crewIndex, null, 'name')}
+                                  >
+                                    <span>{crew.name || 'Click to add name'}</span>
+                                    <Edit2 className="h-3 w-3 text-gray-400" />
+                                  </div>
+                                )}
                               </TableCell>
                               {crew.schedule.map((day, dayIndex) => (
                                 <TableCell key={`${crewIndex}-${dayIndex}`} className="border border-gray-300">
