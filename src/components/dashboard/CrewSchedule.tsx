@@ -66,18 +66,18 @@ export function CrewSchedule() {
           key={currentWeekIndex}
           className="animate-fade-in h-full"
         >
-          <div className="font-bold text-gray-300 text-4xl mb-3 uppercase">{currentWeekData.weekOf}</div>
-          <Table className="border-collapse text-4xl">
+          <div className="font-bold text-gray-300 text-2xl mb-3 uppercase">{currentWeekData.weekOf}</div>
+          <Table className="border-collapse text-2xl">
             <TableHeader className="bg-gray-700">
               <TableRow>
-                <TableHead className="w-24 text-4xl font-bold text-white p-4 border border-gray-600 uppercase">Date</TableHead>
+                <TableHead className="w-24 text-2xl font-bold text-white p-4 border border-gray-600 uppercase">Date</TableHead>
                 {currentWeekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
                   <TableHead 
                     key={`${crew.position}-${crewIndex}`} 
-                    className="text-4xl font-bold text-white p-4 border border-gray-600 text-center min-w-[200px]"
+                    className="text-2xl font-bold text-white p-4 border border-gray-600 text-center min-w-[200px]"
                   >
-                    <div className="font-bold text-4xl uppercase">{crew.position}</div>
-                    <div className="text-2xl text-gray-300 font-normal uppercase">{crew.name}</div>
+                    <div className="font-bold text-2xl uppercase">{crew.position}</div>
+                    <div className="text-lg text-gray-300 font-normal uppercase">{crew.name}</div>
                   </TableHead>
                 ))}
               </TableRow>
@@ -87,10 +87,10 @@ export function CrewSchedule() {
                 <TableRow key={`${day}-${dayIndex}`} className={`${isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[160px]`}>
                   <TableCell className="p-4 border border-gray-600 font-medium">
                     <div>
-                      <div className={`font-bold text-6xl uppercase ${isToday(currentWeekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
+                      <div className={`font-bold text-3xl uppercase ${isToday(currentWeekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
                         {day.slice(0, 3)}
                       </div>
-                      <div className="text-4xl text-gray-400">
+                      <div className="text-2xl text-gray-400">
                         {currentWeekData.dates[dayIndex].split('/').slice(0, 2).join('/')}
                       </div>
                     </div>
@@ -107,13 +107,13 @@ export function CrewSchedule() {
                             <div className={`w-12 h-12 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row1?.jobNumber && (
-                            <div className="font-medium text-6xl text-white uppercase">
+                            <div className="font-medium text-3xl text-white uppercase">
                               {crew.schedule[dayIndex].row1.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row1?.jobName && (
-                          <div className="text-gray-300 text-4xl uppercase">
+                          <div className="text-gray-300 text-2xl uppercase">
                             {crew.schedule[dayIndex].row1.jobName}
                           </div>
                         )}
@@ -124,13 +124,13 @@ export function CrewSchedule() {
                             <div className={`w-12 h-12 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row2?.jobNumber && (
-                            <div className="font-medium text-6xl text-white uppercase">
+                            <div className="font-medium text-3xl text-white uppercase">
                               {crew.schedule[dayIndex].row2.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row2?.jobName && (
-                          <div className="text-gray-300 text-4xl uppercase">
+                          <div className="text-gray-300 text-2xl uppercase">
                             {crew.schedule[dayIndex].row2.jobName}
                           </div>
                         )}
