@@ -6,16 +6,15 @@ import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDashboardData } from '@/contexts/DashboardDataContext';
 
-// Function to get the current day name
-const getCurrentDayName = () => {
-  const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-  const today = new Date().getDay();
-  return days[today];
+// Function to check if a date string matches today's date
+const isToday = (dateString: string) => {
+  const today = new Date();
+  const todayFormatted = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+  return dateString === todayFormatted;
 };
 
 export function CrewSchedule() {
   const { data } = useDashboardData();
-  const currentDay = getCurrentDayName();
   
   return (
     <Card className="h-full bg-gray-800">
@@ -47,9 +46,9 @@ export function CrewSchedule() {
                 </TableHeader>
                 <TableBody>
                   {weekData.days.map((day, dayIndex) => (
-                    <TableRow key={`${day}-${dayIndex}`} className={`${day === currentDay ? 'bg-gray-600' : ''} h-[60px]`}>
+                    <TableRow key={`${day}-${dayIndex}`} className={`${isToday(weekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[60px]`}>
                       <TableCell className="p-2 border border-gray-600 font-medium">
-                        <div className={`font-bold text-sm ${day === currentDay ? 'text-white' : 'text-gray-300'}`}>
+                        <div className={`font-bold text-sm ${isToday(weekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
                           {day.slice(0, 3)}
                         </div>
                         <div className="text-xs text-gray-400">
