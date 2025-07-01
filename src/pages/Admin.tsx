@@ -11,151 +11,16 @@ import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon, X, Plus, Save, Edit2, Download } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
+import { useDashboardData } from '@/contexts/DashboardDataContext';
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { data, updateScheduleData, updateBirthdays, updateShoutouts } = useDashboardData();
   
-  // State for birthdays
-  const [birthdays, setBirthdays] = useState([
-    { name: 'Alex Johnson', date: new Date('2023-04-15') },
-    { name: 'Maria Garcia', date: new Date('2023-04-22') },
-    { name: 'James Wilson', date: new Date('2023-04-30') },
-    { name: 'Beth Chen', date: new Date('2023-05-05') },
-    { name: 'Omar Patel', date: new Date('2023-05-17') },
-  ]);
-  
+  // Local state for new items
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
-  
-  const [shoutouts, setShoutouts] = useState([
-    { 
-      id: 1, 
-      text: "Shoutout to Mike for helping on the Saturday rush job!", 
-      from: "Sarah Kim",
-      date: new Date('2023-04-18')
-    },
-    { 
-      id: 2, 
-      text: "Thanks to Beth for staying late to finish the downtown project documentation!",
-      from: "James Wilson", 
-      date: new Date('2023-04-17') 
-    },
-    { 
-      id: 3, 
-      text: "Kudos to the entire field team for completing the Westlake survey ahead of schedule.", 
-      from: "Omar Patel",
-      date: new Date('2023-04-15') 
-    },
-  ]);
-  
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
-  
-  // State for crew schedule
-  const [scheduleData, setScheduleData] = useState([
-    {
-      weekOf: "May 12 - May 16, 2025",
-      days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
-      dates: ["5/12/2025", "5/13/2025", "5/14/2025", "5/15/2025", "5/16/2025"],
-      crews: [
-        {
-          position: "TIM",
-          name: "SHAUN",
-          schedule: [
-            { jobCode: "j18-18", description: "test" },
-            { jobCode: "j18-18", description: "test" },
-            { jobCode: "j18-183", description: "test" },
-            { jobCode: "j18-184", description: "test" },
-            { jobCode: "j18-185", description: "test" },
-          ]
-        },
-        {
-          position: "TAYLOR",
-          name: "GERRY",
-          schedule: [
-            { jobCode: "j19-18", description: "test" },
-            { jobCode: "j19-18", description: "test" },
-            { jobCode: "j19-183", description: "test" },
-            { jobCode: "j19-184", description: "test" },
-            { jobCode: "j19-185", description: "test" },
-          ]
-        },
-        {
-          position: "DOMINIC",
-          name: "SERGIO",
-          schedule: [
-            { jobCode: "j20-11", description: "test" },
-            { jobCode: "j20-11", description: "test" },
-            { jobCode: "j20-113", description: "test" },
-            { jobCode: "j20-114", description: "test" },
-            { jobCode: "j20-115", description: "test" },
-          ]
-        },
-        {
-          position: "OFF",
-          name: "",
-          schedule: [
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-          ]
-        },
-      ]
-    },
-    {
-      weekOf: "May 19 - May 23, 2025",
-      days: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
-      dates: ["5/19/2025", "5/20/2025", "5/21/2025", "5/22/2025", "5/23/2025"],
-      crews: [
-        {
-          position: "TIM",
-          name: "SHAUN",
-          schedule: [
-            { jobCode: "j18-22", description: "test" },
-            { jobCode: "j18-23", description: "test" },
-            { jobCode: "j18-24", description: "test" },
-            { jobCode: "j18-25", description: "test" },
-            { jobCode: "j18-26", description: "test" },
-          ]
-        },
-        {
-          position: "TAYLOR",
-          name: "GERRY",
-          schedule: [
-            { jobCode: "j19-22", description: "test" },
-            { jobCode: "j19-23", description: "test" },
-            { jobCode: "j19-24", description: "test" },
-            { jobCode: "j19-25", description: "test" },
-            { jobCode: "j19-26", description: "test" },
-          ]
-        },
-        {
-          position: "DOMINIC",
-          name: "SERGIO",
-          schedule: [
-            { jobCode: "j20-22", description: "test" },
-            { jobCode: "j20-23", description: "test" },
-            { jobCode: "j20-24", description: "test" },
-            { jobCode: "j20-25", description: "test" },
-            { jobCode: "j20-26", description: "test" },
-          ]
-        },
-        {
-          position: "OFF",
-          name: "",
-          schedule: [
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-            { jobCode: "", description: "" },
-          ]
-        },
-      ]
-    }
-  ]);
   
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -188,37 +53,41 @@ const Admin = () => {
   const handleAddBirthday = () => {
     if (newBirthday.name.trim() === '') return;
     
-    setBirthdays(prev => [...prev, { ...newBirthday }]);
+    const updatedBirthdays = [...data.birthdays, { ...newBirthday }];
+    updateBirthdays(updatedBirthdays);
     setNewBirthday({ name: '', date: new Date() });
   };
   
-  const handleRemoveBirthday = (index) => {
-    setBirthdays(prev => prev.filter((_, i) => i !== index));
+  const handleRemoveBirthday = (index: number) => {
+    const updatedBirthdays = data.birthdays.filter((_, i) => i !== index);
+    updateBirthdays(updatedBirthdays);
   };
   
   // Handle shoutout updates
   const handleAddShoutout = () => {
     if (newShoutout.text.trim() === '' || newShoutout.from.trim() === '') return;
     
-    const newId = shoutouts.length > 0 
-      ? Math.max(...shoutouts.map(s => s.id)) + 1 
+    const newId = data.shoutouts.length > 0 
+      ? Math.max(...data.shoutouts.map(s => s.id)) + 1 
       : 1;
     
-    setShoutouts(prev => [
+    const updatedShoutouts = [
       { 
         id: newId, 
         text: newShoutout.text, 
         from: newShoutout.from, 
         date: new Date() 
       },
-      ...prev
-    ]);
+      ...data.shoutouts
+    ];
     
+    updateShoutouts(updatedShoutouts);
     setNewShoutout({ text: '', from: '' });
   };
   
-  const handleRemoveShoutout = (id) => {
-    setShoutouts(prev => prev.filter(shoutout => shoutout.id !== id));
+  const handleRemoveShoutout = (id: number) => {
+    const updatedShoutouts = data.shoutouts.filter(shoutout => shoutout.id !== id);
+    updateShoutouts(updatedShoutouts);
   };
   
   // Handle crew schedule editing
@@ -229,9 +98,9 @@ const Admin = () => {
     
     let currentValue = '';
     if (field === 'position' || field === 'name') {
-      currentValue = scheduleData[weekIndex].crews[crewIndex][field];
+      currentValue = data.scheduleData[weekIndex].crews[crewIndex][field];
     } else if (dayIndex !== null) {
-      currentValue = scheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field];
+      currentValue = data.scheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field];
     }
     
     setEditingCell(cellId);
@@ -239,7 +108,7 @@ const Admin = () => {
   };
   
   const handleSaveEdit = (weekIndex: number, crewIndex: number, dayIndex: number | null, field: 'jobCode' | 'description' | 'position' | 'name') => {
-    const newScheduleData = [...scheduleData];
+    const newScheduleData = [...data.scheduleData];
     
     if (field === 'position' || field === 'name') {
       newScheduleData[weekIndex].crews[crewIndex][field] = editValue;
@@ -247,7 +116,7 @@ const Admin = () => {
       newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field] = editValue;
     }
     
-    setScheduleData(newScheduleData);
+    updateScheduleData(newScheduleData);
     setEditingCell(null);
     setEditValue('');
   };
@@ -300,7 +169,7 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {scheduleData.map((weekData, weekIndex) => (
+                  {data.scheduleData.map((weekData, weekIndex) => (
                     <div key={weekIndex}>
                       <div className="flex justify-between items-center mb-3">
                         <h3 className="text-lg font-semibold">{weekData.weekOf}</h3>
@@ -493,7 +362,7 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 mb-6">
-                  {birthdays.map((birthday, index) => (
+                  {data.birthdays.map((birthday, index) => (
                     <div key={index} className="flex justify-between items-center p-3 bg-white border rounded-md">
                       <div className="flex-1">{birthday.name}</div>
                       <div className="flex-1 text-gray-500">
@@ -565,7 +434,7 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 mb-6">
-                  {shoutouts.map((shoutout) => (
+                  {data.shoutouts.map((shoutout) => (
                     <div 
                       key={shoutout.id} 
                       className="flex justify-between items-start p-4 bg-white border rounded-md"
