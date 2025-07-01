@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -30,6 +31,20 @@ const Admin = () => {
   // Local state for new items
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
+  
+  // Function to update crew name
+  const updateCrewName = (weekIndex: number, crewIndex: number, newName: string) => {
+    const newScheduleData = [...data.scheduleData];
+    newScheduleData[weekIndex].crews[crewIndex].name = newName;
+    updateScheduleData(newScheduleData);
+  };
+  
+  // Function to update crew position
+  const updateCrewPosition = (weekIndex: number, crewIndex: number, newPosition: string) => {
+    const newScheduleData = [...data.scheduleData];
+    newScheduleData[weekIndex].crews[crewIndex].position = newPosition;
+    updateScheduleData(newScheduleData);
+  };
   
   // Function to copy from previous day
   const copyFromPreviousDay = (weekIndex: number, crewIndex: number, dayIndex: number) => {
@@ -194,122 +209,130 @@ const Admin = () => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {weekData.crews.map((crew, crewIndex) => (
+                          {weekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
                             <TableRow key={`${weekIndex}-${crew.position}-${crewIndex}`}>
                               <TableCell className="border border-gray-300 font-medium">
-                                <div className="font-bold">{crew.position}</div>
-                                <div className="text-sm text-gray-600">{crew.name}</div>
+                                <div className="space-y-2">
+                                  <Input
+                                    placeholder="Position"
+                                    value={crew.position}
+                                    onChange={(e) => updateCrewPosition(weekIndex, crewIndex, e.target.value)}
+                                    className="font-bold text-sm"
+                                  />
+                                  <Input
+                                    placeholder="Name"
+                                    value={crew.name}
+                                    onChange={(e) => updateCrewName(weekIndex, crewIndex, e.target.value)}
+                                    className="text-sm"
+                                  />
+                                </div>
                               </TableCell>
                               {crew.schedule.map((daySchedule, dayIndex) => (
                                 <TableCell key={`${crewIndex}-${dayIndex}`} className="border border-gray-300">
-                                  {crew.position === 'OFF' ? (
-                                    <div className="text-gray-400 text-center">OFF</div>
-                                  ) : (
-                                    <div className="space-y-4">
-                                      {/* Copy button */}
-                                      {dayIndex > 0 && (
-                                        <div className="flex justify-end">
-                                          <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => copyFromPreviousDay(weekIndex, crewIndex, dayIndex)}
-                                            className="h-6 w-6 p-0"
-                                            title="Copy from previous day"
-                                          >
-                                            <Copy className="h-3 w-3" />
-                                          </Button>
-                                        </div>
-                                      )}
-                                      
-                                      {/* Row 1 */}
-                                      <div className="space-y-2 p-2 bg-gray-50 rounded">
-                                        <div className="text-xs font-semibold text-gray-600">Row 1</div>
-                                        <div className="grid grid-cols-3 gap-2">
-                                          <Select
-                                            value={daySchedule.row1?.color || 'none'}
-                                            onValueChange={(value) => 
-                                              updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'color', value)
-                                            }
-                                          >
-                                            <SelectTrigger className="h-8">
-                                              <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              {availableColors.map((color) => (
-                                                <SelectItem key={color.value} value={color.value}>
-                                                  <div className="flex items-center gap-2">
-                                                    {color.value !== 'none' && (
-                                                      <div 
-                                                        className="w-3 h-3 rounded-full"
-                                                        style={{ backgroundColor: color.color }}
-                                                      ></div>
-                                                    )}
-                                                    <span>{color.label}</span>
-                                                  </div>
-                                                </SelectItem>
-                                              ))}
-                                            </SelectContent>
-                                          </Select>
-                                          <Input
-                                            placeholder="Job #"
-                                            value={daySchedule.row1?.jobNumber || ''}
-                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobNumber', e.target.value)}
-                                            className="h-8 text-xs"
-                                          />
-                                          <Input
-                                            placeholder="Job Name"
-                                            value={daySchedule.row1?.jobName || ''}
-                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobName', e.target.value)}
-                                            className="h-8 text-xs"
-                                          />
-                                        </div>
+                                  <div className="space-y-4">
+                                    {/* Copy button */}
+                                    {dayIndex > 0 && (
+                                      <div className="flex justify-end">
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => copyFromPreviousDay(weekIndex, crewIndex, dayIndex)}
+                                          className="h-6 w-6 p-0"
+                                          title="Copy from previous day"
+                                        >
+                                          <Copy className="h-3 w-3" />
+                                        </Button>
                                       </div>
-                                      
-                                      {/* Row 2 */}
-                                      <div className="space-y-2 p-2 bg-gray-50 rounded">
-                                        <div className="text-xs font-semibold text-gray-600">Row 2</div>
-                                        <div className="grid grid-cols-3 gap-2">
-                                          <Select
-                                            value={daySchedule.row2?.color || 'none'}
-                                            onValueChange={(value) => 
-                                              updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'color', value)
-                                            }
-                                          >
-                                            <SelectTrigger className="h-8">
-                                              <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              {availableColors.map((color) => (
-                                                <SelectItem key={color.value} value={color.value}>
-                                                  <div className="flex items-center gap-2">
-                                                    {color.value !== 'none' && (
-                                                      <div 
-                                                        className="w-3 h-3 rounded-full"
-                                                        style={{ backgroundColor: color.color }}
-                                                      ></div>
-                                                    )}
-                                                    <span>{color.label}</span>
-                                                  </div>
-                                                </SelectItem>
-                                              ))}
-                                            </SelectContent>
-                                          </Select>
-                                          <Input
-                                            placeholder="Job #"
-                                            value={daySchedule.row2?.jobNumber || ''}
-                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobNumber', e.target.value)}
-                                            className="h-8 text-xs"
-                                          />
-                                          <Input
-                                            placeholder="Job Name"
-                                            value={daySchedule.row2?.jobName || ''}
-                                            onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobName', e.target.value)}
-                                            className="h-8 text-xs"
-                                          />
-                                        </div>
+                                    )}
+                                    
+                                    {/* Row 1 */}
+                                    <div className="space-y-2 p-2 bg-gray-50 rounded">
+                                      <div className="text-xs font-semibold text-gray-600">Row 1</div>
+                                      <div className="grid grid-cols-3 gap-2">
+                                        <Select
+                                          value={daySchedule.row1?.color || 'none'}
+                                          onValueChange={(value) => 
+                                            updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'color', value)
+                                          }
+                                        >
+                                          <SelectTrigger className="h-8">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {availableColors.map((color) => (
+                                              <SelectItem key={color.value} value={color.value}>
+                                                <div className="flex items-center gap-2">
+                                                  {color.value !== 'none' && (
+                                                    <div 
+                                                      className="w-3 h-3 rounded-full"
+                                                      style={{ backgroundColor: color.color }}
+                                                    ></div>
+                                                  )}
+                                                  <span>{color.label}</span>
+                                                </div>
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                        <Input
+                                          placeholder="Job #"
+                                          value={daySchedule.row1?.jobNumber || ''}
+                                          onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobNumber', e.target.value)}
+                                          className="h-8 text-xs"
+                                        />
+                                        <Input
+                                          placeholder="Job Name"
+                                          value={daySchedule.row1?.jobName || ''}
+                                          onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobName', e.target.value)}
+                                          className="h-8 text-xs"
+                                        />
                                       </div>
                                     </div>
-                                  )}
+                                    
+                                    {/* Row 2 */}
+                                    <div className="space-y-2 p-2 bg-gray-50 rounded">
+                                      <div className="text-xs font-semibold text-gray-600">Row 2</div>
+                                      <div className="grid grid-cols-3 gap-2">
+                                        <Select
+                                          value={daySchedule.row2?.color || 'none'}
+                                          onValueChange={(value) => 
+                                            updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'color', value)
+                                          }
+                                        >
+                                          <SelectTrigger className="h-8">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {availableColors.map((color) => (
+                                              <SelectItem key={color.value} value={color.value}>
+                                                <div className="flex items-center gap-2">
+                                                  {color.value !== 'none' && (
+                                                    <div 
+                                                      className="w-3 h-3 rounded-full"
+                                                      style={{ backgroundColor: color.color }}
+                                                    ></div>
+                                                  )}
+                                                  <span>{color.label}</span>
+                                                </div>
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                        <Input
+                                          placeholder="Job #"
+                                          value={daySchedule.row2?.jobNumber || ''}
+                                          onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobNumber', e.target.value)}
+                                          className="h-8 text-xs"
+                                        />
+                                        <Input
+                                          placeholder="Job Name"
+                                          value={daySchedule.row2?.jobName || ''}
+                                          onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobName', e.target.value)}
+                                          className="h-8 text-xs"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
                                 </TableCell>
                               ))}
                             </TableRow>
