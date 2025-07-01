@@ -1,11 +1,10 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calendar, Download, Edit2, Save, X } from "lucide-react";
+import { Calendar, Download } from "lucide-react";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 // Initial structured data for the first week
 const initialWeekOneData = {
@@ -145,30 +144,8 @@ const exportDayAsCSV = (weekData: any, dayIndex: number) => {
 };
 
 export function CrewSchedule() {
-  const [scheduleData, setScheduleData] = useState([initialWeekOneData, initialWeekTwoData]);
-  const [editingCell, setEditingCell] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState('');
+  const [scheduleData] = useState([initialWeekOneData, initialWeekTwoData]);
   const currentDay = getCurrentDayName();
-  
-  const handleCellEdit = (weekIndex: number, crewIndex: number, dayIndex: number, field: 'jobCode' | 'description') => {
-    const cellId = `${weekIndex}-${crewIndex}-${dayIndex}-${field}`;
-    const currentValue = scheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field];
-    setEditingCell(cellId);
-    setEditValue(currentValue);
-  };
-  
-  const handleSaveEdit = (weekIndex: number, crewIndex: number, dayIndex: number, field: 'jobCode' | 'description') => {
-    const newScheduleData = [...scheduleData];
-    newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][field] = editValue;
-    setScheduleData(newScheduleData);
-    setEditingCell(null);
-    setEditValue('');
-  };
-  
-  const handleCancelEdit = () => {
-    setEditingCell(null);
-    setEditValue('');
-  };
   
   return (
     <Card className="h-full bg-gray-800">
@@ -176,7 +153,6 @@ export function CrewSchedule() {
         <CardTitle className="flex items-center gap-2 text-white text-2xl">
           <Calendar className="h-6 w-6" />
           Field Crew Schedule
-          <span className="text-sm text-gray-400 ml-4">(Click to edit cells)</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-2">
@@ -230,72 +206,9 @@ export function CrewSchedule() {
                           {day.jobCode !== undefined && (
                             <div className="flex flex-col gap-2">
                               <div className="space-y-1">
-                                {/* Job Code Field */}
-                                {editingCell === `${weekIndex}-${crewIndex}-${dayIndex}-jobCode` ? (
-                                  <div className="flex items-center gap-1">
-                                    <Input
-                                      value={editValue}
-                                      onChange={(e) => setEditValue(e.target.value)}
-                                      className="text-sm h-6 p-1"
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          handleSaveEdit(weekIndex, crewIndex, dayIndex, 'jobCode');
-                                        } else if (e.key === 'Escape') {
-                                          handleCancelEdit();
-                                        }
-                                      }}
-                                      autoFocus
-                                    />
-                                    <Button size="sm" variant="ghost" onClick={() => handleSaveEdit(weekIndex, crewIndex, dayIndex, 'jobCode')}>
-                                      <Save className="h-3 w-3" />
-                                    </Button>
-                                    <Button size="sm" variant="ghost" onClick={handleCancelEdit}>
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <div 
-                                    className="cursor-pointer hover:bg-gray-700 p-1 rounded flex items-center gap-1"
-                                    onClick={() => handleCellEdit(weekIndex, crewIndex, dayIndex, 'jobCode')}
-                                  >
-                                    <span className="font-medium text-lg text-white">{day.jobCode}</span>
-                                    <Edit2 className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
-                                  </div>
-                                )}
-                                
-                                {/* Description Field */}
-                                {editingCell === `${weekIndex}-${crewIndex}-${dayIndex}-description` ? (
-                                  <div className="flex items-center gap-1">
-                                    <Input
-                                      value={editValue}
-                                      onChange={(e) => setEditValue(e.target.value)}
-                                      className="text-sm h-6 p-1"
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          handleSaveEdit(weekIndex, crewIndex, dayIndex, 'description');
-                                        } else if (e.key === 'Escape') {
-                                          handleCancelEdit();
-                                        }
-                                      }}
-                                      autoFocus
-                                    />
-                                    <Button size="sm" variant="ghost" onClick={() => handleSaveEdit(weekIndex, crewIndex, dayIndex, 'description')}>
-                                      <Save className="h-3 w-3" />
-                                    </Button>
-                                    <Button size="sm" variant="ghost" onClick={handleCancelEdit}>
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <div 
-                                    className="cursor-pointer hover:bg-gray-700 p-1 rounded flex items-center gap-1"
-                                    onClick={() => handleCellEdit(weekIndex, crewIndex, dayIndex, 'description')}
-                                  >
-                                    {day.description && (
-                                      <span className="text-gray-300 text-lg">- {day.description}</span>
-                                    )}
-                                    <Edit2 className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100" />
-                                  </div>
+                                <div className="font-medium text-lg text-white">{day.jobCode}</div>
+                                {day.description && (
+                                  <div className="text-gray-300 text-lg">- {day.description}</div>
                                 )}
                               </div>
                             </div>
