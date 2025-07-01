@@ -23,7 +23,7 @@ export function ComicOfTheDay() {
       <CardContent className="p-4">
         <div className="flex flex-col items-center">
           <div className="w-full mb-4">
-            <AspectRatio ratio={16 / 9} className="bg-gray-700 rounded-md overflow-hidden">
+            <AspectRatio ratio={9 / 5} className="bg-gray-700 rounded-md overflow-hidden">
               <img 
                 src={comicData.image} 
                 alt="Comic of the Day" 
