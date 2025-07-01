@@ -46,9 +46,9 @@ const Admin = () => {
   };
   
   // Function to update row data
-  const updateRowData = (weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string) => {
+  const updateRowData = (weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string | 'orange' | 'blue' | 'green' | 'purple' | 'none') => {
     const newScheduleData = [...data.scheduleData];
-    newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row][field] = value;
+    newScheduleData[weekIndex].crews[crewIndex].schedule[dayIndex][row][field] = value as any;
     updateScheduleData(newScheduleData);
   };
 
