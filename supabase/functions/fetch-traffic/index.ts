@@ -81,28 +81,77 @@ serve(async (req) => {
       );
     }
 
-    console.log('HERE_API_KEY found, length:', hereApiKey.length);
-    console.log('Fetching traffic data for', routes.length, 'routes');
+    console.log('HERE_API_KEY found, starting traffic data fetch...');
+    
+    // Test with a single route first to debug the API call
+    const testRoute = routes[0];
+    const testUrl = `https://router.hereapi.com/v8/routes?transportMode=car&origin=${testRoute.fromCoords}&destination=${testRoute.toCoords}&return=summary&apikey=${hereApiKey}`;
+    
+    console.log(`Testing single route: ${testRoute.from} to ${testRoute.to}`);
+    
+    try {
+      const testResponse = await fetch(testUrl);
+      console.log(`Test response status: ${testResponse.status}`);
+      
+      if (!testResponse.ok) {
+        const errorText = await testResponse.text();
+        console.error(`HERE API test error: ${testResponse.status} - ${errorText}`);
+        
+        // Return fallback data with specific error info
+        const fallbackRoutes = routes.map(route => ({
+          from: route.from,
+          to: route.to,
+          via: route.via,
+          time: "-- min",
+          distance: "-- mi",
+          status: `API Error ${testResponse.status}`
+        }));
+        
+        return new Response(
+          JSON.stringify({ routes: fallbackRoutes }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
+      
+      const testData = await testResponse.json();
+      console.log('Test API call successful, proceeding with all routes...');
+      
+    } catch (testError) {
+      console.error('Test API call failed:', testError.message);
+      
+      // Return fallback data with network error info
+      const fallbackRoutes = routes.map(route => ({
+        from: route.from,
+        to: route.to,
+        via: route.via,
+        time: "-- min",
+        distance: "-- mi",
+        status: "Network Error"
+      }));
+      
+      return new Response(
+        JSON.stringify({ routes: fallbackRoutes }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
     
     // Fetch traffic data for all routes
     const trafficPromises = routes.map(async (route) => {
       try {
-        const url = `https://router.hereapi.com/v8/routes?transportMode=car&origin=${route.fromCoords}&destination=${route.toCoords}&return=summary,actions&apikey=${hereApiKey}`;
-        
-        console.log(`Fetching route: ${route.from} to ${route.to}`);
-        console.log(`URL: ${url.replace(hereApiKey, '[API_KEY_HIDDEN]')}`);
+        const url = `https://router.hereapi.com/v8/routes?transportMode=car&origin=${route.fromCoords}&destination=${route.toCoords}&return=summary&apikey=${hereApiKey}`;
         
         const response = await fetch(url);
-        console.log(`Response status for ${route.from} to ${route.to}:`, response.status);
         
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`HERE API error for ${route.from} to ${route.to}:`, response.status, errorText);
-          throw new Error(`HERE API error: ${response.status} - ${errorText}`);
+          console.error(`HERE API error for ${route.from} to ${route.to}: ${response.status}`);
+          throw new Error(`API error: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log(`Response data for ${route.from} to ${route.to}:`, JSON.stringify(data, null, 2));
         
         if (!data.routes || data.routes.length === 0) {
           console.error(`No routes found for ${route.from} to ${route.to}`);
@@ -127,7 +176,7 @@ serve(async (req) => {
           }
         }
         
-        console.log(`Successfully processed ${route.from} to ${route.to}: ${durationMinutes}min, ${distanceMiles}mi, ${status}`);
+        console.log(`Successfully processed ${route.from} to ${route.to}: ${durationMinutes}min, ${distanceMiles}mi`);
         
         return {
           from: route.from,
@@ -154,7 +203,7 @@ serve(async (req) => {
     });
     
     const trafficData = await Promise.all(trafficPromises);
-    console.log('Successfully processed all routes, returning data');
+    console.log('Traffic data processing complete');
     
     return new Response(
       JSON.stringify({ routes: trafficData }),
@@ -165,7 +214,6 @@ serve(async (req) => {
     
   } catch (error) {
     console.error('Error in fetch-traffic function:', error.message);
-    console.error('Stack trace:', error.stack);
     
     return new Response(
       JSON.stringify({ 
