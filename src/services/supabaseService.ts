@@ -134,57 +134,157 @@ export async function getScheduleData(): Promise<WeekData[]> {
 
 export async function saveScheduleData(scheduleData: WeekData[]): Promise<void> {
   try {
-    // Clear existing data
-    await supabase.from('crew_schedules').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    console.log('Starting to save schedule data:', scheduleData);
 
-    // Insert new data
+    // Get existing schedules to check what needs to be updated vs inserted
+    const { data: existingSchedules, error: fetchError } = await supabase
+      .from('crew_schedules')
+      .select('*')
+      .order('week_index');
+
+    if (fetchError) throw fetchError;
+
+    // Process each week
     for (let weekIndex = 0; weekIndex < scheduleData.length; weekIndex++) {
       const weekData = scheduleData[weekIndex];
+      let scheduleId: string;
+
+      // Check if this week already exists
+      const existingSchedule = existingSchedules.find(s => s.week_index === weekIndex);
       
-      const { data: schedule, error: scheduleError } = await supabase
-        .from('crew_schedules')
-        .insert({
-          week_of: weekData.weekOf,
-          week_index: weekIndex
-        })
-        .select()
-        .single();
+      if (existingSchedule) {
+        // Update existing schedule
+        const { error: updateError } = await supabase
+          .from('crew_schedules')
+          .update({ week_of: weekData.weekOf })
+          .eq('id', existingSchedule.id);
 
-      if (scheduleError) throw scheduleError;
-
-      for (let crewIndex = 0; crewIndex < weekData.crews.length; crewIndex++) {
-        const crew = weekData.crews[crewIndex];
-        
-        const { data: member, error: memberError } = await supabase
-          .from('crew_members')
+        if (updateError) throw updateError;
+        scheduleId = existingSchedule.id;
+      } else {
+        // Insert new schedule
+        const { data: newSchedule, error: insertError } = await supabase
+          .from('crew_schedules')
           .insert({
-            schedule_id: schedule.id,
-            position: crew.position,
-            name: crew.name,
-            order_index: crewIndex
+            week_of: weekData.weekOf,
+            week_index: weekIndex
           })
           .select()
           .single();
 
-        if (memberError) throw memberError;
+        if (insertError) throw insertError;
+        scheduleId = newSchedule.id;
+      }
 
-        // Insert schedule items for each day
+      // Get existing crew members for this schedule
+      const { data: existingMembers, error: membersError } = await supabase
+        .from('crew_members')
+        .select('*')
+        .eq('schedule_id', scheduleId)
+        .order('order_index');
+
+      if (membersError) throw membersError;
+
+      // Process each crew member
+      for (let crewIndex = 0; crewIndex < weekData.crews.length; crewIndex++) {
+        const crew = weekData.crews[crewIndex];
+        let memberId: string;
+
+        // Check if this crew member already exists
+        const existingMember = existingMembers.find(m => m.order_index === crewIndex);
+
+        if (existingMember) {
+          // Update existing member
+          const { error: updateMemberError } = await supabase
+            .from('crew_members')
+            .update({
+              position: crew.position,
+              name: crew.name
+            })
+            .eq('id', existingMember.id);
+
+          if (updateMemberError) throw updateMemberError;
+          memberId = existingMember.id;
+        } else {
+          // Insert new member
+          const { data: newMember, error: insertMemberError } = await supabase
+            .from('crew_members')
+            .insert({
+              schedule_id: scheduleId,
+              position: crew.position,
+              name: crew.name,
+              order_index: crewIndex
+            })
+            .select()
+            .single();
+
+          if (insertMemberError) throw insertMemberError;
+          memberId = newMember.id;
+        }
+
+        // Get existing schedule items for this member
+        const { data: existingItems, error: itemsError } = await supabase
+          .from('schedule_items')
+          .select('*')
+          .eq('crew_member_id', memberId)
+          .order('day_index');
+
+        if (itemsError) throw itemsError;
+
+        // Process each day's schedule
         for (let dayIndex = 0; dayIndex < crew.schedule.length; dayIndex++) {
           const daySchedule = crew.schedule[dayIndex];
           
-          await supabase.from('schedule_items').insert({
-            crew_member_id: member.id,
-            day_index: dayIndex,
+          // Check if this day's schedule already exists
+          const existingItem = existingItems.find(i => i.day_index === dayIndex);
+
+          const itemData = {
             row1_color: daySchedule.row1.color,
             row1_job_number: daySchedule.row1.jobNumber,
             row1_job_name: daySchedule.row1.jobName,
             row2_color: daySchedule.row2.color,
             row2_job_number: daySchedule.row2.jobNumber,
             row2_job_name: daySchedule.row2.jobName
-          });
+          };
+
+          if (existingItem) {
+            // Update existing item
+            const { error: updateItemError } = await supabase
+              .from('schedule_items')
+              .update(itemData)
+              .eq('id', existingItem.id);
+
+            if (updateItemError) throw updateItemError;
+          } else {
+            // Insert new item
+            const { error: insertItemError } = await supabase
+              .from('schedule_items')
+              .insert({
+                crew_member_id: memberId,
+                day_index: dayIndex,
+                ...itemData
+              });
+
+            if (insertItemError) throw insertItemError;
+          }
+        }
+      }
+
+      // Clean up any extra crew members that shouldn't exist
+      if (existingMembers.length > weekData.crews.length) {
+        const membersToDelete = existingMembers.slice(weekData.crews.length);
+        for (const member of membersToDelete) {
+          const { error: deleteError } = await supabase
+            .from('crew_members')
+            .delete()
+            .eq('id', member.id);
+          
+          if (deleteError) throw deleteError;
         }
       }
     }
+
+    console.log('Successfully saved schedule data');
   } catch (error) {
     console.error('Error saving schedule data:', error);
     throw error;
