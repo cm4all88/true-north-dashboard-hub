@@ -2,77 +2,76 @@
 import React, { useState, useEffect } from "react";
 import { Car, MapPin, Clock, ArrowRightLeft } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-
-// Updated routes - both directions
-const routesFromSeattle = [
-  {
-    from: "Seattle",
-    to: "Everett",
-    via: "I-5",
-    time: "35 min",
-    distance: "28 mi",
-    status: "No major delays",
-  },
-  {
-    from: "Seattle",
-    to: "Tacoma",
-    via: "I-5",
-    time: "40 min",
-    distance: "34 mi",
-    status: "Heavy traffic near airport",
-  },
-  {
-    from: "Seattle",
-    to: "Puyallup",
-    via: "SR 167",
-    time: "45 min",
-    distance: "38 mi",
-    status: "Moderate traffic",
-  },
-];
-
-const routesToSeattle = [
-  {
-    from: "Everett",
-    to: "Seattle",
-    via: "I-5",
-    time: "42 min",
-    distance: "28 mi",
-    status: "Accident at Northgate",
-  },
-  {
-    from: "Tacoma",
-    to: "Seattle",
-    via: "I-5",
-    time: "38 min",
-    distance: "34 mi",
-    status: "No major delays",
-  },
-  {
-    from: "Puyallup",
-    to: "Seattle",
-    via: "SR 167",
-    time: "50 min",
-    distance: "38 mi",
-    status: "Construction delays",
-  },
-];
-
-// Combine all routes for scrolling
-const allRoutes = [...routesToSeattle, ...routesFromSeattle];
+import { getTrafficData, TrafficRoute } from "@/services/trafficService";
 
 export const TrafficTimes = () => {
+  const [routes, setRoutes] = useState<TrafficRoute[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch traffic data on component mount
   useEffect(() => {
+    const fetchTraffic = async () => {
+      setLoading(true);
+      try {
+        const trafficData = await getTrafficData();
+        setRoutes(trafficData);
+      } catch (error) {
+        console.error('Error fetching traffic data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTraffic();
+  }, []);
+
+  // Auto-rotate through routes
+  useEffect(() => {
+    if (routes.length === 0) return;
+    
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % allRoutes.length);
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % routes.length);
     }, 10000); // Change every 10 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [routes.length]);
 
-  const currentRoute = allRoutes[currentIndex];
+  const currentRoute = routes[currentIndex];
+
+  if (loading) {
+    return (
+      <Card className="h-full bg-gray-800 overflow-hidden">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-white text-xl">
+            <Car className="h-6 w-6" />
+            Traffic Times
+            <ArrowRightLeft className="h-4 w-4 ml-2 text-gray-400" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 flex items-center justify-center">
+          <div className="text-gray-300">Loading traffic data...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!currentRoute) {
+    return (
+      <Card className="h-full bg-gray-800 overflow-hidden">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-white text-xl">
+            <Car className="h-6 w-6" />
+            Traffic Times
+            <ArrowRightLeft className="h-4 w-4 ml-2 text-gray-400" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 flex items-center justify-center">
+          <div className="text-gray-300">No traffic data available</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="h-full bg-gray-800 overflow-hidden">
@@ -113,7 +112,7 @@ export const TrafficTimes = () => {
           
           {/* Progress indicator */}
           <div className="flex justify-center mt-4 space-x-1">
-            {allRoutes.map((_, index) => (
+            {routes.map((_, index) => (
               <div
                 key={index}
                 className={`h-2 w-2 rounded-full transition-colors duration-300 ${
