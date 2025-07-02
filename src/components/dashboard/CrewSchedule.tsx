@@ -51,37 +51,37 @@ export function CrewSchedule() {
   
   return (
     <Card className="h-full bg-gray-800">
-      <CardHeader className="pb-1 px-3 py-1">
-        <CardTitle className="flex items-center gap-2 text-white text-lg uppercase">
-          <Calendar className="h-4 w-4" />
+      <CardHeader className="pb-2 px-4 py-2">
+        <CardTitle className="flex items-center gap-2 text-white text-xl uppercase">
+          <Calendar className="h-5 w-5" />
           Field Crew Schedule
-          <ArrowLeftRight className="h-3 w-3 ml-2 text-gray-400" />
-          <span className="text-base text-blue-400">
+          <ArrowLeftRight className="h-4 w-4 ml-2 text-gray-400" />
+          <span className="text-lg text-blue-400">
             Week {currentWeekIndex + 1}
           </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-1">
+      <CardContent className="p-2">
         <div 
           key={currentWeekIndex}
           className="animate-fade-in h-full"
         >
-          <div className="font-bold text-gray-300 text-base mb-1 uppercase">{currentWeekData.weekOf}</div>
-          <Table className="border-collapse text-sm">
+          <div className="font-bold text-gray-300 text-lg mb-2 uppercase">{currentWeekData.weekOf}</div>
+          <Table className="border-collapse">
             <TableHeader className="bg-gray-700">
               <TableRow>
-                <TableHead className="w-32 text-sm font-bold text-white p-1 border border-gray-600 uppercase">Crew</TableHead>
+                <TableHead className="w-40 text-base font-bold text-white p-3 border border-gray-600 uppercase">Crew</TableHead>
                 {currentWeekData.days.map((day, dayIndex) => (
                   <TableHead 
                     key={`${day}-${dayIndex}`} 
-                    className={`text-sm font-bold text-white p-1 border border-gray-600 text-center min-w-[120px] ${
+                    className={`text-base font-bold text-white p-3 border border-gray-600 text-center min-w-[140px] ${
                       isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''
                     }`}
                   >
-                    <div className="font-bold text-sm uppercase">
+                    <div className="font-bold text-base uppercase">
                       {day.slice(0, 3)}
                     </div>
-                    <div className="text-xs text-gray-300 font-normal">
+                    <div className="text-sm text-gray-300 font-normal">
                       {currentWeekData.dates[dayIndex].split('/').slice(0, 2).join('/')}
                     </div>
                   </TableHead>
@@ -90,13 +90,13 @@ export function CrewSchedule() {
             </TableHeader>
             <TableBody>
               {currentWeekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
-                <TableRow key={`${crew.position}-${crewIndex}`} className="h-[200px]">
-                  <TableCell className="p-2 border border-gray-600 font-medium">
+                <TableRow key={`${crew.position}-${crewIndex}`} className="h-[180px]">
+                  <TableCell className="p-3 border border-gray-600 font-medium">
                     <div>
-                      <div className="font-bold text-base uppercase text-white">
+                      <div className="font-bold text-lg uppercase text-white">
                         {crew.position}
                       </div>
-                      <div className="text-sm text-gray-300 uppercase">
+                      <div className="text-base text-gray-300 uppercase">
                         {crew.name}
                       </div>
                     </div>
@@ -104,41 +104,41 @@ export function CrewSchedule() {
                   {currentWeekData.days.map((_, dayIndex) => (
                     <TableCell 
                       key={`${crewIndex}-${dayIndex}`} 
-                      className={`p-2 border border-gray-600 text-center ${
+                      className={`p-3 border border-gray-600 text-center ${
                         isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''
                       }`}
                     >
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {/* Row 1 */}
-                        <div className="flex items-center justify-center gap-1 min-h-[24px]">
+                        <div className="flex items-center justify-center gap-2 min-h-[28px]">
                           {crew.schedule[dayIndex]?.row1?.color && crew.schedule[dayIndex].row1.color !== 'none' && (
-                            <div className={`w-4 h-4 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
+                            <div className={`w-5 h-5 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row1?.jobNumber && (
-                            <div className="font-medium text-sm text-white uppercase">
+                            <div className="font-medium text-base text-white uppercase">
                               {crew.schedule[dayIndex].row1.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row1?.jobName && (
-                          <div className="text-gray-300 text-xs uppercase">
+                          <div className="text-gray-300 text-sm uppercase">
                             {crew.schedule[dayIndex].row1.jobName}
                           </div>
                         )}
                         
                         {/* Row 2 */}
-                        <div className="flex items-center justify-center gap-1 min-h-[24px]">
+                        <div className="flex items-center justify-center gap-2 min-h-[28px]">
                           {crew.schedule[dayIndex]?.row2?.color && crew.schedule[dayIndex].row2.color !== 'none' && (
-                            <div className={`w-4 h-4 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
+                            <div className={`w-5 h-5 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row2?.jobNumber && (
-                            <div className="font-medium text-sm text-white uppercase">
+                            <div className="font-medium text-base text-white uppercase">
                               {crew.schedule[dayIndex].row2.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row2?.jobName && (
-                          <div className="text-gray-300 text-xs uppercase">
+                          <div className="text-gray-300 text-sm uppercase">
                             {crew.schedule[dayIndex].row2.jobName}
                           </div>
                         )}
@@ -151,11 +151,11 @@ export function CrewSchedule() {
           </Table>
           
           {/* Progress indicator */}
-          <div className="flex justify-center mt-1 space-x-1">
+          <div className="flex justify-center mt-2 space-x-1">
             {data.scheduleData.map((_, index) => (
               <div
                 key={index}
-                className={`h-1 w-1 rounded-full transition-colors duration-300 ${
+                className={`h-2 w-2 rounded-full transition-colors duration-300 ${
                   index === currentWeekIndex ? 'bg-blue-400' : 'bg-gray-600'
                 }`}
               />
