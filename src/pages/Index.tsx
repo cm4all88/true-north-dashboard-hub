@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -47,13 +48,13 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Middle section: Crew Schedule - 57% */}
-            <div className="h-[57%] min-h-0">
+            {/* Middle section: Crew Schedule - 59.5% */}
+            <div className="h-[59.5%] min-h-0">
               <CrewSchedule />
             </div>
 
-            {/* Bottom section: Shoutouts and Traffic side by side - 25% */}
-            <div className="h-[25%] min-h-0 flex gap-2">
+            {/* Bottom section: Shoutouts and Traffic side by side - 22.5% */}
+            <div className="h-[22.5%] min-h-0 flex gap-2">
               <div className="flex-1">
                 <ShoutoutBoard />
               </div>
@@ -93,3 +94,4 @@ const Index = () => {
 };
 
 export default Index;
+
