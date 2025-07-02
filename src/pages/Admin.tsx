@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,38 +27,88 @@ const Admin = () => {
   const navigate = useNavigate();
   const { data, updateScheduleData, updateBirthdays, updateShoutouts } = useDashboardData();
   
+  // Local state for inputs to prevent lag
+  const [inputValues, setInputValues] = useState<{[key: string]: string}>({});
+  const timeoutRefs = useRef<{[key: string]: NodeJS.Timeout}>({});
+  
   // Local state for new items
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
   
-  // Optimized update functions with useCallback to prevent unnecessary re-renders
-  const updateCrewName = useCallback((weekIndex: number, crewIndex: number, newName: string) => {
-    const newScheduleData = [...data.scheduleData];
-    const allCrews = newScheduleData[weekIndex].crews;
-    const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
-    
-    if (visibleCrews[crewIndex]) {
-      const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
-      if (actualIndex !== -1) {
-        newScheduleData[weekIndex].crews[actualIndex].name = newName;
-        updateScheduleData(newScheduleData);
-      }
+  // Debounced update function
+  const debouncedUpdate = useCallback((key: string, value: string, updateFn: () => void) => {
+    // Clear existing timeout
+    if (timeoutRefs.current[key]) {
+      clearTimeout(timeoutRefs.current[key]);
     }
-  }, [data.scheduleData, updateScheduleData]);
+    
+    // Set new timeout
+    timeoutRefs.current[key] = setTimeout(() => {
+      updateFn();
+      delete timeoutRefs.current[key];
+    }, 300);
+  }, []);
+  
+  // Get input value (from local state or data)
+  const getInputValue = useCallback((key: string, fallback: string) => {
+    return inputValues[key] !== undefined ? inputValues[key] : fallback;
+  }, [inputValues]);
+  
+  // Handle input change with debouncing
+  const handleInputChange = useCallback((key: string, value: string, updateFn: () => void) => {
+    setInputValues(prev => ({ ...prev, [key]: value }));
+    debouncedUpdate(key, value, updateFn);
+  }, [debouncedUpdate]);
+  
+  const updateCrewName = useCallback((weekIndex: number, crewIndex: number, newName: string) => {
+    const key = `crew-name-${weekIndex}-${crewIndex}`;
+    const updateFn = () => {
+      const newScheduleData = [...data.scheduleData];
+      const allCrews = newScheduleData[weekIndex].crews;
+      const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
+      
+      if (visibleCrews[crewIndex]) {
+        const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
+        if (actualIndex !== -1) {
+          newScheduleData[weekIndex].crews[actualIndex].name = newName;
+          updateScheduleData(newScheduleData);
+          // Clear from local state after update
+          setInputValues(prev => {
+            const newState = { ...prev };
+            delete newState[key];
+            return newState;
+          });
+        }
+      }
+    };
+    
+    handleInputChange(key, newName, updateFn);
+  }, [data.scheduleData, updateScheduleData, handleInputChange]);
   
   const updateCrewPosition = useCallback((weekIndex: number, crewIndex: number, newPosition: string) => {
-    const newScheduleData = [...data.scheduleData];
-    const allCrews = newScheduleData[weekIndex].crews;
-    const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
-    
-    if (visibleCrews[crewIndex]) {
-      const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
-      if (actualIndex !== -1) {
-        newScheduleData[weekIndex].crews[actualIndex].position = newPosition;
-        updateScheduleData(newScheduleData);
+    const key = `crew-position-${weekIndex}-${crewIndex}`;
+    const updateFn = () => {
+      const newScheduleData = [...data.scheduleData];
+      const allCrews = newScheduleData[weekIndex].crews;
+      const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
+      
+      if (visibleCrews[crewIndex]) {
+        const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
+        if (actualIndex !== -1) {
+          newScheduleData[weekIndex].crews[actualIndex].position = newPosition;
+          updateScheduleData(newScheduleData);
+          // Clear from local state after update
+          setInputValues(prev => {
+            const newState = { ...prev };
+            delete newState[key];
+            return newState;
+          });
+        }
       }
-    }
-  }, [data.scheduleData, updateScheduleData]);
+    };
+    
+    handleInputChange(key, newPosition, updateFn);
+  }, [data.scheduleData, updateScheduleData, handleInputChange]);
   
   const copyFromPreviousDay = useCallback((weekIndex: number, crewIndex: number, dayIndex: number) => {
     if (dayIndex === 0) return;
@@ -81,28 +131,44 @@ const Admin = () => {
   }, [data.scheduleData, updateScheduleData]);
   
   const updateRowData = useCallback((weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string) => {
-    const newScheduleData = [...data.scheduleData];
-    const allCrews = newScheduleData[weekIndex].crews;
-    const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
-    
-    if (!visibleCrews[crewIndex]) return;
-    
-    const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
-    if (actualIndex === -1) return;
-    
-    if (!newScheduleData[weekIndex]?.crews[actualIndex]?.schedule[dayIndex]) return;
-    
-    if (!newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row]) {
-      newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row] = {
-        color: 'none',
-        jobNumber: '',
-        jobName: ''
-      };
+    const key = `row-${weekIndex}-${crewIndex}-${dayIndex}-${row}-${field}`;
+    const updateFn = () => {
+      const newScheduleData = [...data.scheduleData];
+      const allCrews = newScheduleData[weekIndex].crews;
+      const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
+      
+      if (!visibleCrews[crewIndex]) return;
+      
+      const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
+      if (actualIndex === -1) return;
+      
+      if (!newScheduleData[weekIndex]?.crews[actualIndex]?.schedule[dayIndex]) return;
+      
+      if (!newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row]) {
+        newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row] = {
+          color: 'none',
+          jobNumber: '',
+          jobName: ''
+        };
+      }
+      
+      newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row][field] = value as any;
+      updateScheduleData(newScheduleData);
+      // Clear from local state after update
+      setInputValues(prev => {
+        const newState = { ...prev };
+        delete newState[key];
+        return newState;
+      });
+    };
+
+    if (field === 'color') {
+      // Color changes don't need debouncing
+      updateFn();
+    } else {
+      handleInputChange(key, value, updateFn);
     }
-    
-    newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row][field] = value as any;
-    updateScheduleData(newScheduleData);
-  }, [data.scheduleData, updateScheduleData]);
+  }, [data.scheduleData, updateScheduleData, handleInputChange]);
 
   // Function to export daily schedule as CSV
   const exportDayAsCSV = (weekData: any, dayIndex: number) => {
@@ -206,7 +272,7 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Manage Crew Schedule</CardTitle>
                 <CardDescription>
-                  Edit the crew schedule - Type directly in the fields. Changes save automatically.
+                  Edit the crew schedule - Type directly in the fields. Changes save automatically after you stop typing.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -237,13 +303,13 @@ const Admin = () => {
                                   <div className="space-y-3">
                                     <Input
                                       placeholder="Position"
-                                      value={crew.position}
+                                      value={getInputValue(`crew-position-${weekIndex}-${crewIndex}`, crew.position)}
                                       onChange={(e) => updateCrewPosition(weekIndex, crewIndex, e.target.value)}
                                       className="font-bold text-base h-12 text-lg"
                                     />
                                     <Input
                                       placeholder="Name"
-                                      value={crew.name}
+                                      value={getInputValue(`crew-name-${weekIndex}-${crewIndex}`, crew.name)}
                                       onChange={(e) => updateCrewName(weekIndex, crewIndex, e.target.value)}
                                       className="text-base h-12 text-lg"
                                     />
@@ -298,13 +364,13 @@ const Admin = () => {
                                           </Select>
                                           <Input
                                             placeholder="Job Number"
-                                            value={daySchedule.row1?.jobNumber || ''}
+                                            value={getInputValue(`row-${weekIndex}-${crewIndex}-${dayIndex}-row1-jobNumber`, daySchedule.row1?.jobNumber || '')}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobNumber', e.target.value)}
                                             className="h-10 text-base"
                                           />
                                           <Input
                                             placeholder="Job Description"
-                                            value={daySchedule.row1?.jobName || ''}
+                                            value={getInputValue(`row-${weekIndex}-${crewIndex}-${dayIndex}-row1-jobName`, daySchedule.row1?.jobName || '')}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobName', e.target.value)}
                                             className="h-10 text-base"
                                           />
@@ -342,13 +408,13 @@ const Admin = () => {
                                           </Select>
                                           <Input
                                             placeholder="Job Number"
-                                            value={daySchedule.row2?.jobNumber || ''}
+                                            value={getInputValue(`row-${weekIndex}-${crewIndex}-${dayIndex}-row2-jobNumber`, daySchedule.row2?.jobNumber || '')}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobNumber', e.target.value)}
                                             className="h-10 text-base"
                                           />
                                           <Input
                                             placeholder="Job Description"
-                                            value={daySchedule.row2?.jobName || ''}
+                                            value={getInputValue(`row-${weekIndex}-${crewIndex}-${dayIndex}-row2-jobName`, daySchedule.row2?.jobName || '')}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobName', e.target.value)}
                                             className="h-10 text-base"
                                           />
