@@ -1,10 +1,11 @@
+
 // Mock data for the True North Dashboard
 
 // Crew Schedule
 export const crewScheduleMock = {
-  Monday: ['Alex Johnson - Field Survey', 'Maria Garcia - Data Processing', 'Darnell Williams - Equipment'],
+  Monday: ['Alex Johnson - Field Survey', 'Maria Garcia - Data Processing', 'Andreas Williams - Equipment'],
   Tuesday: ['Beth Chen - Field Survey', 'Omar Patel - Data Processing', 'Sarah Kim - Equipment'],
-  Wednesday: ['James Wilson - Field Survey', 'Maria Garcia - Data Processing', 'Darnell Williams - Equipment'],
+  Wednesday: ['James Wilson - Field Survey', 'Maria Garcia - Data Processing', 'Andreas Williams - Equipment'],
   Thursday: ['Beth Chen - Field Survey', 'Omar Patel - Data Processing', 'Alex Johnson - Equipment'],
   Friday: ['James Wilson - Field Survey', 'Sarah Kim - Data Processing', 'Omar Patel - Equipment'],
 };
