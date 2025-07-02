@@ -71,7 +71,7 @@ serve(async (req) => {
     const hereApiKey = Deno.env.get('HERE_API_KEY');
     
     if (!hereApiKey) {
-      console.error('HERE_API_KEY not found');
+      console.error('HERE_API_KEY not found in environment variables');
       return new Response(
         JSON.stringify({ error: 'HERE API key not configured' }),
         { 
@@ -81,6 +81,7 @@ serve(async (req) => {
       );
     }
 
+    console.log('HERE_API_KEY found, length:', hereApiKey.length);
     console.log('Fetching traffic data for', routes.length, 'routes');
     
     // Fetch traffic data for all routes
@@ -89,14 +90,19 @@ serve(async (req) => {
         const url = `https://router.hereapi.com/v8/routes?transportMode=car&origin=${route.fromCoords}&destination=${route.toCoords}&return=summary,actions&apikey=${hereApiKey}`;
         
         console.log(`Fetching route: ${route.from} to ${route.to}`);
+        console.log(`URL: ${url.replace(hereApiKey, '[API_KEY_HIDDEN]')}`);
+        
         const response = await fetch(url);
+        console.log(`Response status for ${route.from} to ${route.to}:`, response.status);
         
         if (!response.ok) {
-          console.error(`HERE API error for ${route.from} to ${route.to}:`, response.status);
-          throw new Error(`HERE API error: ${response.status}`);
+          const errorText = await response.text();
+          console.error(`HERE API error for ${route.from} to ${route.to}:`, response.status, errorText);
+          throw new Error(`HERE API error: ${response.status} - ${errorText}`);
         }
         
         const data = await response.json();
+        console.log(`Response data for ${route.from} to ${route.to}:`, JSON.stringify(data, null, 2));
         
         if (!data.routes || data.routes.length === 0) {
           console.error(`No routes found for ${route.from} to ${route.to}`);
@@ -121,6 +127,8 @@ serve(async (req) => {
           }
         }
         
+        console.log(`Successfully processed ${route.from} to ${route.to}: ${durationMinutes}min, ${distanceMiles}mi, ${status}`);
+        
         return {
           from: route.from,
           to: route.to,
@@ -131,7 +139,7 @@ serve(async (req) => {
         };
         
       } catch (error) {
-        console.error(`Error fetching route ${route.from} to ${route.to}:`, error);
+        console.error(`Error fetching route ${route.from} to ${route.to}:`, error.message);
         
         // Return fallback data for this route
         return {
@@ -146,7 +154,7 @@ serve(async (req) => {
     });
     
     const trafficData = await Promise.all(trafficPromises);
-    console.log('Successfully fetched traffic data for', trafficData.length, 'routes');
+    console.log('Successfully processed all routes, returning data');
     
     return new Response(
       JSON.stringify({ routes: trafficData }),
@@ -156,7 +164,8 @@ serve(async (req) => {
     );
     
   } catch (error) {
-    console.error('Error in fetch-traffic function:', error);
+    console.error('Error in fetch-traffic function:', error.message);
+    console.error('Stack trace:', error.stack);
     
     return new Response(
       JSON.stringify({ 
