@@ -90,7 +90,7 @@ export function CrewSchedule() {
             </TableHeader>
             <TableBody>
               {currentWeekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
-                <TableRow key={`${crew.position}-${crewIndex}`} className="h-[180px]">
+                <TableRow key={`${crew.position}-${crewIndex}`} className="h-[135px]">
                   <TableCell className="p-3 border border-gray-600 font-medium">
                     <div>
                       <div className="font-bold text-lg uppercase text-white">
@@ -104,41 +104,41 @@ export function CrewSchedule() {
                   {currentWeekData.days.map((_, dayIndex) => (
                     <TableCell 
                       key={`${crewIndex}-${dayIndex}`} 
-                      className={`p-3 border border-gray-600 text-center ${
+                      className={`p-2 border border-gray-600 text-center ${
                         isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''
                       }`}
                     >
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {/* Row 1 */}
-                        <div className="flex items-center justify-center gap-2 min-h-[28px]">
+                        <div className="flex items-center justify-center gap-2 min-h-[24px]">
                           {crew.schedule[dayIndex]?.row1?.color && crew.schedule[dayIndex].row1.color !== 'none' && (
-                            <div className={`w-5 h-5 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
+                            <div className={`w-4 h-4 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row1?.jobNumber && (
-                            <div className="font-medium text-base text-white uppercase">
+                            <div className="font-medium text-lg text-white uppercase">
                               {crew.schedule[dayIndex].row1.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row1?.jobName && (
-                          <div className="text-gray-300 text-sm uppercase">
+                          <div className="text-gray-300 text-base uppercase">
                             {crew.schedule[dayIndex].row1.jobName}
                           </div>
                         )}
                         
                         {/* Row 2 */}
-                        <div className="flex items-center justify-center gap-2 min-h-[28px]">
+                        <div className="flex items-center justify-center gap-2 min-h-[24px]">
                           {crew.schedule[dayIndex]?.row2?.color && crew.schedule[dayIndex].row2.color !== 'none' && (
-                            <div className={`w-5 h-5 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
+                            <div className={`w-4 h-4 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row2?.jobNumber && (
-                            <div className="font-medium text-base text-white uppercase">
+                            <div className="font-medium text-lg text-white uppercase">
                               {crew.schedule[dayIndex].row2.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row2?.jobName && (
-                          <div className="text-gray-300 text-sm uppercase">
+                          <div className="text-gray-300 text-base uppercase">
                             {crew.schedule[dayIndex].row2.jobName}
                           </div>
                         )}

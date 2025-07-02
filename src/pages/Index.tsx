@@ -37,8 +37,8 @@ const Index = () => {
 
         <main className="flex-1 px-2 py-1 min-h-0">
           <div className="flex flex-col gap-1 h-full">
-            {/* Top section: Weather and Clock - Doubled from 6% to 12% */}
-            <div className="h-[12%] flex gap-2">
+            {/* Top section: Weather and Clock - 10% */}
+            <div className="h-[10%] flex gap-2">
               <div className="flex-1">
                 <WeatherForecast headerMode={false} />
               </div>
@@ -47,18 +47,18 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Middle section: Crew Schedule - Reduced from 82% to 64% to accommodate other increases */}
-            <div className="h-[64%] min-h-0">
+            {/* Middle section: Crew Schedule - 60% */}
+            <div className="h-[60%] min-h-0">
               <CrewSchedule />
             </div>
 
-            {/* Shoutouts section - Doubled from 6% to 12% */}
-            <div className="h-[12%] min-h-0">
+            {/* Shoutouts section - 10% */}
+            <div className="h-[10%] min-h-0">
               <ShoutoutBoard />
             </div>
 
-            {/* Bottom section: Traffic Times - Doubled from 6% to 12% */}
-            <div className="h-[12%] min-h-0">
+            {/* Bottom section: Traffic Times - 20% */}
+            <div className="h-[20%] min-h-0">
               <TrafficTimes />
             </div>
           </div>
