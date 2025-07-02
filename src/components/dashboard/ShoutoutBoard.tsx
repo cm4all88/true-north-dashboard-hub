@@ -22,13 +22,13 @@ export function ShoutoutBoard() {
     return (
       <Card className="h-full bg-gray-800">
         <CardHeader className="pb-1 px-3 py-2">
-          <CardTitle className="flex items-center gap-2 text-white text-lg">
-            <MessageSquare className="h-4 w-4" />
+          <CardTitle className="flex items-center gap-2 text-white text-xl">
+            <MessageSquare className="h-5 w-5" />
             Team Shoutouts
           </CardTitle>
         </CardHeader>
         <CardContent className="p-2">
-          <p className="text-gray-300">No shoutouts available</p>
+          <p className="text-gray-300 text-lg">No shoutouts available</p>
         </CardContent>
       </Card>
     );
@@ -39,8 +39,8 @@ export function ShoutoutBoard() {
   return (
     <Card className="h-full bg-gray-800 overflow-hidden">
       <CardHeader className="pb-1 px-3 py-1">
-        <CardTitle className="flex items-center gap-2 text-white text-lg">
-          <MessageSquare className="h-4 w-4" />
+        <CardTitle className="flex items-center gap-2 text-white text-xl">
+          <MessageSquare className="h-5 w-5" />
           Team Shoutouts
         </CardTitle>
       </CardHeader>
@@ -49,18 +49,18 @@ export function ShoutoutBoard() {
           key={currentIndex}
           className="animate-fade-in"
         >
-          <div className="space-y-1">
-            <p className="text-white text-base leading-relaxed">{currentShoutout.text}</p>
+          <div className="space-y-2">
+            <p className="text-white text-xl leading-relaxed font-medium">{currentShoutout.text}</p>
             <div className="flex justify-between items-center">
-              <span className="text-gray-300 text-sm">From: {currentShoutout.from}</span>
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-300 text-base">From: {currentShoutout.from}</span>
+              <span className="text-gray-400 text-base">
                 {new Date(currentShoutout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
             </div>
           </div>
           
           {/* Progress indicator */}
-          <div className="flex justify-center mt-1 space-x-1">
+          <div className="flex justify-center mt-2 space-x-1">
             {data.shoutouts.map((_, index) => (
               <div
                 key={index}
