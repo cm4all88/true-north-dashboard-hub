@@ -51,86 +51,94 @@ export function CrewSchedule() {
   
   return (
     <Card className="h-full bg-gray-800">
-      <CardHeader className="pb-1 px-3 py-2">
-        <CardTitle className="flex items-center gap-2 text-white text-xl uppercase">
-          <Calendar className="h-5 w-5" />
+      <CardHeader className="pb-1 px-3 py-1">
+        <CardTitle className="flex items-center gap-2 text-white text-lg uppercase">
+          <Calendar className="h-4 w-4" />
           Field Crew Schedule
-          <ArrowLeftRight className="h-4 w-4 ml-2 text-gray-400" />
-          <span className="text-lg text-blue-400">
+          <ArrowLeftRight className="h-3 w-3 ml-2 text-gray-400" />
+          <span className="text-base text-blue-400">
             Week {currentWeekIndex + 1}
           </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-2">
+      <CardContent className="p-1">
         <div 
           key={currentWeekIndex}
           className="animate-fade-in h-full"
         >
-          <div className="font-bold text-gray-300 text-lg mb-2 uppercase">{currentWeekData.weekOf}</div>
-          <Table className="border-collapse text-lg">
+          <div className="font-bold text-gray-300 text-base mb-1 uppercase">{currentWeekData.weekOf}</div>
+          <Table className="border-collapse text-sm">
             <TableHeader className="bg-gray-700">
               <TableRow>
-                <TableHead className="w-20 text-lg font-bold text-white p-2 border border-gray-600 uppercase">Date</TableHead>
-                {currentWeekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
+                <TableHead className="w-32 text-sm font-bold text-white p-1 border border-gray-600 uppercase">Crew</TableHead>
+                {currentWeekData.days.map((day, dayIndex) => (
                   <TableHead 
-                    key={`${crew.position}-${crewIndex}`} 
-                    className="text-lg font-bold text-white p-2 border border-gray-600 text-center min-w-[180px]"
+                    key={`${day}-${dayIndex}`} 
+                    className={`text-sm font-bold text-white p-1 border border-gray-600 text-center min-w-[120px] ${
+                      isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''
+                    }`}
                   >
-                    <div className="font-bold text-lg uppercase">{crew.position}</div>
-                    <div className="text-sm text-gray-300 font-normal uppercase">{crew.name}</div>
+                    <div className="font-bold text-sm uppercase">
+                      {day.slice(0, 3)}
+                    </div>
+                    <div className="text-xs text-gray-300 font-normal">
+                      {currentWeekData.dates[dayIndex].split('/').slice(0, 2).join('/')}
+                    </div>
                   </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentWeekData.days.map((day, dayIndex) => (
-                <TableRow key={`${day}-${dayIndex}`} className={`${isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''} h-[120px]`}>
+              {currentWeekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
+                <TableRow key={`${crew.position}-${crewIndex}`} className="h-[100px]">
                   <TableCell className="p-2 border border-gray-600 font-medium">
                     <div>
-                      <div className={`font-bold text-xl uppercase ${isToday(currentWeekData.dates[dayIndex]) ? 'text-white' : 'text-gray-300'}`}>
-                        {day.slice(0, 3)}
+                      <div className="font-bold text-base uppercase text-white">
+                        {crew.position}
                       </div>
-                      <div className="text-lg text-gray-400">
-                        {currentWeekData.dates[dayIndex].split('/').slice(0, 2).join('/')}
+                      <div className="text-sm text-gray-300 uppercase">
+                        {crew.name}
                       </div>
                     </div>
                   </TableCell>
-                  {currentWeekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
+                  {currentWeekData.days.map((_, dayIndex) => (
                     <TableCell 
                       key={`${crewIndex}-${dayIndex}`} 
-                      className="p-3 border border-gray-600 text-center"
+                      className={`p-2 border border-gray-600 text-center ${
+                        isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''
+                      }`}
                     >
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {/* Row 1 */}
-                        <div className="flex items-center justify-center gap-2 min-h-[36px]">
+                        <div className="flex items-center justify-center gap-1 min-h-[24px]">
                           {crew.schedule[dayIndex]?.row1?.color && crew.schedule[dayIndex].row1.color !== 'none' && (
-                            <div className={`w-6 h-6 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
+                            <div className={`w-4 h-4 rounded-full ${getColorClass(crew.schedule[dayIndex].row1.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row1?.jobNumber && (
-                            <div className="font-medium text-xl text-white uppercase">
+                            <div className="font-medium text-sm text-white uppercase">
                               {crew.schedule[dayIndex].row1.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row1?.jobName && (
-                          <div className="text-gray-300 text-sm uppercase">
+                          <div className="text-gray-300 text-xs uppercase">
                             {crew.schedule[dayIndex].row1.jobName}
                           </div>
                         )}
                         
                         {/* Row 2 */}
-                        <div className="flex items-center justify-center gap-2 min-h-[36px]">
+                        <div className="flex items-center justify-center gap-1 min-h-[24px]">
                           {crew.schedule[dayIndex]?.row2?.color && crew.schedule[dayIndex].row2.color !== 'none' && (
-                            <div className={`w-6 h-6 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
+                            <div className={`w-4 h-4 rounded-full ${getColorClass(crew.schedule[dayIndex].row2.color)}`}></div>
                           )}
                           {crew.schedule[dayIndex]?.row2?.jobNumber && (
-                            <div className="font-medium text-xl text-white uppercase">
+                            <div className="font-medium text-sm text-white uppercase">
                               {crew.schedule[dayIndex].row2.jobNumber}
                             </div>
                           )}
                         </div>
                         {crew.schedule[dayIndex]?.row2?.jobName && (
-                          <div className="text-gray-300 text-sm uppercase">
+                          <div className="text-gray-300 text-xs uppercase">
                             {crew.schedule[dayIndex].row2.jobName}
                           </div>
                         )}
@@ -143,7 +151,7 @@ export function CrewSchedule() {
           </Table>
           
           {/* Progress indicator */}
-          <div className="flex justify-center mt-2 space-x-1">
+          <div className="flex justify-center mt-1 space-x-1">
             {data.scheduleData.map((_, index) => (
               <div
                 key={index}
