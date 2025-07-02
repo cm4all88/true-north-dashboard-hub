@@ -90,7 +90,7 @@ export function CrewSchedule() {
             </TableHeader>
             <TableBody>
               {currentWeekData.crews.filter(crew => crew.position !== 'OFF').map((crew, crewIndex) => (
-                <TableRow key={`${crew.position}-${crewIndex}`} className="h-[100px]">
+                <TableRow key={`${crew.position}-${crewIndex}`} className="h-[200px]">
                   <TableCell className="p-2 border border-gray-600 font-medium">
                     <div>
                       <div className="font-bold text-base uppercase text-white">
