@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -31,50 +31,43 @@ const Admin = () => {
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
   
-  // Function to update crew name - Simplified to work directly with crew array
-  const updateCrewName = (weekIndex: number, crewIndex: number, newName: string) => {
+  // Optimized update functions with useCallback to prevent unnecessary re-renders
+  const updateCrewName = useCallback((weekIndex: number, crewIndex: number, newName: string) => {
     const newScheduleData = [...data.scheduleData];
     const allCrews = newScheduleData[weekIndex].crews;
     const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
     if (visibleCrews[crewIndex]) {
-      // Find the actual index in the full crew array
       const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
       if (actualIndex !== -1) {
         newScheduleData[weekIndex].crews[actualIndex].name = newName;
-        console.log('Updated crew name:', { weekIndex, actualIndex, newName });
         updateScheduleData(newScheduleData);
       }
     }
-  };
+  }, [data.scheduleData, updateScheduleData]);
   
-  // Function to update crew position - Simplified to work directly with crew array
-  const updateCrewPosition = (weekIndex: number, crewIndex: number, newPosition: string) => {
+  const updateCrewPosition = useCallback((weekIndex: number, crewIndex: number, newPosition: string) => {
     const newScheduleData = [...data.scheduleData];
     const allCrews = newScheduleData[weekIndex].crews;
     const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
     if (visibleCrews[crewIndex]) {
-      // Find the actual index in the full crew array
       const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
       if (actualIndex !== -1) {
         newScheduleData[weekIndex].crews[actualIndex].position = newPosition;
-        console.log('Updated crew position:', { weekIndex, actualIndex, newPosition });
         updateScheduleData(newScheduleData);
       }
     }
-  };
+  }, [data.scheduleData, updateScheduleData]);
   
-  // Function to copy from previous day - Simplified to work directly with crew array
-  const copyFromPreviousDay = (weekIndex: number, crewIndex: number, dayIndex: number) => {
-    if (dayIndex === 0) return; // Can't copy if it's the first day
+  const copyFromPreviousDay = useCallback((weekIndex: number, crewIndex: number, dayIndex: number) => {
+    if (dayIndex === 0) return;
     
     const newScheduleData = [...data.scheduleData];
     const allCrews = newScheduleData[weekIndex].crews;
     const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
     if (visibleCrews[crewIndex]) {
-      // Find the actual index in the full crew array
       const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
       if (actualIndex !== -1) {
         const previousDayData = newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex - 1];
@@ -82,38 +75,23 @@ const Admin = () => {
           row1: { ...previousDayData.row1 },
           row2: { ...previousDayData.row2 }
         };
-        
-        console.log('Copied from previous day:', { weekIndex, actualIndex, dayIndex });
         updateScheduleData(newScheduleData);
       }
     }
-  };
+  }, [data.scheduleData, updateScheduleData]);
   
-  // Function to update row data - Simplified to work directly with crew array
-  const updateRowData = (weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string) => {
+  const updateRowData = useCallback((weekIndex: number, crewIndex: number, dayIndex: number, row: 'row1' | 'row2', field: 'color' | 'jobNumber' | 'jobName', value: string) => {
     const newScheduleData = [...data.scheduleData];
     const allCrews = newScheduleData[weekIndex].crews;
     const visibleCrews = allCrews.filter(crew => crew.position !== 'OFF');
     
-    if (!visibleCrews[crewIndex]) {
-      console.error('Crew not found:', { weekIndex, crewIndex });
-      return;
-    }
+    if (!visibleCrews[crewIndex]) return;
     
-    // Find the actual index in the full crew array
     const actualIndex = allCrews.findIndex(crew => crew === visibleCrews[crewIndex]);
-    if (actualIndex === -1) {
-      console.error('Actual crew index not found:', { weekIndex, crewIndex, actualIndex });
-      return;
-    }
+    if (actualIndex === -1) return;
     
-    // Ensure the schedule data structure exists
-    if (!newScheduleData[weekIndex]?.crews[actualIndex]?.schedule[dayIndex]) {
-      console.error('Schedule data structure missing:', { weekIndex, actualIndex, dayIndex });
-      return;
-    }
+    if (!newScheduleData[weekIndex]?.crews[actualIndex]?.schedule[dayIndex]) return;
     
-    // Ensure the row exists
     if (!newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row]) {
       newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row] = {
         color: 'none',
@@ -122,12 +100,9 @@ const Admin = () => {
       };
     }
     
-    // Update the specific field
     newScheduleData[weekIndex].crews[actualIndex].schedule[dayIndex][row][field] = value as any;
-    
-    console.log('Updated row data:', { weekIndex, actualIndex, dayIndex, row, field, value });
     updateScheduleData(newScheduleData);
-  };
+  }, [data.scheduleData, updateScheduleData]);
 
   // Function to export daily schedule as CSV
   const exportDayAsCSV = (weekData: any, dayIndex: number) => {
@@ -208,9 +183,9 @@ const Admin = () => {
             <Button variant="outline" onClick={() => navigate('/')}>
               View Dashboard
             </Button>
-            <Button onClick={() => alert('Changes saved!')}>
+            <Button onClick={() => alert('Changes saved automatically!')}>
               <Save className="mr-2 h-4 w-4" />
-              Save All Changes
+              Auto-Save Active
             </Button>
           </div>
         </div>
@@ -231,7 +206,7 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Manage Crew Schedule</CardTitle>
                 <CardDescription>
-                  Edit the crew schedule with 2 rows per day. Each row can have a colored dot, job number, and job name.
+                  Edit the crew schedule - Type directly in the fields. Changes save automatically.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -240,7 +215,6 @@ const Admin = () => {
                     <div key={weekIndex} className="border rounded-lg p-6 bg-white">
                       <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">{weekData.weekOf}</h3>
                       
-                      {/* Large, easy-to-read schedule table */}
                       <div className="overflow-x-auto">
                         <table className="w-full border-collapse border-2 border-gray-300">
                           <thead>
@@ -249,7 +223,7 @@ const Admin = () => {
                                 Crew Member
                               </th>
                               {weekData.days.map((day, index) => (
-                                <th key={day + index} className="border-2 border-gray-300 p-4 text-center font-bold text-lg min-w-[280px]">
+                                <th key={`${day}-${index}`} className="border-2 border-gray-300 p-4 text-center font-bold text-lg min-w-[300px]">
                                   <div className="text-lg font-bold">{day}</div>
                                   <div className="text-sm text-gray-600 font-normal">{weekData.dates[index]}</div>
                                 </th>
@@ -265,46 +239,45 @@ const Admin = () => {
                                       placeholder="Position"
                                       value={crew.position}
                                       onChange={(e) => updateCrewPosition(weekIndex, crewIndex, e.target.value)}
-                                      className="font-bold text-base h-10"
+                                      className="font-bold text-base h-12 text-lg"
                                     />
                                     <Input
                                       placeholder="Name"
                                       value={crew.name}
                                       onChange={(e) => updateCrewName(weekIndex, crewIndex, e.target.value)}
-                                      className="text-base h-10"
+                                      className="text-base h-12 text-lg"
                                     />
                                   </div>
                                 </td>
                                 {crew.schedule.map((daySchedule, dayIndex) => (
                                   <td key={`${crewIndex}-${dayIndex}`} className="border-2 border-gray-300 p-3 align-top">
                                     <div className="space-y-4">
-                                      {/* Copy button */}
                                       {dayIndex > 0 && (
-                                        <div className="flex justify-end mb-2">
+                                        <div className="flex justify-end mb-3">
                                           <Button
                                             size="sm"
                                             variant="outline"
                                             onClick={() => copyFromPreviousDay(weekIndex, crewIndex, dayIndex)}
-                                            className="h-8 px-2"
+                                            className="h-8 px-3 text-xs"
                                             title="Copy from previous day"
                                           >
-                                            <Copy className="h-4 w-4 mr-1" />
+                                            <Copy className="h-3 w-3 mr-1" />
                                             Copy
                                           </Button>
                                         </div>
                                       )}
                                       
-                                      {/* Row 1 */}
-                                      <div className="bg-blue-50 p-3 rounded-lg border">
-                                        <div className="text-sm font-bold text-blue-800 mb-2">JOB 1</div>
-                                        <div className="space-y-2">
+                                      {/* JOB 1 */}
+                                      <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                                        <div className="text-sm font-bold text-blue-800 mb-3">JOB 1</div>
+                                        <div className="space-y-3">
                                           <Select
                                             value={daySchedule.row1?.color || 'none'}
                                             onValueChange={(value) => 
                                               updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'color', value)
                                             }
                                           >
-                                            <SelectTrigger className="h-9">
+                                            <SelectTrigger className="h-10 text-base">
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="bg-white z-50">
@@ -327,28 +300,28 @@ const Admin = () => {
                                             placeholder="Job Number"
                                             value={daySchedule.row1?.jobNumber || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobNumber', e.target.value)}
-                                            className="h-9 text-sm"
+                                            className="h-10 text-base"
                                           />
                                           <Input
                                             placeholder="Job Description"
                                             value={daySchedule.row1?.jobName || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row1', 'jobName', e.target.value)}
-                                            className="h-9 text-sm"
+                                            className="h-10 text-base"
                                           />
                                         </div>
                                       </div>
                                       
-                                      {/* Row 2 */}
-                                      <div className="bg-green-50 p-3 rounded-lg border">
-                                        <div className="text-sm font-bold text-green-800 mb-2">JOB 2</div>
-                                        <div className="space-y-2">
+                                      {/* JOB 2 */}
+                                      <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+                                        <div className="text-sm font-bold text-green-800 mb-3">JOB 2</div>
+                                        <div className="space-y-3">
                                           <Select
                                             value={daySchedule.row2?.color || 'none'}
                                             onValueChange={(value) => 
                                               updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'color', value)
                                             }
                                           >
-                                            <SelectTrigger className="h-9">
+                                            <SelectTrigger className="h-10 text-base">
                                               <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="bg-white z-50">
@@ -371,13 +344,13 @@ const Admin = () => {
                                             placeholder="Job Number"
                                             value={daySchedule.row2?.jobNumber || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobNumber', e.target.value)}
-                                            className="h-9 text-sm"
+                                            className="h-10 text-base"
                                           />
                                           <Input
                                             placeholder="Job Description"
                                             value={daySchedule.row2?.jobName || ''}
                                             onChange={(e) => updateRowData(weekIndex, crewIndex, dayIndex, 'row2', 'jobName', e.target.value)}
-                                            className="h-9 text-sm"
+                                            className="h-10 text-base"
                                           />
                                         </div>
                                       </div>
