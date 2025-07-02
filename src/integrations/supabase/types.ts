@@ -9,7 +9,163 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      birthdays: {
+        Row: {
+          birth_date: string
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          birth_date: string
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          birth_date?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      crew_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          order_index: number
+          position: string
+          schedule_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          order_index: number
+          position: string
+          schedule_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          order_index?: number
+          position?: string
+          schedule_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crew_members_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "crew_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crew_schedules: {
+        Row: {
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          week_index: number
+          week_of: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          week_index: number
+          week_of: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          week_index?: number
+          week_of?: string
+        }
+        Relationships: []
+      }
+      schedule_items: {
+        Row: {
+          created_at: string | null
+          crew_member_id: string | null
+          day_index: number
+          id: string
+          row1_color: string | null
+          row1_job_name: string | null
+          row1_job_number: string | null
+          row2_color: string | null
+          row2_job_name: string | null
+          row2_job_number: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          crew_member_id?: string | null
+          day_index: number
+          id?: string
+          row1_color?: string | null
+          row1_job_name?: string | null
+          row1_job_number?: string | null
+          row2_color?: string | null
+          row2_job_name?: string | null
+          row2_job_number?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          crew_member_id?: string | null
+          day_index?: number
+          id?: string
+          row1_color?: string | null
+          row1_job_name?: string | null
+          row1_job_number?: string | null
+          row2_color?: string | null
+          row2_job_name?: string | null
+          row2_job_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_items_crew_member_id_fkey"
+            columns: ["crew_member_id"]
+            isOneToOne: false
+            referencedRelation: "crew_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shoutouts: {
+        Row: {
+          created_at: string | null
+          date_posted: string
+          from_person: string
+          id: string
+          text: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_posted?: string
+          from_person: string
+          id?: string
+          text: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_posted?: string
+          from_person?: string
+          id?: string
+          text?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

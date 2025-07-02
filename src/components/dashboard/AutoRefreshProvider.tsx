@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useDashboardData } from '@/contexts/DashboardDataContext';
 
 interface AutoRefreshContextType {
   lastUpdated: Date | null;
@@ -14,35 +15,32 @@ const AutoRefreshContext = createContext<AutoRefreshContextType>({
 export const useAutoRefresh = () => useContext(AutoRefreshContext);
 
 interface AutoRefreshProviderProps {
-  children: React.ReactNode;
-  refreshInterval?: number; // milliseconds
+  children: ReactNode;
+  refreshInterval?: number; // in milliseconds
 }
 
 export const AutoRefreshProvider: React.FC<AutoRefreshProviderProps> = ({ 
   children, 
-  refreshInterval = 900000 // Default 15 minutes
+  refreshInterval = 900000 // 15 minutes default
 }) => {
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(new Date());
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const { refreshData: refreshDashboardData } = useDashboardData();
 
   const refreshData = () => {
-    // Update timestamp
+    refreshDashboardData();
     setLastUpdated(new Date());
-    
-    // This is where you would trigger all the data refreshes
-    console.log('Data refreshed at:', new Date().toLocaleTimeString());
-    
-    // You could emit an event or call specific refresh functions here
-    window.dispatchEvent(new CustomEvent('dashboard-refresh'));
   };
 
   useEffect(() => {
+    // Set initial timestamp
+    setLastUpdated(new Date());
+
     // Set up auto-refresh interval
-    const intervalId = setInterval(refreshData, refreshInterval);
-    
-    // Initial refresh
-    refreshData();
-    
-    return () => clearInterval(intervalId);
+    const interval = setInterval(() => {
+      refreshData();
+    }, refreshInterval);
+
+    return () => clearInterval(interval);
   }, [refreshInterval]);
 
   return (

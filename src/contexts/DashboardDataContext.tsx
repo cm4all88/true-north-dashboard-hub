@@ -1,53 +1,31 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-interface RowData {
-  color: 'orange' | 'blue' | 'green' | 'purple' | 'none';
-  jobNumber: string;
-  jobName: string;
-}
-
-interface ScheduleItem {
-  row1: RowData;
-  row2: RowData;
-}
-
-interface CrewMember {
-  position: string;
-  name: string;
-  schedule: ScheduleItem[];
-}
-
-interface WeekData {
-  weekOf: string;
-  days: string[];
-  dates: string[];
-  crews: CrewMember[];
-}
-
-interface Birthday {
-  name: string;
-  date: Date;
-}
-
-interface Shoutout {
-  id: number;
-  text: string;
-  from: string;
-  date: Date;
-}
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { 
+  getScheduleData, 
+  getBirthdays, 
+  getShoutouts, 
+  saveScheduleData, 
+  saveBirthdays, 
+  saveShoutouts,
+  type WeekData,
+  type BirthdayData,
+  type ShoutoutData
+} from '@/services/supabaseService';
 
 interface DashboardData {
   scheduleData: WeekData[];
-  birthdays: Birthday[];
-  shoutouts: Shoutout[];
+  birthdays: BirthdayData[];
+  shoutouts: ShoutoutData[];
 }
 
 interface DashboardDataContextType {
   data: DashboardData;
-  updateScheduleData: (newScheduleData: WeekData[]) => void;
-  updateBirthdays: (newBirthdays: Birthday[]) => void;
-  updateShoutouts: (newShoutouts: Shoutout[]) => void;
+  loading: boolean;
+  error: string | null;
+  updateScheduleData: (newScheduleData: WeekData[]) => Promise<void>;
+  updateBirthdays: (newBirthdays: BirthdayData[]) => Promise<void>;
+  updateShoutouts: (newShoutouts: ShoutoutData[]) => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 // Function to get Monday of current week
@@ -77,7 +55,7 @@ const getWeekRange = (mondayDate: Date) => {
   return `${mondayMonth} ${mondayDay} - ${fridayMonth} ${fridayDay}, ${year}`;
 };
 
-// Generate initial data
+// Generate initial data as fallback
 const generateInitialScheduleData = (): WeekData[] => {
   const currentMonday = getMondayOfWeek(new Date());
   const nextMonday = new Date(currentMonday);
@@ -174,17 +152,6 @@ const generateInitialScheduleData = (): WeekData[] => {
             },
           ]
         },
-        {
-          position: "OFF",
-          name: "",
-          schedule: [
-            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
-            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
-            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
-            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
-            { row1: { color: 'none', jobNumber: '', jobName: '' }, row2: { color: 'none', jobNumber: '', jobName: '' } },
-          ]
-        },
       ]
     };
   };
@@ -196,41 +163,19 @@ const generateInitialScheduleData = (): WeekData[] => {
 };
 
 const initialData: DashboardData = {
-  scheduleData: generateInitialScheduleData(),
-  birthdays: [
-    { name: 'Alex Johnson', date: new Date('2023-04-15') },
-    { name: 'Maria Garcia', date: new Date('2023-04-22') },
-    { name: 'James Wilson', date: new Date('2023-04-30') },
-    { name: 'Beth Chen', date: new Date('2023-05-05') },
-    { name: 'Omar Patel', date: new Date('2023-05-17') },
-  ],
-  shoutouts: [
-    { 
-      id: 1, 
-      text: "Shoutout to Mike for helping on the Saturday rush job!", 
-      from: "Sarah Kim",
-      date: new Date('2023-04-18')
-    },
-    { 
-      id: 2, 
-      text: "Thanks to Beth for staying late to finish the downtown project documentation!",
-      from: "James Wilson", 
-      date: new Date('2023-04-17') 
-    },
-    { 
-      id: 3, 
-      text: "Kudos to the entire field team for completing the Westlake survey ahead of schedule.", 
-      from: "Omar Patel",
-      date: new Date('2023-04-15') 
-    },
-  ]
+  scheduleData: [],
+  birthdays: [],
+  shoutouts: []
 };
 
 const DashboardDataContext = createContext<DashboardDataContextType>({
   data: initialData,
-  updateScheduleData: () => {},
-  updateBirthdays: () => {},
-  updateShoutouts: () => {},
+  loading: false,
+  error: null,
+  updateScheduleData: async () => {},
+  updateBirthdays: async () => {},
+  updateShoutouts: async () => {},
+  refreshData: async () => {},
 });
 
 export const useDashboardData = () => useContext(DashboardDataContext);
@@ -241,25 +186,120 @@ interface DashboardDataProviderProps {
 
 export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ children }) => {
   const [data, setData] = useState<DashboardData>(initialData);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const updateScheduleData = (newScheduleData: WeekData[]) => {
-    setData(prev => ({ ...prev, scheduleData: newScheduleData }));
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const [scheduleData, birthdays, shoutouts] = await Promise.all([
+        getScheduleData(),
+        getBirthdays(),
+        getShoutouts()
+      ]);
+
+      // If no data exists, initialize with sample data
+      if (scheduleData.length === 0) {
+        const sampleData = generateInitialScheduleData();
+        await saveScheduleData(sampleData);
+        setData({
+          scheduleData: sampleData,
+          birthdays: birthdays.length > 0 ? birthdays : [
+            { name: 'Alex Johnson', date: new Date('2023-04-15') },
+            { name: 'Maria Garcia', date: new Date('2023-04-22') },
+            { name: 'James Wilson', date: new Date('2023-04-30') },
+          ],
+          shoutouts: shoutouts.length > 0 ? shoutouts : [
+            { 
+              id: 1, 
+              text: "Shoutout to Mike for helping on the Saturday rush job!", 
+              from: "Sarah Kim",
+              date: new Date('2023-04-18')
+            },
+            { 
+              id: 2, 
+              text: "Thanks to Beth for staying late to finish the downtown project documentation!",
+              from: "James Wilson", 
+              date: new Date('2023-04-17') 
+            },
+          ]
+        });
+      } else {
+        setData({ scheduleData, birthdays, shoutouts });
+      }
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Failed to load data');
+      // Fallback to sample data
+      setData({
+        scheduleData: generateInitialScheduleData(),
+        birthdays: [
+          { name: 'Alex Johnson', date: new Date('2023-04-15') },
+          { name: 'Maria Garcia', date: new Date('2023-04-22') },
+        ],
+        shoutouts: [
+          { 
+            id: 1, 
+            text: "Shoutout to Mike for helping on the Saturday rush job!", 
+            from: "Sarah Kim",
+            date: new Date('2023-04-18')
+          },
+        ]
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateBirthdays = (newBirthdays: Birthday[]) => {
-    setData(prev => ({ ...prev, birthdays: newBirthdays }));
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const updateScheduleData = async (newScheduleData: WeekData[]) => {
+    try {
+      await saveScheduleData(newScheduleData);
+      setData(prev => ({ ...prev, scheduleData: newScheduleData }));
+    } catch (err) {
+      console.error('Error updating schedule data:', err);
+      setError('Failed to save schedule data');
+    }
   };
 
-  const updateShoutouts = (newShoutouts: Shoutout[]) => {
-    setData(prev => ({ ...prev, shoutouts: newShoutouts }));
+  const updateBirthdays = async (newBirthdays: BirthdayData[]) => {
+    try {
+      await saveBirthdays(newBirthdays);
+      setData(prev => ({ ...prev, birthdays: newBirthdays }));
+    } catch (err) {
+      console.error('Error updating birthdays:', err);
+      setError('Failed to save birthdays');
+    }
+  };
+
+  const updateShoutouts = async (newShoutouts: ShoutoutData[]) => {
+    try {
+      await saveShoutouts(newShoutouts);
+      setData(prev => ({ ...prev, shoutouts: newShoutouts }));
+    } catch (err) {
+      console.error('Error updating shoutouts:', err);
+      setError('Failed to save shoutouts');
+    }
+  };
+
+  const refreshData = async () => {
+    await loadData();
   };
 
   return (
     <DashboardDataContext.Provider value={{
       data,
+      loading,
+      error,
       updateScheduleData,
       updateBirthdays,
-      updateShoutouts
+      updateShoutouts,
+      refreshData
     }}>
       {children}
     </DashboardDataContext.Provider>
