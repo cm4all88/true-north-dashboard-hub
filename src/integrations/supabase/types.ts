@@ -166,6 +166,36 @@ export type Database = {
         }
         Relationships: []
       }
+      weather_cache: {
+        Row: {
+          created_at: string
+          current_condition: string
+          current_temp: number
+          forecast: Json
+          id: string
+          last_updated: string
+          location: string
+        }
+        Insert: {
+          created_at?: string
+          current_condition: string
+          current_temp: number
+          forecast: Json
+          id?: string
+          last_updated?: string
+          location?: string
+        }
+        Update: {
+          created_at?: string
+          current_condition?: string
+          current_temp?: number
+          forecast?: Json
+          id?: string
+          last_updated?: string
+          location?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CloudSun, CloudRain, Sun } from "lucide-react";
-import { weatherForecastMock } from '@/lib/mockData';
+import { getWeatherData, refreshWeatherData, type WeatherData } from '@/services/weatherService';
 
 // Function to determine which weather icon to display
 const getWeatherIcon = (condition: string) => {
@@ -23,21 +23,53 @@ interface WeatherForecastProps {
 }
 
 export function WeatherForecast({ headerMode = false }: WeatherForecastProps) {
-  const [weatherData, setWeatherData] = useState(weatherForecastMock);
+  const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Here you would fetch real weather data from an API
-    // For now, we'll use our mock data
-    const intervalId = setInterval(() => {
-      // Simulate data refresh every hour
-      console.log('Weather data would be refreshed here');
-    }, 3600000); // 1 hour
+    const loadWeatherData = async () => {
+      try {
+        const data = await getWeatherData();
+        setWeatherData(data);
+      } catch (error) {
+        console.error('Error loading weather data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadWeatherData();
+
+    // Refresh weather data every 30 minutes
+    const intervalId = setInterval(async () => {
+      await refreshWeatherData();
+      const data = await getWeatherData();
+      setWeatherData(data);
+    }, 30 * 60 * 1000); // 30 minutes
     
     return () => clearInterval(intervalId);
   }, []);
 
   // Only show first 5 days
   const visibleWeatherData = weatherData.slice(0, 5);
+
+  if (loading) {
+    return (
+      <Card className="h-full bg-gray-800">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-white">
+            <CloudSun className="h-5 w-5" />
+            Seattle Weather Forecast
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-center items-center h-20">
+            <div className="text-gray-300">Loading weather...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (headerMode) {
     return (
