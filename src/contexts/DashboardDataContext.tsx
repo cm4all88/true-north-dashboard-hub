@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface RowData {
@@ -143,6 +144,32 @@ const generateInitialScheduleData = (): WeekData[] => {
             },
             { 
               row1: { color: 'green', jobNumber: `j19-${185 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
+            },
+          ]
+        },
+        {
+          position: "LIAM",
+          name: "SERGIO",
+          schedule: [
+            { 
+              row1: { color: 'purple', jobNumber: `j20-${11 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
+            },
+            { 
+              row1: { color: 'purple', jobNumber: `j20-${11 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
+            },
+            { 
+              row1: { color: 'blue', jobNumber: `j20-${113 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
+            },
+            { 
+              row1: { color: 'green', jobNumber: `j20-${114 + weekOffset}`, jobName: 'test' },
+              row2: { color: 'none', jobNumber: '', jobName: '' }
+            },
+            { 
+              row1: { color: 'orange', jobNumber: `j20-${115 + weekOffset}`, jobName: 'test' },
               row2: { color: 'none', jobNumber: '', jobName: '' }
             },
           ]
