@@ -33,7 +33,17 @@ export async function getWeatherData(): Promise<WeatherData[]> {
     }
 
     if (data && data.forecast) {
-      return data.forecast as WeatherData[];
+      // Properly cast the JSON data to WeatherData[]
+      const forecast = data.forecast as unknown as WeatherData[];
+      
+      // Validate that the forecast data has the expected structure
+      if (Array.isArray(forecast) && forecast.length > 0 && 
+          forecast[0].day !== undefined && 
+          forecast[0].high !== undefined && 
+          forecast[0].low !== undefined && 
+          forecast[0].condition !== undefined) {
+        return forecast;
+      }
     }
 
     return getFallbackWeatherData();
