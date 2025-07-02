@@ -24,11 +24,39 @@ export async function getWeatherData(): Promise<WeatherData[]> {
       .from('weather_cache')
       .select('*')
       .eq('location', 'Seattle')
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching weather data:', error);
-      // Return fallback data if database fetch fails
+      // Try to refresh weather data if there's an error
+      await refreshWeatherData();
+      return getFallbackWeatherData();
+    }
+
+    // If no data exists, try to fetch fresh data
+    if (!data) {
+      console.log('No weather data found, refreshing...');
+      await refreshWeatherData();
+      
+      // Try to fetch again after refresh
+      const { data: refreshedData } = await supabase
+        .from('weather_cache')
+        .select('*')
+        .eq('location', 'Seattle')
+        .maybeSingle();
+      
+      if (refreshedData && refreshedData.forecast) {
+        const forecast = refreshedData.forecast as unknown as WeatherData[];
+        
+        if (Array.isArray(forecast) && forecast.length > 0 && 
+            forecast[0].day !== undefined && 
+            forecast[0].high !== undefined && 
+            forecast[0].low !== undefined && 
+            forecast[0].condition !== undefined) {
+          return forecast;
+        }
+      }
+      
       return getFallbackWeatherData();
     }
 
@@ -55,12 +83,13 @@ export async function getWeatherData(): Promise<WeatherData[]> {
 
 export async function refreshWeatherData(): Promise<void> {
   try {
-    const { error } = await supabase.functions.invoke('fetch-weather');
+    console.log('Refreshing weather data...');
+    const { data, error } = await supabase.functions.invoke('fetch-weather');
     
     if (error) {
       console.error('Error refreshing weather data:', error);
     } else {
-      console.log('Weather data refreshed successfully');
+      console.log('Weather data refreshed successfully:', data);
     }
   } catch (error) {
     console.error('Error invoking weather refresh:', error);
