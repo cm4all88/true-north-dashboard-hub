@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TrueNorthLogo } from '@/components/TrueNorthLogo';
@@ -26,8 +27,8 @@ const Index = () => {
     <div className="min-h-screen bg-gray-900 text-white overflow-hidden" id="dashboard-container">
       {/* Container with 16:9 aspect ratio */}
       <div className="w-full h-screen flex flex-col">
-        <header className="w-full bg-gray-800 shadow-md h-10 flex-shrink-0">
-          <div className="max-w-full mx-auto px-3 py-1 flex justify-between items-center h-full">
+        <header className="w-full bg-gray-800 shadow-md h-16 flex-shrink-0">
+          <div className="max-w-full mx-auto px-3 py-2 flex justify-between items-center h-full">
             <div className="flex-shrink-0">
               <TrueNorthLogo />
             </div>
@@ -36,8 +37,8 @@ const Index = () => {
 
         <main className="flex-1 px-2 py-1 min-h-0">
           <div className="flex flex-col gap-1 h-full">
-            {/* Top section: Weather and Clock - 15% */}
-            <div className="h-[15%] flex gap-2">
+            {/* Top section: Weather and Clock - 18% */}
+            <div className="h-[18%] flex gap-2">
               <div className="flex-1">
                 <WeatherForecast headerMode={false} />
               </div>
@@ -46,8 +47,8 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Middle section: Crew Schedule - 60% */}
-            <div className="h-[60%] min-h-0">
+            {/* Middle section: Crew Schedule - 57% */}
+            <div className="h-[57%] min-h-0">
               <CrewSchedule />
             </div>
 
