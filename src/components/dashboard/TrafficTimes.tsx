@@ -67,7 +67,7 @@ export const TrafficTimes = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % allRoutes.length);
-    }, 4000); // Change every 4 seconds
+    }, 10000); // Change every 10 seconds
 
     return () => clearInterval(interval);
   }, []);

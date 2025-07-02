@@ -13,7 +13,7 @@ export function ShoutoutBoard() {
     
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % data.shoutouts.length);
-    }, 5000); // Change every 5 seconds
+    }, 10000); // Change every 10 seconds
 
     return () => clearInterval(interval);
   }, [data.shoutouts.length]);
