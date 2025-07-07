@@ -158,7 +158,7 @@ const generateInitialScheduleData = (): WeekData[] => {
 
   return [
     generateWeekData(currentMonday, 0),
-    generateWeekData(nextMonday, 4)
+    generateWeekData(nextMonday, 0)
   ];
 };
 
