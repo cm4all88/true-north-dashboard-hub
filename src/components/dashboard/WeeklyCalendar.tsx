@@ -6,13 +6,11 @@ import { format, startOfWeek, endOfWeek, isToday, addDays, isSameDay } from "dat
 import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-// Mock events data - replace with actual API call in production
+// Sample events - can be expanded with real data from Supabase
 const EVENTS = [
   { id: 1, title: "Team Meeting", date: addDays(new Date(), 1), type: "meeting" },
-  { id: 2, title: "Safety Training", date: addDays(new Date(), 2), type: "training" },
-  { id: 3, title: "Equipment Inspection", date: addDays(new Date(), 3), type: "maintenance" },
-  { id: 4, title: "Flight Schedule Review", date: addDays(new Date(), 0), type: "meeting" },
-  { id: 5, title: "Pilot Certification", date: addDays(new Date(), 4), type: "training" }
+  { id: 2, title: "Project Review", date: addDays(new Date(), 2), type: "meeting" },
+  { id: 3, title: "Site Visit", date: addDays(new Date(), 3), type: "field work" }
 ];
 
 export const WeeklyCalendar = () => {
