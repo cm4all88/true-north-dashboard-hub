@@ -1,4 +1,6 @@
 
+import { supabase } from '@/integrations/supabase/client';
+
 export interface TrafficRoute {
   from: string;
   to: string;
@@ -8,7 +10,7 @@ export interface TrafficRoute {
   status: string;
 }
 
-// Mock traffic data that simulates real Seattle-area traffic conditions
+// Mock traffic data as fallback
 const mockTrafficData: TrafficRoute[] = [
   {
     from: "Bellevue",
@@ -61,11 +63,35 @@ const mockTrafficData: TrafficRoute[] = [
 ];
 
 export const getTrafficData = async (): Promise<TrafficRoute[]> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  try {
+    console.log('Fetching real traffic data from Mapbox...');
+    
+    const { data, error } = await supabase.functions.invoke('fetch-mapbox-traffic');
+    
+    if (error) {
+      console.error('Error calling Mapbox traffic function:', error);
+      return getFallbackTrafficData();
+    }
+    
+    if (data && data.routes && Array.isArray(data.routes)) {
+      console.log('Successfully received traffic data:', data.routes.length, 'routes');
+      return data.routes;
+    }
+    
+    console.warn('Invalid traffic data format, using fallback');
+    return getFallbackTrafficData();
+    
+  } catch (error) {
+    console.error('Error in getTrafficData:', error);
+    return getFallbackTrafficData();
+  }
+};
+
+function getFallbackTrafficData(): TrafficRoute[] {
+  console.log('Using fallback traffic data');
   
   // Add some randomization to make it feel more realistic
-  const randomizedData = mockTrafficData.map(route => {
+  return mockTrafficData.map(route => {
     const baseTime = parseInt(route.time);
     const variation = Math.floor(Math.random() * 10) - 5; // +/- 5 minutes
     const newTime = Math.max(1, baseTime + variation);
@@ -86,6 +112,4 @@ export const getTrafficData = async (): Promise<TrafficRoute[]> => {
       status
     };
   });
-  
-  return randomizedData;
-};
+}
