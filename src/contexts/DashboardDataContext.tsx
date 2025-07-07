@@ -200,35 +200,8 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
         getShoutouts()
       ]);
 
-      // If no data exists, initialize with sample data
-      if (scheduleData.length === 0) {
-        const sampleData = generateInitialScheduleData();
-        await saveScheduleData(sampleData);
-        setData({
-          scheduleData: sampleData,
-          birthdays: birthdays.length > 0 ? birthdays : [
-            { name: 'Alex Johnson', date: new Date('2023-04-15') },
-            { name: 'Maria Garcia', date: new Date('2023-04-22') },
-            { name: 'James Wilson', date: new Date('2023-04-30') },
-          ],
-          shoutouts: shoutouts.length > 0 ? shoutouts : [
-            { 
-              id: 1, 
-              text: "Shoutout to Mike for helping on the Saturday rush job!", 
-              from: "Sarah Kim",
-              date: new Date('2023-04-18')
-            },
-            { 
-              id: 2, 
-              text: "Thanks to Beth for staying late to finish the downtown project documentation!",
-              from: "James Wilson", 
-              date: new Date('2023-04-17') 
-            },
-          ]
-        });
-      } else {
-        setData({ scheduleData, birthdays, shoutouts });
-      }
+      // Use the real data from database
+      setData({ scheduleData, birthdays, shoutouts });
     } catch (err) {
       console.error('Error loading data:', err);
       setError('Failed to load data');
