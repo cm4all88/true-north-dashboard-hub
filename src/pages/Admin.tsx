@@ -7,12 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, X, Plus, Save, Edit2, Download, Copy } from "lucide-react";
+import { Calendar as CalendarIcon, X, Plus, Save, Edit2, Download, Copy, FileSpreadsheet } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useDashboardData } from '@/contexts/DashboardDataContext';
+import * as XLSX from 'xlsx';
 
 // Available colors for dots
 const availableColors = [
@@ -170,6 +171,95 @@ const Admin = () => {
     }
   }, [data.scheduleData, updateScheduleData, handleInputChange]);
 
+  // Function to export all schedule data to Excel
+  const exportToExcel = () => {
+    const workbook = XLSX.utils.book_new();
+    
+    // Create a worksheet for each week
+    data.scheduleData.forEach((weekData, weekIndex) => {
+      const worksheetData: any[][] = [];
+      
+      // Add header row with week information
+      worksheetData.push([`Week ${weekIndex + 1}: ${weekData.weekOf}`]);
+      worksheetData.push([]); // Empty row
+      
+      // Add column headers
+      const headers = ['Crew Member', 'Position'];
+      weekData.days.forEach((day, dayIndex) => {
+        headers.push(`${day} ${weekData.dates[dayIndex]} - Job 1 Color`);
+        headers.push(`${day} ${weekData.dates[dayIndex]} - Job 1 Number`);
+        headers.push(`${day} ${weekData.dates[dayIndex]} - Job 1 Name`);
+        headers.push(`${day} ${weekData.dates[dayIndex]} - Job 2 Color`);
+        headers.push(`${day} ${weekData.dates[dayIndex]} - Job 2 Number`);
+        headers.push(`${day} ${weekData.dates[dayIndex]} - Job 2 Name`);
+      });
+      worksheetData.push(headers);
+      
+      // Add crew data
+      weekData.crews.filter(crew => crew.position !== 'OFF').forEach(crew => {
+        const row = [crew.name, crew.position];
+        
+        crew.schedule.forEach(daySchedule => {
+          row.push(
+            daySchedule.row1?.color || 'none',
+            daySchedule.row1?.jobNumber || '',
+            daySchedule.row1?.jobName || '',
+            daySchedule.row2?.color || 'none',
+            daySchedule.row2?.jobNumber || '',
+            daySchedule.row2?.jobName || ''
+          );
+        });
+        
+        worksheetData.push(row);
+      });
+      
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+      
+      // Auto-size columns
+      const columnWidths = headers.map((header, index) => {
+        const maxLength = Math.max(
+          header.length,
+          ...worksheetData.slice(3).map(row => String(row[index] || '').length)
+        );
+        return { wch: Math.min(maxLength + 2, 30) };
+      });
+      worksheet['!cols'] = columnWidths;
+      
+      XLSX.utils.book_append_sheet(workbook, worksheet, `Week ${weekIndex + 1}`);
+    });
+    
+    // Create summary sheet with birthdays and shoutouts
+    const summaryData: any[][] = [];
+    summaryData.push(['BIRTHDAYS']);
+    summaryData.push(['Name', 'Date']);
+    data.birthdays.forEach(birthday => {
+      summaryData.push([birthday.name, format(birthday.date, "MMMM d, yyyy")]);
+    });
+    
+    summaryData.push([]); // Empty row
+    summaryData.push(['SHOUTOUTS']);
+    summaryData.push(['Message', 'From', 'Date']);
+    data.shoutouts.forEach(shoutout => {
+      summaryData.push([shoutout.text, shoutout.from, format(shoutout.date, "MMMM d, yyyy")]);
+    });
+    
+    const summaryWorksheet = XLSX.utils.aoa_to_sheet(summaryData);
+    summaryWorksheet['!cols'] = [
+      { wch: 50 }, // Message/Name column
+      { wch: 20 }, // From/Date column
+      { wch: 15 }  // Date column
+    ];
+    
+    XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Summary');
+    
+    // Generate filename with current date
+    const today = new Date();
+    const filename = `crew-schedule-${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}.xlsx`;
+    
+    // Save the file
+    XLSX.writeFile(workbook, filename);
+  };
+
   // Function to export daily schedule as CSV
   const exportDayAsCSV = (weekData: any, dayIndex: number) => {
     const dayName = weekData.days[dayIndex];
@@ -248,6 +338,10 @@ const Admin = () => {
           <div className="flex items-center gap-4">
             <Button variant="outline" onClick={() => navigate('/')}>
               View Dashboard
+            </Button>
+            <Button variant="outline" onClick={exportToExcel}>
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Export to Excel
             </Button>
             <Button onClick={() => alert('Changes saved automatically!')}>
               <Save className="mr-2 h-4 w-4" />
