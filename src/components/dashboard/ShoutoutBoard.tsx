@@ -50,7 +50,7 @@ export function ShoutoutBoard() {
           className="animate-fade-in"
         >
           <div className="space-y-2">
-            <p className="text-white text-2xl leading-relaxed font-medium break-words whitespace-normal">{currentShoutout.text}</p>
+            <p className="text-white text-4xl leading-relaxed font-medium break-words whitespace-normal">{currentShoutout.text}</p>
             <div className="flex justify-between items-center">
               <span className="text-gray-300 text-base">From: {currentShoutout.from}</span>
               <span className="text-gray-400 text-base">
