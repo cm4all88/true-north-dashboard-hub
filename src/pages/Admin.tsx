@@ -28,6 +28,9 @@ const Admin = () => {
   const navigate = useNavigate();
   const { data, updateScheduleData, updateBirthdays, updateShoutouts } = useDashboardData();
   
+  // State for vacation/sick callouts
+  const [callouts, setCallouts] = useState<{[key: string]: string}>({});
+  
   // Local state for inputs to prevent lag
   const [inputValues, setInputValues] = useState<{[key: string]: string}>({});
   const timeoutRefs = useRef<{[key: string]: NodeJS.Timeout}>({});
@@ -357,6 +360,7 @@ const Admin = () => {
         <Tabs defaultValue="schedule">
           <TabsList className="mb-6">
             <TabsTrigger value="schedule">Crew Schedule</TabsTrigger>
+            <TabsTrigger value="callouts">Vacation/Sick</TabsTrigger>
             <TabsTrigger value="birthdays">Birthdays</TabsTrigger>
             <TabsTrigger value="shoutouts">Shoutouts</TabsTrigger>
           </TabsList>
@@ -519,6 +523,82 @@ const Admin = () => {
                                 ))}
                               </tr>
                             ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="callouts">
+            <Card>
+              <CardHeader>
+                <CardTitle>Manage Vacation & Sick Callouts</CardTitle>
+                <CardDescription>
+                  Manage vacation and sick day callouts for each week and day.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-8">
+                  {data.scheduleData.map((weekData, weekIndex) => (
+                    <div key={weekIndex} className="border rounded-lg p-6 bg-white">
+                      <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">{weekData.weekOf}</h3>
+                      
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border-2 border-gray-300">
+                          <thead>
+                            <tr className="bg-blue-100">
+                              <th className="border-2 border-gray-300 p-4 text-left font-bold text-lg min-w-[150px]">
+                                Type
+                              </th>
+                              {weekData.days.map((day, index) => (
+                                <th key={`${day}-${index}`} className="border-2 border-gray-300 p-4 text-center font-bold text-lg min-w-[200px]">
+                                  <div className="text-lg font-bold">{day}</div>
+                                  <div className="text-sm text-gray-600 font-normal">{weekData.dates[index]}</div>
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b-2 border-gray-200">
+                              <td className="border-2 border-gray-300 p-4 bg-green-50 font-bold text-green-800">
+                                VACATION
+                              </td>
+                              {weekData.days.map((_, dayIndex) => (
+                                <td key={`vacation-${dayIndex}`} className="border-2 border-gray-300 p-3">
+                                  <Textarea
+                                    placeholder="Enter vacation callouts..."
+                                    value={callouts[`${weekIndex}-${dayIndex}-vacation`] || ''}
+                                    onChange={(e) => setCallouts(prev => ({
+                                      ...prev,
+                                      [`${weekIndex}-${dayIndex}-vacation`]: e.target.value
+                                    }))}
+                                    className="min-h-[80px] resize-none"
+                                  />
+                                </td>
+                              ))}
+                            </tr>
+                            <tr className="border-b-2 border-gray-200">
+                              <td className="border-2 border-gray-300 p-4 bg-red-50 font-bold text-red-800">
+                                SICK
+                              </td>
+                              {weekData.days.map((_, dayIndex) => (
+                                <td key={`sick-${dayIndex}`} className="border-2 border-gray-300 p-3">
+                                  <Textarea
+                                    placeholder="Enter sick callouts..."
+                                    value={callouts[`${weekIndex}-${dayIndex}-sick`] || ''}
+                                    onChange={(e) => setCallouts(prev => ({
+                                      ...prev,
+                                      [`${weekIndex}-${dayIndex}-sick`]: e.target.value
+                                    }))}
+                                    className="min-h-[80px] resize-none"
+                                  />
+                                </td>
+                              ))}
+                            </tr>
                           </tbody>
                         </table>
                       </div>
