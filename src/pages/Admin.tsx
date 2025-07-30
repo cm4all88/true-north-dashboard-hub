@@ -377,7 +377,7 @@ const Admin = () => {
                 <div className="space-y-8">
                   {data.scheduleData.map((weekData, weekIndex) => (
                     <div key={weekIndex} className="border rounded-lg p-6 bg-white">
-                      <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">
+                      <h3 className="text-xl font-bold mb-6 text-center bg-primary text-primary-foreground p-3 rounded">
                         {(() => {
                           const firstDate = new Date(weekData.dates[0]);
                           const lastDate = new Date(weekData.dates[weekData.dates.length - 1]);
@@ -561,7 +561,7 @@ const Admin = () => {
                 <div className="space-y-8">
                   {data.scheduleData.map((weekData, weekIndex) => (
                     <div key={weekIndex} className="border rounded-lg p-6 bg-white">
-                      <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">
+                      <h3 className="text-xl font-bold mb-6 text-center bg-primary text-primary-foreground p-3 rounded">
                         {(() => {
                           const firstDate = new Date(weekData.dates[0]);
                           const lastDate = new Date(weekData.dates[weekData.dates.length - 1]);
