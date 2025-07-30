@@ -77,21 +77,27 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          sick_callouts: string[] | null
           updated_at: string | null
+          vacation_callouts: string[] | null
           week_index: number
           week_of: string
         }
         Insert: {
           created_at?: string | null
           id?: string
+          sick_callouts?: string[] | null
           updated_at?: string | null
+          vacation_callouts?: string[] | null
           week_index: number
           week_of: string
         }
         Update: {
           created_at?: string | null
           id?: string
+          sick_callouts?: string[] | null
           updated_at?: string | null
+          vacation_callouts?: string[] | null
           week_index?: number
           week_of?: string
         }

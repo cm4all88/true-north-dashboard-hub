@@ -125,7 +125,11 @@ export async function getScheduleData(): Promise<WeekData[]> {
         weekOf: schedule.week_of,
         days,
         dates,
-        crews
+        crews,
+        callouts: {
+          vacation: schedule.vacation_callouts || ['', '', '', '', ''],
+          sick: schedule.sick_callouts || ['', '', '', '', '']
+        }
       };
     });
 
@@ -160,7 +164,11 @@ export async function saveScheduleData(scheduleData: WeekData[]): Promise<void> 
         // Update existing schedule
         const { error: updateError } = await supabase
           .from('crew_schedules')
-          .update({ week_of: weekData.weekOf })
+          .update({ 
+            week_of: weekData.weekOf,
+            vacation_callouts: weekData.callouts?.vacation || ['', '', '', '', ''],
+            sick_callouts: weekData.callouts?.sick || ['', '', '', '', '']
+          })
           .eq('id', existingSchedule.id);
 
         if (updateError) throw updateError;
@@ -171,7 +179,9 @@ export async function saveScheduleData(scheduleData: WeekData[]): Promise<void> 
           .from('crew_schedules')
           .insert({
             week_of: weekData.weekOf,
-            week_index: weekIndex
+            week_index: weekIndex,
+            vacation_callouts: weekData.callouts?.vacation || ['', '', '', '', ''],
+            sick_callouts: weekData.callouts?.sick || ['', '', '', '', '']
           })
           .select()
           .single();
