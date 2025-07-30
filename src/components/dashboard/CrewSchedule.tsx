@@ -69,7 +69,23 @@ export function CrewSchedule() {
           key={currentWeekIndex}
           className="animate-fade-in h-full"
         >
-          <div className="font-bold text-gray-300 text-lg mb-2 uppercase">{currentWeekData.weekOf}</div>
+          <div className="font-bold text-gray-300 text-lg mb-2 uppercase">
+            {(() => {
+              const firstDate = new Date(currentWeekData.dates[0]);
+              const lastDate = new Date(currentWeekData.dates[currentWeekData.dates.length - 1]);
+              
+              const formatDate = (date: Date) => {
+                return date.toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric'
+                });
+              };
+              
+              const year = firstDate.getFullYear();
+              
+              return `${formatDate(firstDate)} - ${formatDate(lastDate)}, ${year}`;
+            })()}
+          </div>
           <Table className="border-collapse">
             <TableHeader className="bg-gray-700">
               <TableRow>
