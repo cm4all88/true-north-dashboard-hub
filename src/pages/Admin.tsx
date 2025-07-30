@@ -339,10 +339,10 @@ const Admin = () => {
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 flex justify-between items-center">
           <TrueNorthLogo />
           <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={() => navigate('/')}>
+            <Button onClick={() => navigate('/')}>
               View Dashboard
             </Button>
-            <Button variant="outline" onClick={exportToExcel}>
+            <Button onClick={exportToExcel}>
               <FileSpreadsheet className="mr-2 h-4 w-4" />
               Export to Excel
             </Button>
@@ -377,7 +377,23 @@ const Admin = () => {
                 <div className="space-y-8">
                   {data.scheduleData.map((weekData, weekIndex) => (
                     <div key={weekIndex} className="border rounded-lg p-6 bg-white">
-                      <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">{weekData.weekOf}</h3>
+                      <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">
+                        {(() => {
+                          const firstDate = new Date(weekData.dates[0]);
+                          const lastDate = new Date(weekData.dates[weekData.dates.length - 1]);
+                          
+                          const formatDate = (date: Date) => {
+                            return date.toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric'
+                            });
+                          };
+                          
+                          const year = firstDate.getFullYear();
+                          
+                          return `${formatDate(firstDate)} - ${formatDate(lastDate)}, ${year}`;
+                        })()}
+                      </h3>
                       
                       <div className="overflow-x-auto">
                         <table className="w-full border-collapse border-2 border-gray-300">
@@ -545,7 +561,23 @@ const Admin = () => {
                 <div className="space-y-8">
                   {data.scheduleData.map((weekData, weekIndex) => (
                     <div key={weekIndex} className="border rounded-lg p-6 bg-white">
-                      <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">{weekData.weekOf}</h3>
+                      <h3 className="text-xl font-bold mb-6 text-center bg-gray-100 p-3 rounded">
+                        {(() => {
+                          const firstDate = new Date(weekData.dates[0]);
+                          const lastDate = new Date(weekData.dates[weekData.dates.length - 1]);
+                          
+                          const formatDate = (date: Date) => {
+                            return date.toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric'
+                            });
+                          };
+                          
+                          const year = firstDate.getFullYear();
+                          
+                          return `${formatDate(firstDate)} - ${formatDate(lastDate)}, ${year}`;
+                        })()}
+                      </h3>
                       
                       <div className="overflow-x-auto">
                         <table className="w-full border-collapse border-2 border-gray-300">
