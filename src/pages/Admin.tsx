@@ -327,6 +327,47 @@ const Admin = () => {
     updateShoutouts(updatedShoutouts);
   };
   
+  // Save callouts data to schedule
+  const handleSaveCallouts = async () => {
+    try {
+      const updatedScheduleData = data.scheduleData.map((weekData, weekIndex) => ({
+        ...weekData,
+        callouts: {
+          vacation: weekData.days.map((_, dayIndex) => 
+            callouts[`${weekIndex}-${dayIndex}-vacation`] || ''
+          ),
+          sick: weekData.days.map((_, dayIndex) => 
+            callouts[`${weekIndex}-${dayIndex}-sick`] || ''
+          ),
+        }
+      }));
+      
+      await updateScheduleData(updatedScheduleData);
+      alert('Callouts saved successfully!');
+    } catch (error) {
+      console.error('Error saving callouts:', error);
+      alert('Error saving callouts');
+    }
+  };
+  
+  // Initialize callouts from existing data
+  React.useEffect(() => {
+    const initialCallouts: {[key: string]: string} = {};
+    data.scheduleData.forEach((weekData, weekIndex) => {
+      if (weekData.callouts) {
+        weekData.days.forEach((_, dayIndex) => {
+          if (weekData.callouts?.vacation?.[dayIndex]) {
+            initialCallouts[`${weekIndex}-${dayIndex}-vacation`] = weekData.callouts.vacation[dayIndex];
+          }
+          if (weekData.callouts?.sick?.[dayIndex]) {
+            initialCallouts[`${weekIndex}-${dayIndex}-sick`] = weekData.callouts.sick[dayIndex];
+          }
+        });
+      }
+    });
+    setCallouts(initialCallouts);
+  }, [data.scheduleData]);
+  
   // Save all changes
   const handleSaveChanges = () => {
     // Here you would save all the data to your backend
@@ -633,12 +674,20 @@ const Admin = () => {
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+                 
+                 {/* Save Callouts Button */}
+                 <div className="flex justify-center pt-6">
+                   <Button onClick={handleSaveCallouts} className="bg-primary text-primary-foreground">
+                     <Save className="mr-2 h-4 w-4" />
+                     Save Vacation & Sick Callouts
+                   </Button>
+                 </div>
+               </CardContent>
+             </Card>
           </TabsContent>
           
           <TabsContent value="birthdays">

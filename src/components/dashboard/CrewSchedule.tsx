@@ -182,16 +182,16 @@ export function CrewSchedule() {
                       isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''
                     }`}
                   >
-                    <div className="space-y-1">
-                      {/* Vacation section */}
-                      <div className="text-white text-sm uppercase min-h-[20px] flex items-center justify-center">
-                        {/* Placeholder for vacation data */}
-                      </div>
-                      {/* Sick section */}
-                      <div className="text-white text-sm uppercase min-h-[20px] flex items-center justify-center">
-                        {/* Placeholder for sick data */}
-                      </div>
-                    </div>
+                     <div className="space-y-1">
+                       {/* Vacation section */}
+                       <div className="text-white text-sm uppercase min-h-[20px] flex items-center justify-center">
+                         {currentWeekData.callouts?.vacation?.[dayIndex] || ''}
+                       </div>
+                       {/* Sick section */}
+                       <div className="text-white text-sm uppercase min-h-[20px] flex items-center justify-center">
+                         {currentWeekData.callouts?.sick?.[dayIndex] || ''}
+                       </div>
+                     </div>
                   </TableCell>
                 ))}
               </TableRow>

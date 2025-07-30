@@ -14,6 +14,10 @@ export interface WeekData {
   days: string[];
   dates: string[];
   crews: CrewMemberData[];
+  callouts?: {
+    vacation: string[];
+    sick: string[];
+  };
 }
 
 export interface CrewMemberData {
