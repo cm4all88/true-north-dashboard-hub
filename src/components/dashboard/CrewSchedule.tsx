@@ -60,7 +60,7 @@ export function CrewSchedule() {
           Field Crew Schedule
           <ArrowLeftRight className="h-4 w-4 ml-2 text-gray-400" />
           <span className="text-lg text-blue-400">
-            Week {currentWeekIndex + 1}
+            {currentWeekData.weekOf}
           </span>
         </CardTitle>
       </CardHeader>
