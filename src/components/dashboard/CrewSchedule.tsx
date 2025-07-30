@@ -166,6 +166,35 @@ export function CrewSchedule() {
                   ))}
                 </TableRow>
               ))}
+              
+              {/* Vacation/Sick Row */}
+              <TableRow className="h-[70px] border-t-2 border-gray-500">
+                <TableCell className="p-3 border border-gray-600 font-medium">
+                  <div className="space-y-1">
+                    <div className="font-bold text-base uppercase text-white">VAC</div>
+                    <div className="font-bold text-base uppercase text-white">SICK</div>
+                  </div>
+                </TableCell>
+                {currentWeekData.days.map((_, dayIndex) => (
+                  <TableCell 
+                    key={`callouts-${dayIndex}`} 
+                    className={`p-2 border border-gray-600 text-center ${
+                      isToday(currentWeekData.dates[dayIndex]) ? 'bg-gray-600' : ''
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      {/* Vacation section */}
+                      <div className="text-white text-sm uppercase min-h-[20px] flex items-center justify-center">
+                        {/* Placeholder for vacation data */}
+                      </div>
+                      {/* Sick section */}
+                      <div className="text-white text-sm uppercase min-h-[20px] flex items-center justify-center">
+                        {/* Placeholder for sick data */}
+                      </div>
+                    </div>
+                  </TableCell>
+                ))}
+              </TableRow>
             </TableBody>
           </Table>
           
