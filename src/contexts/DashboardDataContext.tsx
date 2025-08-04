@@ -1,7 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { 
-  getScheduleData, 
+  getScheduleData,
+  getScheduleDataByFieldDate,
   getBirthdays, 
   getShoutouts, 
   saveScheduleData, 
@@ -196,7 +197,7 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
       setError(null);
       
       const [scheduleData, birthdays, shoutouts] = await Promise.all([
-        getScheduleData(),
+        getScheduleDataByFieldDate(),
         getBirthdays(),
         getShoutouts()
       ]);

@@ -31,11 +31,13 @@ export interface ScheduleItemData {
     color: 'orange' | 'blue' | 'green' | 'purple' | 'none';
     jobNumber: string;
     jobName: string;
+    fieldDate?: string;
   };
   row2: {
     color: 'orange' | 'blue' | 'green' | 'purple' | 'none';
     jobNumber: string;
     jobName: string;
+    fieldDate?: string;
   };
 }
 
@@ -49,6 +51,168 @@ export interface ShoutoutData {
   text: string;
   from: string;
   date: Date;
+}
+
+// Helper function to get the Monday of a given week
+function getMondayOfWeek(date: Date): Date {
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(date.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+// Helper function to check if a date falls within a week
+function isDateInWeek(date: string, weekStart: Date): boolean {
+  const taskDate = new Date(date);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  return taskDate >= weekStart && taskDate <= weekEnd;
+}
+
+// Generate weekly schedule organized by field dates
+export async function getScheduleDataByFieldDate(): Promise<WeekData[]> {
+  try {
+    // Get all schedule items with field dates
+    const { data: allItems, error: itemsError } = await supabase
+      .from('schedule_items')
+      .select(`
+        *,
+        crew_members!inner(
+          position,
+          name,
+          order_index,
+          crew_schedules!inner(
+            week_of,
+            vacation_callouts,
+            sick_callouts
+          )
+        )
+      `)
+      .not('row1_field_date', 'is', null)
+      .or('row2_field_date.not.is.null,row1_field_date.not.is.null');
+
+    if (itemsError) throw itemsError;
+
+    // Group tasks by their field dates to determine which week they belong to
+    const today = new Date();
+    const currentMonday = getMondayOfWeek(new Date(today));
+    const weeks: { [key: string]: any } = {};
+
+    // Process each item and assign to correct week based on field date
+    allItems?.forEach(item => {
+      // Check row1 field date
+      if (item.row1_field_date) {
+        const fieldDate = new Date(item.row1_field_date);
+        const weekStart = getMondayOfWeek(new Date(fieldDate));
+        const weekKey = weekStart.toISOString().split('T')[0];
+        
+        if (!weeks[weekKey]) {
+          weeks[weekKey] = {
+            weekStart,
+            items: [],
+            callouts: item.crew_members.crew_schedules.vacation_callouts || ['', '', '', '', '']
+          };
+        }
+        weeks[weekKey].items.push({
+          ...item,
+          targetRow: 'row1'
+        });
+      }
+
+      // Check row2 field date
+      if (item.row2_field_date) {
+        const fieldDate = new Date(item.row2_field_date);
+        const weekStart = getMondayOfWeek(new Date(fieldDate));
+        const weekKey = weekStart.toISOString().split('T')[0];
+        
+        if (!weeks[weekKey]) {
+          weeks[weekKey] = {
+            weekStart,
+            items: [],
+            callouts: item.crew_members.crew_schedules.vacation_callouts || ['', '', '', '', '']
+          };
+        }
+        weeks[weekKey].items.push({
+          ...item,
+          targetRow: 'row2'
+        });
+      }
+    });
+
+    // Convert to WeekData format
+    const weekDataArray: WeekData[] = Object.entries(weeks)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(0, 4) // Show 4 weeks
+      .map(([weekKey, weekInfo], index) => {
+        const weekStart = weekInfo.weekStart;
+        const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
+        const dates: string[] = [];
+        
+        // Generate dates for this week
+        for (let i = 0; i < 5; i++) {
+          const date = new Date(weekStart);
+          date.setDate(weekStart.getDate() + i);
+          dates.push(`${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`);
+        }
+
+        // Build crew schedule for this week
+        const crewMap: { [key: string]: any } = {};
+        
+        weekInfo.items.forEach((item: any) => {
+          const crewKey = `${item.crew_members.position}-${item.crew_members.name}`;
+          if (!crewMap[crewKey]) {
+            crewMap[crewKey] = {
+              position: item.crew_members.position,
+              name: item.crew_members.name,
+              schedule: Array(5).fill(null).map(() => ({
+                row1: { color: 'none', jobNumber: '', jobName: '', fieldDate: undefined },
+                row2: { color: 'none', jobNumber: '', jobName: '', fieldDate: undefined }
+              }))
+            };
+          }
+
+          // Find which day this task belongs to
+          const fieldDate = item.targetRow === 'row1' ? item.row1_field_date : item.row2_field_date;
+          const taskDate = new Date(fieldDate);
+          const dayIndex = Math.floor((taskDate.getTime() - weekStart.getTime()) / (24 * 60 * 60 * 1000));
+          
+          if (dayIndex >= 0 && dayIndex < 5) {
+            if (item.targetRow === 'row1') {
+              crewMap[crewKey].schedule[dayIndex].row1 = {
+                color: item.row1_color,
+                jobNumber: item.row1_job_number,
+                jobName: item.row1_job_name,
+                fieldDate: item.row1_field_date
+              };
+            } else {
+              crewMap[crewKey].schedule[dayIndex].row2 = {
+                color: item.row2_color,
+                jobNumber: item.row2_job_number,
+                jobName: item.row2_job_name,
+                fieldDate: item.row2_field_date
+              };
+            }
+          }
+        });
+
+        return {
+          weekOf: `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+          days,
+          dates,
+          crews: Object.values(crewMap),
+          callouts: {
+            vacation: weekInfo.callouts || ['', '', '', '', ''],
+            sick: ['', '', '', '', ''] // You can add sick callouts logic here
+          }
+        };
+      });
+
+    return weekDataArray;
+  } catch (error) {
+    console.error('Error fetching schedule data by field date:', error);
+    return [];
+  }
 }
 
 // Schedule operations
@@ -87,12 +251,14 @@ export async function getScheduleData(): Promise<WeekData[]> {
             row1: {
               color: (item?.row1_color as any) || 'none',
               jobNumber: item?.row1_job_number || '',
-              jobName: item?.row1_job_name || ''
+              jobName: item?.row1_job_name || '',
+              fieldDate: item?.row1_field_date || undefined
             },
             row2: {
               color: (item?.row2_color as any) || 'none',
               jobNumber: item?.row2_job_number || '',
-              jobName: item?.row2_job_name || ''
+              jobName: item?.row2_job_name || '',
+              fieldDate: item?.row2_field_date || undefined
             }
           });
         }
@@ -256,9 +422,11 @@ export async function saveScheduleData(scheduleData: WeekData[]): Promise<void> 
             row1_color: daySchedule.row1.color,
             row1_job_number: daySchedule.row1.jobNumber,
             row1_job_name: daySchedule.row1.jobName,
+            row1_field_date: daySchedule.row1.fieldDate || null,
             row2_color: daySchedule.row2.color,
             row2_job_number: daySchedule.row2.jobNumber,
-            row2_job_name: daySchedule.row2.jobName
+            row2_job_name: daySchedule.row2.jobName,
+            row2_field_date: daySchedule.row2.fieldDate || null
           };
 
           if (existingItem) {

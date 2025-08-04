@@ -110,9 +110,11 @@ export type Database = {
           day_index: number
           id: string
           row1_color: string | null
+          row1_field_date: string | null
           row1_job_name: string | null
           row1_job_number: string | null
           row2_color: string | null
+          row2_field_date: string | null
           row2_job_name: string | null
           row2_job_number: string | null
         }
@@ -122,9 +124,11 @@ export type Database = {
           day_index: number
           id?: string
           row1_color?: string | null
+          row1_field_date?: string | null
           row1_job_name?: string | null
           row1_job_number?: string | null
           row2_color?: string | null
+          row2_field_date?: string | null
           row2_job_name?: string | null
           row2_job_number?: string | null
         }
@@ -134,9 +138,11 @@ export type Database = {
           day_index?: number
           id?: string
           row1_color?: string | null
+          row1_field_date?: string | null
           row1_job_name?: string | null
           row1_job_number?: string | null
           row2_color?: string | null
+          row2_field_date?: string | null
           row2_job_name?: string | null
           row2_job_number?: string | null
         }
