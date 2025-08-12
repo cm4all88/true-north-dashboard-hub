@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useDashboardData } from '@/contexts/DashboardDataContext';
 import * as XLSX from 'xlsx';
+import { supabase } from "@/integrations/supabase/client";
 
 // Available colors for dots
 const availableColors = [
@@ -38,6 +39,7 @@ const Admin = () => {
   // Local state for new items
   const [newBirthday, setNewBirthday] = useState({ name: '', date: new Date() });
   const [newShoutout, setNewShoutout] = useState({ text: '', from: '' });
+  const [reports, setReports] = useState<{ name: string; url: string }[]>([]);
   
   // Debounced update function
   const debouncedUpdate = useCallback((key: string, value: string, updateFn: () => void) => {
@@ -404,6 +406,7 @@ const Admin = () => {
             <TabsTrigger value="callouts">Vacation/Sick</TabsTrigger>
             <TabsTrigger value="birthdays">Birthdays</TabsTrigger>
             <TabsTrigger value="shoutouts">Shoutouts</TabsTrigger>
+            <TabsTrigger value="reports">Weekly Reports</TabsTrigger>
           </TabsList>
           
           <TabsContent value="schedule">
@@ -817,6 +820,47 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
+        <TabsContent value="reports">
+          <Card>
+            <CardHeader>
+              <CardTitle>Weekly Reports</CardTitle>
+              <CardDescription>Downloads of Monday morning Excel exports.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3 mb-4">
+                <Button onClick={async () => {
+                  const { data, error } = await supabase.storage.from('reports').list('', { sortBy: { column: 'updated_at', order: 'desc' } });
+                  if (error) { console.error('Failed to list reports', error); alert('Failed to load reports'); return; }
+                  const files = (data || []).map((f: any) => {
+                    const { data: pub } = supabase.storage.from('reports').getPublicUrl(f.name);
+                    return { name: f.name, url: pub.publicUrl };
+                  });
+                  setReports(files);
+                }}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {reports.length === 0 ? (
+                  <div className="text-sm text-gray-500">No reports found yet. The first file will appear next Monday.</div>
+                ) : (
+                  reports.map((f) => (
+                    <div key={f.name} className="flex items-center justify-between p-3 bg-white border rounded-md">
+                      <div className="truncate">{f.name}</div>
+                      <a href={f.url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm">
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                        </Button>
+                      </a>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
         </Tabs>
       </main>
     </div>
