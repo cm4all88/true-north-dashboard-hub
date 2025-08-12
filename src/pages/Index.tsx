@@ -9,7 +9,7 @@ import { DashboardClock } from '@/components/dashboard/DashboardClock';
 import { ShoutoutBoard } from '@/components/dashboard/ShoutoutBoard';
 import { useAutoRefresh } from '@/components/dashboard/AutoRefreshProvider';
 import { Button } from '@/components/ui/button';
-import { Settings, RefreshCw } from "lucide-react";
+import { Settings, RefreshCw, PieChart } from "lucide-react";
 import { ToggleFullscreen } from '@/components/ToggleFullscreen';
 import { TrafficTimes } from "@/components/dashboard/TrafficTimes";
 
@@ -79,6 +79,12 @@ const Index = () => {
                 Refresh
               </Button>
               <ToggleFullscreen />
+              <Link to="/budget">
+                <Button variant="ghost" size="sm" className="text-xs text-gray-300 hover:text-white h-4 px-1">
+                  <PieChart className="mr-1 h-3 w-3" />
+                  Budget
+                </Button>
+              </Link>
               <Link to="/admin">
                 <Button variant="ghost" size="sm" className="text-xs text-gray-300 hover:text-white h-4 px-1">
                   <Settings className="mr-1 h-3 w-3" />
