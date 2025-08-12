@@ -379,7 +379,7 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 flex justify-between items-center">
+        <div className="max-w-[2000px] mx-auto px-4 py-4 sm:px-6 flex justify-between items-center">
           <TrueNorthLogo />
           <div className="flex items-center gap-4">
             <Button onClick={() => navigate('/')}>
@@ -397,7 +397,7 @@ const Admin = () => {
         </div>
       </header>
       
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6">
+      <main className="max-w-[2000px] mx-auto px-4 py-8 sm:px-6">
         <h1 className="text-2xl font-bold text-truenorth-700 mb-6">Dashboard Administration</h1>
         
         <Tabs defaultValue="schedule">
